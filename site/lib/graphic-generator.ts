@@ -21,6 +21,8 @@ export type GraphicState = {
   homeScore: string; awayScore: string; resultClubSide: 'home' | 'away' | 'none';
   matchdayBackground: string; matchdaySubject: string; matchdayTeamName: string; matchdayPlayerName: string;
   matchdayDate: string; matchdayTime: string; matchdaySubjectX: number; matchdaySubjectY: number; matchdaySubjectZoom: number;
+  matchdayShadowX: number; matchdayShadowY: number; matchdayShadowWidth: number; matchdayShadowHeight: number;
+  matchdayShadowBlur: number; matchdayShadowOpacity: number;
 };
 
 export const SPONSORS = [
@@ -34,6 +36,14 @@ export const LOGOS = [
   { id: 'nerone-bounganvillae', name: 'Nerone BGV', logo: '/assets/bgv-logo-testo-bianco.png', mono: '/assets/teams/2026-27/mono_white/nerone_bgv_white_text.png' },
   { id: 'samurai-csi', name: 'Samurai', logo: '/assets/teams/2026-27/samurai.png', mono: '' },
   { id: 'ciampino', name: 'Ciampino', logo: '', mono: '/assets/teams/2026-27/mono_white/ciampino_white.png' },
+] as const;
+
+export const MATCHDAY_WHITE_LOGOS = [
+  { id: 'nerone', name: 'Nerone · simbolo', logo: '/assets/teams/2026-27/mono_white/nerone_white.png' },
+  { id: 'nerone', name: 'Nerone · con scritta', logo: '/assets/teams/2026-27/mono_white/nerone_white_text.png' },
+  { id: 'nerone-bounganvillae', name: 'Nerone BGV · simbolo', logo: '/assets/teams/2026-27/mono_white/nerone_bgv_white.png' },
+  { id: 'nerone-bounganvillae', name: 'Nerone BGV · con scritta', logo: '/assets/teams/2026-27/mono_white/nerone_bgv_white_text.png' },
+  { id: 'la-squad', name: 'La Squad', logo: '/assets/teams/2026-27/mono_white/ciampino_white.png' },
 ] as const;
 
 const imageCache = new Map<string, Promise<HTMLImageElement>>();
@@ -84,45 +94,6 @@ function containVisible(ctx: CanvasRenderingContext2D, img: HTMLImageElement, x:
   const scale = Math.min(w / bounds.w, h / bounds.h);
   const dw = bounds.w * scale, dh = bounds.h * scale;
   ctx.drawImage(img, bounds.x, bounds.y, bounds.w, bounds.h, x + (w - dw) / 2, y + (h - dh) / 2, dw, dh);
-}
-const footCache = new WeakMap<HTMLImageElement, { x: number; y: number }[]>();
-function visibleFeet(img: HTMLImageElement) {
-  const cached = footCache.get(img);
-  if (cached) return cached;
-  const bounds = visibleBounds(img);
-  const fallback = [
-    { x: bounds.x + bounds.w * .36, y: bounds.y + bounds.h },
-    { x: bounds.x + bounds.w * .64, y: bounds.y + bounds.h },
-  ];
-  const mask = document.createElement('canvas');
-  mask.width = img.naturalWidth; mask.height = img.naturalHeight;
-  const maskCtx = mask.getContext('2d', { willReadFrequently: true });
-  if (!maskCtx) return fallback;
-  try {
-    maskCtx.drawImage(img, 0, 0);
-    const pixels = maskCtx.getImageData(0, 0, mask.width, mask.height).data;
-    const mid = bounds.x + bounds.w / 2;
-    const bottom = [-1, -1];
-    const startY = Math.floor(bounds.y + bounds.h * .78);
-    for (let y = startY; y < bounds.y + bounds.h; y += 2) {
-      for (let x = bounds.x; x < bounds.x + bounds.w; x += 2) {
-        if (pixels[(y * mask.width + x) * 4 + 3] > 100) bottom[x < mid ? 0 : 1] = y;
-      }
-    }
-    const feet = fallback.map((point, side) => {
-      if (bottom[side] < 0) return point;
-      let sum = 0, count = 0;
-      const fromY = Math.max(startY, bottom[side] - Math.max(8, bounds.h * .035));
-      for (let y = Math.floor(fromY); y <= bottom[side]; y += 2) {
-        for (let x = side === 0 ? bounds.x : Math.floor(mid); x < (side === 0 ? mid : bounds.x + bounds.w); x += 2) {
-          if (pixels[(y * mask.width + x) * 4 + 3] > 100) { sum += x; count++; }
-        }
-      }
-      return { x: count ? sum / count : point.x, y: bottom[side] };
-    });
-    footCache.set(img, feet);
-    return feet;
-  } catch { return fallback; }
 }
 export async function sponsorGlassSize(sponsorId: string) {
   const sponsor = SPONSORS.find(item => item.id === sponsorId) ?? SPONSORS[3];
@@ -369,10 +340,8 @@ async function matchday(ctx: CanvasRenderingContext2D, s: GraphicState) {
   text(ctx, s.matchdayTime || 'ORARIO DA DEFINIRE', 767, 634, 263, 30, 'Georgia, serif', 'italic 700', 'left', 23);
   lines(ctx, s.address || 'LUOGO DA DEFINIRE', 767, 679, 265, 3, 25, 31, 'Georgia, serif', 'italic 700');
   const [home, away] = await Promise.all([optionalImage(s.homeLogo), optionalImage(s.awayLogo)]);
-  ctx.save(); ctx.filter = 'brightness(0) invert(1)';
   if (home) containVisible(ctx, home, 766, 785, 104, 100);
   if (away) containVisible(ctx, away, 900, 785, 104, 100);
-  ctx.restore();
 
   ctx.fillStyle = '#f7f3ee';
   ctx.font = '700 21px "DM Sans", Arial, sans-serif';
@@ -388,14 +357,15 @@ async function matchday(ctx: CanvasRenderingContext2D, s: GraphicState) {
     const width = bounds.w * scale, height = bounds.h * scale;
     const x = 540 - width / 2 + s.matchdaySubjectX;
     const y = 1200 - height + s.matchdaySubjectY;
-    const feet = visibleFeet(subject).map(point => ({ x: x + (point.x - bounds.x) * scale, y: y + (point.y - bounds.y) * scale }));
-    ctx.save(); ctx.filter = 'blur(24px)'; ctx.fillStyle = '#18000691';
-    ctx.beginPath(); ctx.ellipse((feet[0].x + feet[1].x) / 2 + 10, Math.max(feet[0].y, feet[1].y) + 17, Math.max(85, width * .29), 29, 0, 0, Math.PI * 2); ctx.fill(); ctx.restore();
-    for (const foot of feet) {
-      ctx.save(); ctx.filter = 'blur(8px)'; ctx.fillStyle = '#100003ae';
-      ctx.beginPath(); ctx.ellipse(foot.x + 7, foot.y + 8, Math.max(37, width * .105), 13, 0, 0, Math.PI * 2); ctx.fill(); ctx.restore();
-    }
-    ctx.save(); ctx.shadowColor = '#2700068c'; ctx.shadowBlur = 23; ctx.shadowOffsetX = 10; ctx.shadowOffsetY = 17;
+    ctx.save();
+    ctx.filter = `blur(${s.matchdayShadowBlur}px)`;
+    ctx.fillStyle = `rgba(16, 0, 4, ${s.matchdayShadowOpacity / 100})`;
+    ctx.beginPath();
+    ctx.ellipse(x + width / 2 + s.matchdayShadowX, y + height + s.matchdayShadowY,
+      s.matchdayShadowWidth / 2, s.matchdayShadowHeight / 2, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+    ctx.save();
     ctx.drawImage(subject, bounds.x, bounds.y, bounds.w, bounds.h, x, y, width, height);
     ctx.restore();
   } else {

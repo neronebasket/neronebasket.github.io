@@ -2,7 +2,7 @@
 
 import { Fragment, useEffect, useRef, useState } from 'react';
 import { ArrowDownToLine, CalendarDays, ImagePlus, Plus, Trash2 } from 'lucide-react';
-import { drawGraphic, LOGOS, SPONSORS, sponsorGlassSize, type Appointment, type Glass, type GraphicState, type GraphicType, type WeekFormat, type WeekMatch } from '@/lib/graphic-generator';
+import { drawGraphic, LOGOS, MATCHDAY_WHITE_LOGOS, SPONSORS, sponsorGlassSize, type Appointment, type Glass, type GraphicState, type GraphicType, type WeekFormat, type WeekMatch } from '@/lib/graphic-generator';
 import './graphic-generator.css';
 
 export type SiteGame = {
@@ -29,6 +29,8 @@ const initialState: GraphicState = {
   address: 'Via Olimpica, 46B (4Kasette) Anzio (RM)', homeScore: '76', awayScore: '51', resultClubSide: 'home',
   matchdayBackground: '#c80b1d', matchdaySubject: '', matchdayTeamName: 'NERONE BASKET ANZIO', matchdayPlayerName: 'NOME GIOCATORE',
   matchdayDate: '2026-10-21', matchdayTime: '21:00', matchdaySubjectX: 0, matchdaySubjectY: 0, matchdaySubjectZoom: 1,
+  matchdayShadowX: 0, matchdayShadowY: 18, matchdayShadowWidth: 260, matchdayShadowHeight: 58,
+  matchdayShadowBlur: 24, matchdayShadowOpacity: 57,
 };
 
 function parseCsv(source: string): string[][] {
@@ -68,9 +70,8 @@ function gameAppointment(game: SiteGame): Appointment {
   const atHome = game.homeId === game.club;
   return { id: game.id, club: game.club, date: game.date, time: game.time, opponent: atHome ? game.away : game.home, atHome };
 }
-function matchdayLogo(teamId: string, fallback: string) {
-  return teamId === 'nerone' ? '/assets/logo-bianco.png'
-    : teamId === 'nerone-bounganvillae' ? '/assets/bgv-bianco.png' : fallback;
+function matchdayLogo(teamId: string) {
+  return MATCHDAY_WHITE_LOGOS.find(item => item.id === teamId)?.logo || '';
 }
 function Field({ label, value, onChange, placeholder, type = 'text' }: { label: string; value: string; onChange: (value: string) => void; placeholder?: string; type?: string }) {
   return <label className="gg-field"><span>{label}</span><input type={type} value={value} placeholder={placeholder} onChange={event => onChange(event.target.value)} /></label>;
@@ -141,8 +142,8 @@ export function GraphicGenerator({ games, teamLogos }: { games: SiteGame[]; team
     setMessage('');
     setState(current => ({ ...current,
       homeTeam: game.home, awayTeam: game.away,
-      homeLogo: current.type === 'risultato' ? (LOGOS.find(logo => logo.id === game.homeId)?.mono || '') : current.type === 'matchday' ? matchdayLogo(game.homeId, game.homeLogo) : game.homeLogo,
-      awayLogo: current.type === 'risultato' ? (LOGOS.find(logo => logo.id === game.awayId)?.mono || '') : current.type === 'matchday' ? matchdayLogo(game.awayId, game.awayLogo) : game.awayLogo,
+      homeLogo: current.type === 'risultato' ? (LOGOS.find(logo => logo.id === game.homeId)?.mono || '') : current.type === 'matchday' ? matchdayLogo(game.homeId) : game.homeLogo,
+      awayLogo: current.type === 'risultato' ? (LOGOS.find(logo => logo.id === game.awayId)?.mono || '') : current.type === 'matchday' ? matchdayLogo(game.awayId) : game.awayLogo,
       competition: game.competition, dateTime: formattedDateTime(game.date, game.time),
       address: game.address, homeScore: game.homeScore == null ? current.homeScore : String(game.homeScore),
       awayScore: game.awayScore == null ? current.awayScore : String(game.awayScore),
@@ -295,7 +296,9 @@ export function GraphicGenerator({ games, teamLogos }: { games: SiteGame[]; team
     setState(current => ({ ...current, glasses: current.glasses.map(g => g.id === active.id ? { ...g, x: Math.round(Math.max(0, Math.min(1080 - g.width, p.x - active.dx))), y: Math.round(Math.max(0, Math.min(canvasHeight - g.height, p.y - active.dy))) } : g) }));
   }
 
-  const logoOptions = state.type === 'risultato'
+  const logoOptions = state.type === 'matchday'
+    ? MATCHDAY_WHITE_LOGOS.map(item => ({ value: item.logo, label: item.name }))
+    : state.type === 'risultato'
     ? LOGOS.filter(item => item.mono).map(item => ({ value: item.mono, label: item.name }))
     : [{ value: '/assets/logo-testo-bianco.png', label: 'Nerone · bianco' }, { value: '/assets/logo-bianco.png', label: 'Nerone · simbolo' }, { value: '/assets/bgv-bianco.png', label: 'Nerone BGV · simbolo' }, ...teamLogos.map(item => ({ value: item.logo, label: item.name }))]
       .filter((item, index, all) => all.findIndex(candidate => candidate.value === item.value) === index);
@@ -306,7 +309,7 @@ export function GraphicGenerator({ games, teamLogos }: { games: SiteGame[]; team
     <div className="gg-shell">
       <div className="gg-editor">
         <div className="gg-intro"><p className="gg-eyebrow">01 / SCEGLI IL FORMATO</p><h2>Crea la grafica</h2><p>Compila i contenuti, controlla l’anteprima e scarica il post pronto per Instagram.</p></div>
-        <div className="gg-types" role="group" aria-label="Tipo di grafica">{(Object.keys(TYPE_LABELS) as GraphicType[]).map(type => <button key={type} type="button" className={state.type === type ? 'active' : ''} onClick={() => { setSelectedGame(''); setMessage(''); setState(current => ({ ...current, type, sponsor: type === 'calendario' ? 'maisondali' : type === 'matchday' ? 'superette' : type === 'risultato' ? 'silviomarsili' : current.sponsor, homeTeam: type === 'risultato' || type === 'matchday' ? 'NERONE' : current.homeTeam, awayTeam: type === 'risultato' ? 'CIAMPINO' : type === 'week' || type === 'matchday' ? 'SAMURAI' : current.awayTeam, homeLogo: type === 'risultato' ? '/assets/teams/2026-27/mono_white/nerone_white_text.png' : type === 'matchday' ? '/assets/logo-bianco.png' : '/assets/logo-testo-bianco.png', awayLogo: type === 'risultato' ? '/assets/teams/2026-27/mono_white/ciampino_white.png' : '/assets/teams/2026-27/samurai.png', resultClubSide: type === 'risultato' ? 'home' : current.resultClubSide })); }}>{TYPE_LABELS[type]}</button>)}</div>
+        <div className="gg-types" role="group" aria-label="Tipo di grafica">{(Object.keys(TYPE_LABELS) as GraphicType[]).map(type => <button key={type} type="button" className={state.type === type ? 'active' : ''} onClick={() => { setSelectedGame(''); setMessage(''); setState(current => ({ ...current, type, sponsor: type === 'calendario' ? 'maisondali' : type === 'matchday' ? 'superette' : type === 'risultato' ? 'silviomarsili' : current.sponsor, homeTeam: type === 'risultato' || type === 'matchday' ? 'NERONE' : current.homeTeam, awayTeam: type === 'risultato' ? 'CIAMPINO' : type === 'week' || type === 'matchday' ? 'SAMURAI' : current.awayTeam, homeLogo: type === 'risultato' ? '/assets/teams/2026-27/mono_white/nerone_white_text.png' : type === 'matchday' ? matchdayLogo('nerone') : '/assets/logo-testo-bianco.png', awayLogo: type === 'risultato' ? '/assets/teams/2026-27/mono_white/ciampino_white.png' : type === 'matchday' ? '' : '/assets/teams/2026-27/samurai.png', resultClubSide: type === 'risultato' ? 'home' : current.resultClubSide })); }}>{TYPE_LABELS[type]}</button>)}</div>
 
         <Fragment key={state.type}>
 
@@ -320,13 +323,14 @@ export function GraphicGenerator({ games, teamLogos }: { games: SiteGame[]; team
           </section>
         </> : state.type === 'matchday' ? <>
           <section className="gg-panel"><div className="gg-panel-head"><span>01</span><h3>Partita</h3></div>
+            <p className="gg-help">Loghi bianchi disponibili: Nerone, Nerone BGV e La Squad. Per le altre squadre va aggiunto il relativo PNG nella cartella mono_white.</p>
             <div className="gg-grid">
               <Select label="Prendi dal calendario" value={selectedGame} onChange={pickGame} options={[{ value: '', label: 'Seleziona una partita' }, ...games.map(game => ({ value: game.id, label: `${game.date} · ${game.home} – ${game.away}` }))]} />
               <Field label="Nome squadra in alto" value={state.matchdayTeamName} onChange={value => update('matchdayTeamName', value)} />
               <Field label="Squadra di casa" value={state.homeTeam} onChange={value => updateTeam('home', value)} />
               <Field label="Squadra ospite" value={state.awayTeam} onChange={value => updateTeam('away', value)} />
-              <Select label="Logo casa · reso bianco" value={state.homeLogo} onChange={value => update('homeLogo', value)} options={[{ value: '', label: 'Nessuno' }, ...logoOptions]} />
-              <Select label="Logo ospite · reso bianco" value={state.awayLogo} onChange={value => update('awayLogo', value)} options={[{ value: '', label: 'Nessuno' }, ...logoOptions]} />
+              <Select label="Logo bianco casa" value={state.homeLogo} onChange={value => update('homeLogo', value)} options={[{ value: '', label: 'Nessuno' }, ...logoOptions]} />
+              <Select label="Logo bianco ospite" value={state.awayLogo} onChange={value => update('awayLogo', value)} options={[{ value: '', label: 'Nessuno' }, ...logoOptions]} />
             </div>
           </section>
           <section className="gg-panel"><div className="gg-panel-head"><span>02</span><h3>Dettagli</h3></div>
@@ -345,6 +349,16 @@ export function GraphicGenerator({ games, teamLogos }: { games: SiteGame[]; team
               <label className="gg-field"><span>Posizione orizzontale · {state.matchdaySubjectX} px</span><input type="range" min="-280" max="280" step="1" value={state.matchdaySubjectX} onChange={event => update('matchdaySubjectX', Number(event.target.value))} /></label>
               <label className="gg-field"><span>Posizione verticale · {state.matchdaySubjectY} px</span><input type="range" min="-300" max="300" step="1" value={state.matchdaySubjectY} onChange={event => update('matchdaySubjectY', Number(event.target.value))} /></label>
               <label className="gg-field"><span>Dimensione giocatore · {Math.round(state.matchdaySubjectZoom * 100)}%</span><input type="range" min="0.5" max="2" step="0.05" value={state.matchdaySubjectZoom} onChange={event => update('matchdaySubjectZoom', Number(event.target.value))} /></label>
+            </div>
+            <div className="gg-matchday-shadow"><h4>Ombra a terra</h4><p>Un solo ovale sotto il PNG. Regolalo guardando l’anteprima.</p>
+              <div className="gg-grid gg-sliders">
+                <label className="gg-field"><span>Posizione orizzontale · {state.matchdayShadowX} px</span><input type="range" min="-250" max="250" step="1" value={state.matchdayShadowX} onChange={event => update('matchdayShadowX', Number(event.target.value))} /></label>
+                <label className="gg-field"><span>Posizione verticale · {state.matchdayShadowY} px</span><input type="range" min="-100" max="120" step="1" value={state.matchdayShadowY} onChange={event => update('matchdayShadowY', Number(event.target.value))} /></label>
+                <label className="gg-field"><span>Larghezza · {state.matchdayShadowWidth} px</span><input type="range" min="80" max="550" step="2" value={state.matchdayShadowWidth} onChange={event => update('matchdayShadowWidth', Number(event.target.value))} /></label>
+                <label className="gg-field"><span>Altezza · {state.matchdayShadowHeight} px</span><input type="range" min="10" max="120" step="2" value={state.matchdayShadowHeight} onChange={event => update('matchdayShadowHeight', Number(event.target.value))} /></label>
+                <label className="gg-field"><span>Sfocatura · {state.matchdayShadowBlur} px</span><input type="range" min="0" max="50" step="1" value={state.matchdayShadowBlur} onChange={event => update('matchdayShadowBlur', Number(event.target.value))} /></label>
+                <label className="gg-field"><span>Opacità · {state.matchdayShadowOpacity}%</span><input type="range" min="0" max="100" step="1" value={state.matchdayShadowOpacity} onChange={event => update('matchdayShadowOpacity', Number(event.target.value))} /></label>
+              </div>
             </div>
           </section>
         </> : <>
