@@ -1,4 +1,4 @@
-# WebMAKER Studio 0.2.3
+# WebMAKER Studio 0.2.4
 
 App Windows locale per aggiornare i contenuti del sito Nerone Basket Anzio. Il sito pubblico rimane in `site/` e GitHub Pages continua a pubblicare il branch `main` con il workflow esistente.
 
@@ -36,9 +36,9 @@ Le bozze auto salvate restano sul PC finché il file non viene salvato; anche i 
 ## Lavoro quotidiano dell'operatore
 
 - **Squadre / Giocatori / Roster:** gli ID restano stabili; i campi YAML o colonne CSV non gestiti dall'interfaccia vengono mantenuti. Per le foto importa prima l'immagine in **Immagini**, poi copia il percorso `/assets/...` nel profilo o nella notizia.
-- **Nuove squadre:** in **Squadre**, inserisci ID stabile, nome completo e breve. Aggiungila alla bozza, imposta i loghi se disponibili e premi **Salva sul PC**. Solo dopo il salvataggio compare nei menu delle partite e dei campionati. Gli ID esistenti non si rinominano.
-- **Stagioni e campionati:** in **Campionati** scegli la stagione, modifica nome, squadre Nerone partecipanti e punti classifica oppure crea un nuovo campionato. Puoi aggiungere anche una stagione e decidere separatamente quando renderla corrente. Salva la configurazione; in **Partite** apparirà il nuovo archivio CSV, creato sul disco quando salvi il primo contenuto. Gli ID restano fissi perché collegano gli archivi storici.
-- **Partite:** scegli stagione/campionato dal file, modifica data, squadre, punteggi e luogo. Una nuova partita riceve un ID unico che non cambia in seguito.
+- **Nuove squadre:** in **Squadre**, inserisci ID stabile, nome completo e breve. Aggiungila alla bozza, imposta loghi e scheda del campo se disponibili e premi **Salva sul PC**. Solo dopo il salvataggio compare nei menu delle partite e dei campionati. Gli ID esistenti non si rinominano.
+- **Stagioni e campionati:** in **Campionati** scegli la stagione, modifica nome, formula, nota pubblica, fonte, squadre Nerone partecipanti e punti classifica oppure crea un nuovo campionato. Puoi aggiungere anche una stagione e decidere separatamente quando renderla corrente. Salva la configurazione; in **Partite** apparirà il nuovo archivio CSV, creato sul disco quando salvi il primo contenuto. Gli ID restano fissi perché collegano gli archivi storici.
+- **Partite:** scegli stagione/campionato dal file, modifica data, squadre, punteggi e luogo. Quando selezioni la squadra di casa, Studio propone campo, indirizzo e orario abituale salvati nella sua scheda; ogni valore resta modificabile. Una nuova partita riceve un ID unico che non cambia in seguito.
 - **Notizie:** Markdown con front matter YAML. Lo slug è derivato dal titolo alla creazione; titolo, data, copertina e collegamenti sono modificabili. L'anteprima Markdown è isolata in un iframe senza script.
 - **Backup:** esporta un ZIP v1 di dati/notizie/immagini. Il ripristino standard aggiunge solo file assenti e segnala i conflitti. Il ripristino con sovrascrittura è una scelta separata e conserva una copia locale precedente.
 - **Generatore grafiche:** il generatore già pubblicato si apre nel browser; Studio non modifica il suo codice o il suo flusso.

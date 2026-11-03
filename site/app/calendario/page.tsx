@@ -32,7 +32,7 @@ export default function CalendarPage() {
     <main>
       <SiteHeader />
       <PageIntro eyebrow="Stagione 2026/27" title="Calendario">
-        <p>Partite passate e prossimi appuntamenti delle due squadre Nerone nel campionato Amatori UISP.</p>
+        <p>Partite passate e prossimi appuntamenti del Nerone in Platinum e del Nerone BGV in Gold.</p>
       </PageIntro>
       <section className="page-section calendar-section"><SeasonCalendar games={games} /></section>
       <SiteFooter />

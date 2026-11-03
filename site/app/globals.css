@@ -194,10 +194,29 @@ h1 span { color: var(--red); }
 .league-content { background: var(--paper); }
 .archive-toolbar { display: flex; align-items: end; justify-content: space-between; gap: 28px; margin-bottom: 48px; }
 .archive-toolbar .filters { margin-bottom: 0; order: 2; }
+.competition-format { display: grid; grid-template-columns: minmax(240px,.72fr) minmax(0,1.28fr); gap: clamp(30px,5vw,72px); align-items: start; margin: 0 0 58px; padding: clamp(26px,4vw,48px); background: #e7e4dd; border-top: 4px solid var(--red); }
+.competition-format-copy h2 { margin: 7px 0 20px; font-family: var(--display); font-size: clamp(2.2rem,4vw,4rem); font-weight: 400; letter-spacing: .035em; line-height: .95; text-transform: uppercase; }
+.competition-format-copy > p:not(.eyebrow) { color: #46433e; line-height: 1.65; }
+.competition-format-copy > small { display: block; margin-top: 20px; color: #6a655e; font-size: .77rem; line-height: 1.45; }
+.competition-format-copy > a { display: inline-flex; align-items: center; gap: 7px; margin-top: 22px; color: var(--red); font-size: .75rem; font-weight: 900; letter-spacing: .05em; text-transform: uppercase; }
+.competition-groups { display: grid; grid-template-columns: repeat(auto-fit,minmax(180px,1fr)); gap: 14px; }
+.competition-group { background: var(--white); border: 1px solid #d4d0c8; }
+.competition-group h3 { margin: 0; padding: 14px 16px; background: #171717; color: var(--white); font-size: .78rem; letter-spacing: .1em; text-transform: uppercase; }
+.competition-group ul { display: grid; margin: 0; padding: 0; list-style: none; }
+.competition-group li { display: grid; grid-template-columns: 44px minmax(0,1fr); gap: 11px; align-items: center; min-height: 64px; padding: 9px 12px; border-top: 1px solid #ebe8e1; }
+.competition-group li:first-child { border-top: 0; }
+.competition-group li.club-team { background: #f2dadd; box-shadow: inset 4px 0 var(--red); }
+.competition-team-logo { display: grid; place-items: center; width: 44px; height: 44px; }
+.competition-team-logo img { display: block; max-width: 100%; max-height: 100%; object-fit: contain; }
+.competition-team-logo-empty { background: #e4e1da; color: #77726b; font-size: .65rem; letter-spacing: .06em; }
+.competition-group li > span:last-child { display: grid; gap: 2px; min-width: 0; }
+.competition-group li strong { font-size: .78rem; line-height: 1.15; }
+.competition-group li small { color: #77726b; font-size: .62rem; line-height: 1.25; }
 .archive-link { min-height: 44px; justify-content: center; background: var(--ink); color: #fff; }
 .filters { display: flex; gap: 20px; justify-content: flex-end; margin-bottom: 42px; }
 .filters label, .calendar-controls label { display: grid; gap: 8px; color: #5c5a56; font-size: .72rem; font-weight: 900; letter-spacing: .12em; text-transform: uppercase; }
 .filter-trigger { width: 190px; height: 44px; border: 1px solid #a8a59d; border-radius: 0; background: #fff; color: var(--ink); font-size: .88rem; }
+.filters label:last-child .filter-trigger { width: 235px; }
 [data-slot='select-content'] { border: 1px solid #9f9c95; border-radius: 0 !important; background: #fff !important; color: var(--ink) !important; box-shadow: 0 16px 36px rgba(0,0,0,.22) !important; }
 [data-slot='select-item'] { border-radius: 0 !important; background: #fff; color: var(--ink); }
 [data-slot='select-item']:focus, [data-slot='select-item'][data-highlighted] { background: #e1ded6 !important; color: var(--ink) !important; }
@@ -519,7 +538,7 @@ a.bracket-match:hover { border-color: #d56d76; transform: translateY(-2px); }
   .section-heading { grid-template-columns: 1fr; }
   .sponsors-heading { grid-template-columns: 1fr; align-items: start; }
   .sponsors-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .league-layout, .games-archive-layout, .calendar-layout, .roster-preview, .venue-card, .club-grid { grid-template-columns: 1fr; }
+  .league-layout, .games-archive-layout, .calendar-layout, .roster-preview, .venue-card, .club-grid, .competition-format { grid-template-columns: 1fr; }
   .contact-card { grid-column: auto; }
   .news-grid { grid-template-columns: repeat(2, 1fr); }
   .player-hero, .player-content { grid-template-columns: 1fr; }

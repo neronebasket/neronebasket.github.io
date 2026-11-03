@@ -18,8 +18,8 @@ for (const entry of orderedSeasons) {
       slug: competition.id,
       name: competition.name,
       shortName: competition.name,
-      code: competition.id === 'platinum' ? 'UISP' : competition.id.slice(0, 6).toUpperCase(),
-      teamName: 'Nerone Basket Anzio',
+      code: competition.id === 'platinum' ? 'PLT' : competition.id === 'gold' ? 'GLD' : competition.id.slice(0, 6).toUpperCase(),
+      teamName: competition.team ? sportsData.teams[competition.team]?.name ?? 'Nerone Basket Anzio' : 'Nerone Basket Anzio',
     });
   }
 }

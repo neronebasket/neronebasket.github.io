@@ -169,8 +169,23 @@ fn configured_archive_paths(root: &Path, kind: &str) -> Result<Vec<String>, Stri
     Ok(paths)
 }
 
+#[derive(Serialize, Default)]
+#[serde(rename_all = "camelCase")]
+pub struct TeamDefaults {
+    pub venue: String,
+    pub address: String,
+    pub day: String,
+    pub time: String,
+}
+
 #[derive(Serialize)]
-pub struct Catalog { pub teams: Vec<String>, pub players: Vec<String>, pub games: Vec<String> }
+#[serde(rename_all = "camelCase")]
+pub struct Catalog {
+    pub teams: Vec<String>,
+    pub team_details: std::collections::BTreeMap<String, TeamDefaults>,
+    pub players: Vec<String>,
+    pub games: Vec<String>,
+}
 
 #[tauri::command]
 pub fn catalog(state: tauri::State<'_, ProjectState>) -> Result<Catalog, String> {
@@ -181,7 +196,19 @@ pub fn catalog(state: tauri::State<'_, ProjectState>) -> Result<Catalog, String>
 fn catalog_for_root(root: &Path) -> Result<Catalog, String> {
     let yaml = fs::read_to_string(root.join("site/data/teams.yaml")).map_err(|error| error.to_string())?;
     let teams_value: serde_yaml::Value = serde_yaml::from_str(&yaml).map_err(|error| format!("Squadre YAML non valide: {error}"))?;
-    let teams = teams_value.as_mapping().ok_or("Squadre YAML non valide.")?.keys().filter_map(serde_yaml::Value::as_str).map(str::to_string).collect();
+    let teams_mapping = teams_value.as_mapping().ok_or("Squadre YAML non valide.")?;
+    let teams: Vec<String> = teams_mapping.keys().filter_map(serde_yaml::Value::as_str).map(str::to_string).collect();
+    let mut team_details = std::collections::BTreeMap::new();
+    for (key, value) in teams_mapping {
+        let Some(id) = key.as_str() else { continue };
+        let field = |name: &str| value.get(name).and_then(serde_yaml::Value::as_str).unwrap_or("").to_string();
+        team_details.insert(id.to_string(), TeamDefaults {
+            venue: field("home_venue"),
+            address: field("home_address"),
+            day: field("home_day"),
+            time: field("home_time"),
+        });
+    }
     let mut players = Vec::new();
     for entry in walkdir::WalkDir::new(root.join("site/data/players")).max_depth(1).into_iter().filter_map(Result::ok) {
         if !entry.file_type().is_file() || entry.file_name().to_string_lossy().starts_with('_') { continue; }
@@ -204,7 +231,7 @@ fn catalog_for_root(root: &Path) -> Result<Catalog, String> {
         }
     }
     games.sort();
-    Ok(Catalog { teams, players, games })
+    Ok(Catalog { teams, team_details, players, games })
 }
 
 #[cfg(test)]
@@ -231,6 +258,9 @@ mod tests {
         assert!(!catalog.teams.is_empty());
         assert!(!catalog.players.is_empty());
         assert!(!catalog.games.is_empty());
+        let nerone = catalog.team_details.get("nerone").unwrap();
+        assert_eq!(nerone.venue, "Campo 4Kasette");
+        assert_eq!(nerone.time, "20:30");
     }
     #[test]
     fn configured_competition_archives_are_available_even_before_csv_exists() {

@@ -44,7 +44,7 @@ function Notice({ text }: { text: string }) { return text ? <div className="noti
 
 export function App() {
   const [project, setProject] = useState<ProjectInfo | null>(null);
-  const [catalog, setCatalog] = useState<Catalog>({ teams: [], players: [], games: [] });
+  const [catalog, setCatalog] = useState<Catalog>({ teams: [], teamDetails: {}, players: [], games: [] });
   const [section, setSection] = useState<Section>('dashboard');
   const [files, setFiles] = useState<string[]>([]);
   const [file, setFile] = useState('');
@@ -181,7 +181,16 @@ export function App() {
 
   function updateCsv(index: number, column: string, value: string) {
     if (!csv) return;
-    try { csv.update(index, { [column]: value }); change(csv.serialize()); }
+    try {
+      const patch: Record<string, string> = { [column]: value };
+      if (column === 'home_team' && catalog.teamDetails[value]) {
+        const defaults = catalog.teamDetails[value];
+        patch.venue = defaults.venue;
+        patch.address = defaults.address;
+        if (defaults.time) patch.time = defaults.time;
+      }
+      csv.update(index, patch); change(csv.serialize());
+    }
     catch (cause) { setError(String(cause)); }
   }
   function addCsvRow() {
@@ -305,7 +314,7 @@ export function App() {
         {(index === 0 || item.group !== sections[index - 1].group) && <p className="nav-group">{item.group}</p>}
         <button type="button" className={section === item.id ? 'active' : ''} onClick={() => void go(item.id)} disabled={!project && item.id !== 'dashboard'}>{item.label}{item.id === 'publish' && project?.changedFiles.length ? <b>{project.changedFiles.length}</b> : null}</button>
       </div>)}</nav>
-      <div className="sidebar-bottom"><span>v0.2.3 · desktop locale</span><span>Ctrl+S per salvare</span></div>
+      <div className="sidebar-bottom"><span>v0.2.4 · desktop locale</span><span>Ctrl+S per salvare</span></div>
     </aside>
     <main className="workspace">
       <header className="workspace-top"><div><span className="eyebrow">WebMAKER Studio</span><h1>{sections.find((item) => item.id === section)?.label}</h1></div><div className="top-actions"><span className="local-badge">{dirty ? 'Bozza non applicata' : 'Dati locali'}</span>{file && <><button className="button subtle" onClick={undo} disabled={!history.current.length}>Annulla</button><button className="button primary" onClick={() => void saveFile()} disabled={!dirty || busy}>Salva sul PC</button></>}</div></header>
@@ -323,7 +332,14 @@ export function App() {
       {project && section === 'teams' && file && <div className="entity-stack narrow">
         <div className="panel"><div className="panel-heading"><h2>Squadre</h2><span>{teamIds.length} squadre</span></div>
           <div className="team-tabs">{teamIds.map((id) => <button key={id} className={selectedTeam === id ? 'active' : ''} onClick={() => setSelectedTeam(id)}>{id}</button>)}</div>
-          {selectedTeam ? <><p className="hint">ID stabile: <code>{selectedTeam}</code>. Non cambia, perché è usato in partite e roster.</p><div className="form-grid">{['name', 'short_name', 'logo', 'logo_on_dark'].map((key) => <label key={key}><span>{key === 'name' ? 'Nome completo' : key === 'short_name' ? 'Nome breve' : key === 'logo' ? 'Logo su chiaro' : 'Logo su scuro'}</span><input value={String(teamDoc?.getIn([selectedTeam, key]) ?? '')} onChange={(event) => updateYamlField(key, event.target.value, selectedTeam)} /></label>)}</div></> : <p>Seleziona una squadra per modificarla, oppure aggiungine una qui sotto.</p>}
+          {selectedTeam ? <><p className="hint">ID stabile: <code>{selectedTeam}</code>. Non cambia, perché è usato in partite e roster.</p>
+            <div className="form-grid">{[['name', 'Nome completo'], ['short_name', 'Nome breve'], ['logo', 'Logo su chiaro'], ['logo_on_dark', 'Logo su scuro']].map(([key, label]) => <label key={key}><span>{label}</span><input value={String(teamDoc?.getIn([selectedTeam, key]) ?? '')} onChange={(event) => updateYamlField(key, event.target.value, selectedTeam)} /></label>)}</div>
+            <h3 className="form-section-title">Scheda campo</h3>
+            <div className="form-grid">{[
+              ['home_venue', 'Campo di casa'], ['home_address', 'Indirizzo del campo'], ['home_day', 'Giorno abituale'], ['home_time', 'Orario abituale'],
+              ['recovery_venue', 'Campo di recupero'], ['recovery_address', 'Indirizzo recupero'], ['recovery_day', 'Giorno recupero'], ['recovery_time', 'Orario recupero'],
+            ].map(([key, label]) => <label className={key.includes('address') ? 'wide' : ''} key={key}><span>{label}</span><input type={key.includes('time') ? 'time' : 'text'} value={String(teamDoc?.getIn([selectedTeam, key]) ?? '')} onChange={(event) => updateYamlField(key, event.target.value, selectedTeam)} /></label>)}</div>
+            <p className="hint">Se questa squadra viene scelta come squadra di casa in una partita, campo, indirizzo e orario abituale vengono compilati automaticamente.</p></> : <p>Seleziona una squadra per modificarla, oppure aggiungine una qui sotto.</p>}
         </div>
         <div className="panel"><span className="eyebrow">Nuova squadra</span><h2>Aggiungi squadra</h2><div className="form-grid">
           <label><span>ID stabile (es. samurai-aprilia)</span><input value={newTeamId} onChange={(event) => setNewTeamId(event.target.value)} placeholder="nuova-squadra" /></label>
@@ -347,6 +363,9 @@ export function App() {
           <div className="team-tabs">{activeSeason.competitions.map((competition) => <button key={competition.id} className={activeCompetitionId === competition.id ? 'active' : ''} onClick={() => setSelectedCompetition(competition.id)}>{competition.name || competition.id}</button>)}</div>
           {activeCompetition ? <><p className="hint">ID stabile: <code>{activeCompetition.id}</code>. Mantenerlo evita di scollegare partite e classifiche storiche.</p><div className="form-grid">
             <label className="wide"><span>Nome del campionato</span><input value={activeCompetition.name ?? ''} onChange={(event) => applyContent(() => editCompetition(content, activeSeasonId, activeCompetitionId, { name: event.target.value }))} /></label>
+            <label className="wide"><span>Descrizione della formula</span><textarea rows={5} value={activeCompetition.description ?? ''} onChange={(event) => applyContent(() => editCompetition(content, activeSeasonId, activeCompetitionId, { description: event.target.value }))} /></label>
+            <label className="wide"><span>Nota pubblica</span><input value={activeCompetition.notice ?? ''} onChange={(event) => applyContent(() => editCompetition(content, activeSeasonId, activeCompetitionId, { notice: event.target.value }))} /></label>
+            <label className="wide"><span>Link risultati ufficiali</span><input type="url" value={activeCompetition.source_url ?? ''} onChange={(event) => applyContent(() => editCompetition(content, activeSeasonId, activeCompetitionId, { source_url: event.target.value }))} /></label>
             <label><span>Punti per vittoria (vuoto = solo vittorie)</span><input type="number" min="0" step="1" value={activeCompetition.standings_points?.win ?? ''} onChange={(event) => applyContent(() => editCompetition(content, activeSeasonId, activeCompetitionId, { win: event.target.value === '' ? null : Number(event.target.value) }))} /></label>
             <label><span>Punti per sconfitta</span><input type="number" min="0" step="1" value={activeCompetition.standings_points?.loss ?? ''} onChange={(event) => applyContent(() => editCompetition(content, activeSeasonId, activeCompetitionId, { loss: event.target.value === '' ? null : Number(event.target.value) }))} /></label>
           </div><div className="entity-checks"><strong>Squadre Nerone partecipanti</strong><div className="checkbox-grid">{clubTeamOptions.map((id) => <label key={id}><input type="checkbox" checked={activeCompetitionTeams.includes(id)} onChange={(event) => applyContent(() => editCompetition(content, activeSeasonId, activeCompetitionId, { teams: event.target.checked ? [...activeCompetitionTeams, id] : activeCompetitionTeams.filter((team) => team !== id) }))} />{id}</label>)}</div></div></> : <p>Nessun campionato in questa stagione. Aggiungine uno sotto.</p>}

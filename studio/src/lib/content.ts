@@ -24,6 +24,7 @@ function editableDocument(source: string) {
 
 export type CompetitionEntry = {
   id: string; name: string; team?: string; teams?: string[];
+  description?: string; notice?: string; source_url?: string;
   standings_points?: { win?: number | null; loss?: number | null };
 };
 export type SeasonEntry = { id: string; competitions: CompetitionEntry[] };
@@ -82,12 +83,15 @@ export function addCompetition(source: string, season: string, id: string, name:
   return String(document);
 }
 
-export function editCompetition(source: string, season: string, id: string, patch: { name?: string; teams?: string[]; win?: number | null; loss?: number | null }): string {
+export function editCompetition(source: string, season: string, id: string, patch: { name?: string; teams?: string[]; description?: string; notice?: string; source_url?: string; win?: number | null; loss?: number | null }): string {
   const { document, competitionIndex, seasonIndex } = competitionLocation(source, season, id);
   if (competitionIndex < 0) throw new Error(`Campionato ${id} non trovato nella stagione ${season}.`);
   const path = ['seasons', seasonIndex, 'competitions', competitionIndex];
   if (patch.name !== undefined) {
     document.setIn([...path, 'name'], patch.name);
+  }
+  for (const key of ['description', 'notice', 'source_url'] as const) {
+    if (patch[key] !== undefined) document.setIn([...path, key], patch[key]);
   }
   if (patch.teams !== undefined) {
     if (!patch.teams.length) throw new Error('Seleziona almeno una squadra Nerone partecipante.');

@@ -1,4 +1,8 @@
-export type Team = { name: string; short_name: string; logo?: string; logo_on_dark?: string };
+export type Team = {
+  name: string; short_name: string; logo?: string; logo_on_dark?: string;
+  home_venue?: string; home_address?: string; home_day?: string; home_time?: string;
+  recovery_venue?: string; recovery_address?: string; recovery_day?: string; recovery_time?: string;
+};
 export type Player = { id: string; name: string; birth_date?: string; instagram?: string; photo?: string; bio: string; social_urls?: string[] };
 export type RosterEntry = { season: string; competition: string; team_id: string; player_id: string; number: number | null; role: string; active: boolean };
 export type Game = {
@@ -23,8 +27,10 @@ export type PostseasonData = {
   play_in: { title: string; note?: string; groups: PostseasonGroup[] };
   bracket: { title: string; semifinal_game_ids: string[]; final_game_id: string; champion_team_id: string };
 };
+export type CompetitionGroup = { name: string; teams: string[] };
 export type CompetitionData = {
   id: string; name: string; team?: string; teams?: string[]; standings_points: { win: number | null; loss: number | null };
+  description?: string; notice?: string; source_url?: string; groups?: CompetitionGroup[];
   games: Game[]; playerStats: PlayerStat[]; standings: Standing[]; postseason?: PostseasonData;
 };
 export type SeasonData = { id: string; competitions: CompetitionData[] };

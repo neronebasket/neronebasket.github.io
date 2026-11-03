@@ -1,7 +1,8 @@
 import { invoke } from '@tauri-apps/api/core';
 
 export type ProjectInfo = { root: string; branch: string; remote: string; changedFiles: string[]; lastSync: string | null };
-export type Catalog = { teams: string[]; players: string[]; games: string[] };
+export type TeamDefaults = { venue: string; address: string; day: string; time: string };
+export type Catalog = { teams: string[]; teamDetails: Record<string, TeamDefaults>; players: string[]; games: string[] };
 export type Draft = { relative: string; content: string; savedAt: number };
 export type ValidationReport = { errors: string[]; warnings: string[]; games: number; players: number; news: number };
 export type PublicationPreview = { branch: string; remote: string; files: string[]; diff: string; errors: string[]; canPublish: boolean; ahead: number | null; behind: number | null };

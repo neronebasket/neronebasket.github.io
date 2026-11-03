@@ -27,3 +27,15 @@ test('un nuovo campionato appare nei dati e nella sitemap senza archivi CSV pree
     rmSync(root, { recursive: true, force: true });
   }
 });
+
+test('la stagione 2026/27 espone Platinum e Gold con i gironi ufficialmente comunicati', () => {
+  const generated = readFileSync(join(testsRoot, '../lib/generated-data.ts'), 'utf8');
+  const sitemap = readFileSync(join(testsRoot, '../public/sitemap.xml'), 'utf8');
+  assert.match(generated, /"name": "Girone King B"/);
+  assert.match(generated, /"name": "Girone Prime 3"/);
+  assert.match(generated, /"team": "nerone-bounganvillae"/);
+  assert.match(sitemap, /\/campionato\/platinum\/27/);
+  assert.match(sitemap, /\/campionato\/gold\/27/);
+  assert.match(sitemap, /\/partite\/platinum\/27/);
+  assert.match(sitemap, /\/partite\/gold\/27/);
+});

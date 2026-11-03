@@ -7,23 +7,256 @@ export const sportsData: SportsData = {
       "name": "Nerone Basket Anzio",
       "short_name": "Nerone",
       "logo": "/assets/logo-testo-nero.png",
-      "logo_on_dark": "/assets/logo-testo-bianco.png"
+      "logo_on_dark": "/assets/logo-testo-bianco.png",
+      "home_venue": "Campo 4Kasette",
+      "home_address": "Via Nettunense Km 36,500, Anzio (RM)",
+      "home_day": "Domenica",
+      "home_time": "20:30"
     },
     "nerone-bounganvillae": {
       "name": "Nerone Basket Anzio BGV",
       "short_name": "Nerone BGV",
       "logo": "/assets/bgv-logo-testo-nero.png",
-      "logo_on_dark": "/assets/bgv-logo-testo-bianco.png"
+      "logo_on_dark": "/assets/bgv-logo-testo-bianco.png",
+      "home_venue": "Campo 4Kasette",
+      "home_address": "Via Nettunense Km 36,500, Anzio (RM)",
+      "home_day": "Martedì",
+      "home_time": "21:30",
+      "recovery_day": "Mercoledì",
+      "recovery_time": "21:00"
+    },
+    "delfino-basket-anzio": {
+      "name": "ASD Delfino Basket Anzio",
+      "short_name": "Delfino Anzio",
+      "logo": "/assets/teams/2026-27/delfino-basket-anzio.webp",
+      "home_venue": "Palestra Anzio",
+      "home_address": "Via Olimpica 46/B, Anzio (RM)",
+      "home_day": "Lunedì",
+      "home_time": "21:15"
+    },
+    "evergreen-la-squad": {
+      "name": "ASD Polisportiva Evergreen La Squad",
+      "short_name": "La Squad",
+      "logo": "/assets/teams/2026-27/evergreen-la-squad.webp",
+      "home_venue": "Liceo Vito Volterra",
+      "home_address": "Via dell'Acqua Acetosa 8A, Ciampino (RM)",
+      "home_day": "Mercoledì",
+      "home_time": "20:50",
+      "recovery_day": "Lunedì",
+      "recovery_time": "20:50"
+    },
+    "boys-90-fiumicino": {
+      "name": "ASCD Boys 90",
+      "short_name": "Boys 90",
+      "logo": "/assets/teams/2026-27/boys-90-fiumicino.webp",
+      "home_venue": "Scuola SMS Segrè",
+      "home_address": "Via del Faro 225, Fiumicino (RM)",
+      "home_day": "Sabato",
+      "home_time": "20:00",
+      "recovery_day": "Domenica",
+      "recovery_time": "20:00"
+    },
+    "cavese-93-blu": {
+      "name": "USD Basket Cavese 93 Blu",
+      "short_name": "Cavese Blu",
+      "logo": "/assets/teams/2026-27/cavese_blu.webp",
+      "home_venue": "Tensostruttura Andrea Lucidi",
+      "home_address": "Via Giacomo Matteotti SNC, Cave (RM)",
+      "home_day": "Lunedì",
+      "home_time": "20:40",
+      "recovery_day": "Lunedì",
+      "recovery_time": "20:40"
+    },
+    "supernova-fiumicino-a": {
+      "name": "Supernova Fiumicino ASD A",
+      "short_name": "Supernova A",
+      "logo": "/assets/teams/2026-27/fiumicino.webp",
+      "home_venue": "Pala Supernova - palestra I.C. Fregene Passoscuro",
+      "home_address": "Via Serrenti 70, Passoscuro (RM)",
+      "home_day": "Sabato",
+      "home_time": "21:00",
+      "recovery_day": "Domenica",
+      "recovery_time": "18:00"
+    },
+    "uisp-xviii": {
+      "name": "ASD UISP XVIII",
+      "short_name": "UISP XVIII",
+      "logo": "/assets/teams/2026-27/uisp18.webp",
+      "home_venue": "Centro Sportivo Antonelli",
+      "home_address": "Via della Cellulosa SNC, Roma",
+      "home_day": "Giovedì",
+      "home_time": "21:30"
+    },
+    "virtus-monterotondo": {
+      "name": "Virtus Monterotondo",
+      "short_name": "Monterotondo",
+      "logo": "/assets/teams/2026-27/monterotondo.webp",
+      "home_venue": "Liceo G. V. Catullo",
+      "home_address": "Via Tirso 19, Monterotondo (RM)",
+      "home_day": "Mercoledì",
+      "home_time": "20:00",
+      "recovery_day": "Lunedì",
+      "recovery_time": "20:00"
+    },
+    "guidonia-basketball-academy": {
+      "name": "Guidonia Basketball Academy",
+      "short_name": "Guidonia",
+      "logo": "/assets/teams/2026-27/guidonia.webp",
+      "home_venue": "Palestra Comunale",
+      "home_address": "Via Po SNC, Guidonia Montecelio (RM)",
+      "home_day": "Martedì",
+      "home_time": "21:20",
+      "recovery_day": "Giovedì",
+      "recovery_time": "21:20"
+    },
+    "settecamini-caserosse": {
+      "name": "ASD Settecamini Caserosse",
+      "short_name": "Settecamini",
+      "logo": "/assets/teams/2026-27/settecamini.webp",
+      "home_venue": "Palestra Scuola E. Montale",
+      "home_address": "Via Trevi nel Lazio, 00131 Settecamini (RM)",
+      "home_day": "Venerdì",
+      "home_time": "20:00"
+    },
+    "game-time": {
+      "name": "ASD Game Time",
+      "short_name": "Game Time",
+      "logo": "/assets/teams/2026-27/game_time.webp",
+      "home_venue": "Arena Altero Felici - Stella Azzurra",
+      "home_address": "Via Flaminia 867, Roma",
+      "home_day": "Domenica",
+      "home_time": "18:00"
+    },
+    "wibe-roma-aeterna": {
+      "name": "Polisportiva WIBE Roma Aeterna",
+      "short_name": "WIBE Roma",
+      "home_venue": "Istituto Antonio Magarotto",
+      "home_address": "Vicolo di Casale Lumbroso 129, Roma",
+      "home_day": "Lunedì",
+      "home_time": "20:45"
+    },
+    "lokomotiv-prenestino": {
+      "name": "Lokomotiv Prenestino",
+      "short_name": "Lokomotiv",
+      "logo": "/assets/teams/2026-27/prenestino.webp",
+      "home_venue": "Parco delle Energie",
+      "home_address": "Via Prenestina 175, Roma",
+      "home_day": "Sabato",
+      "home_time": "15:00"
+    },
+    "san-giuda-taddeo": {
+      "name": "ASD Oratorio San Giuda Taddeo",
+      "short_name": "San Giuda Taddeo",
+      "home_venue": "Palestra San Giuda Taddeo",
+      "home_address": "Largo Tacchi Venturi 42, Roma",
+      "home_day": "Lunedì",
+      "home_time": "21:15"
+    },
+    "santanna-morena": {
+      "name": "PGS S. Anna Morena",
+      "short_name": "S. Anna Morena",
+      "logo": "/assets/teams/2026-27/santanna_morena.webp",
+      "home_venue": "PGS S. Anna Morena",
+      "home_address": "Via di Torre Morena 61, Roma",
+      "home_day": "Giovedì",
+      "home_time": "21:20",
+      "recovery_day": "Martedì",
+      "recovery_time": "21:20"
+    },
+    "cavese-93-bianco": {
+      "name": "USD Basket Cavese 93 Bianco",
+      "short_name": "Cavese Bianco",
+      "logo": "/assets/teams/2026-27/cavese_bianco.webp",
+      "home_venue": "Tensostruttura Andrea Lucidi",
+      "home_address": "Via Giacomo Matteotti SNC, Cave (RM)",
+      "home_day": "Mercoledì",
+      "home_time": "20:50",
+      "recovery_day": "Mercoledì",
+      "recovery_time": "20:50"
+    },
+    "pgs-salgen": {
+      "name": "ASD PGS Salgen",
+      "short_name": "PGS Salgen",
+      "logo": "/assets/teams/2026-27/salgen.webp",
+      "home_venue": "Palestra Centro Giovanile Salgen",
+      "home_address": "Via Mauro Morrone 27, Roma",
+      "home_day": "Giovedì",
+      "home_time": "21:00",
+      "recovery_day": "Sabato",
+      "recovery_time": "20:00"
+    },
+    "pgs-flipper": {
+      "name": "ASD PGS Flipper",
+      "short_name": "PGS Flipper",
+      "logo": "/assets/teams/2026-27/flipper.webp",
+      "home_venue": "Arena Pio XI",
+      "home_address": "Via Giacomo Costamagna 16, Roma",
+      "home_day": "Martedì",
+      "home_time": "21:30",
+      "recovery_day": "Sabato",
+      "recovery_time": "17:30",
+      "recovery_address": "Via Umbertide 40, Roma"
+    },
+    "elite-roma-all-saints": {
+      "name": "Polisportiva EBR Elite Roma All Saints",
+      "short_name": "Elite Roma",
+      "logo": "/assets/teams/2026-27/elite-roma-all-saints.webp",
+      "home_venue": "Colle La Salle",
+      "home_address": "Via dell'Imbrecciato 181, Roma",
+      "home_day": "Lunedì",
+      "home_time": "20:10"
+    },
+    "elite-roma-young": {
+      "name": "Polisportiva EBR Elite Roma Young",
+      "short_name": "EBR Young",
+      "logo": "/assets/teams/2026-27/ebr_young.webp",
+      "home_venue": "Colle La Salle",
+      "home_address": "Via dell'Imbrecciato 181, Roma",
+      "home_day": "Lunedì",
+      "home_time": "21:20"
+    },
+    "cor-basket-villa-flaminia": {
+      "name": "COR Basket Villa Flaminia",
+      "short_name": "Villa Flaminia",
+      "logo": "/assets/teams/2026-27/villa_flaminia.webp",
+      "home_venue": "Villa Flaminia",
+      "home_address": "Via Donatello 20, Roma",
+      "home_day": "Giovedì",
+      "home_time": "21:15",
+      "recovery_day": "Sabato",
+      "recovery_time": "16:00"
+    },
+    "r3-bombers": {
+      "name": "A.S.D. R3 Bombers",
+      "short_name": "R3 Bombers",
+      "logo": "/assets/teams/2026-27/bombers.webp",
+      "home_venue": "Pala De Pinedo",
+      "home_address": "Via Francesco Morandini 30, Roma",
+      "home_day": "Venerdì",
+      "home_time": "21:45"
+    },
+    "monteverde-parrots": {
+      "name": "ASD Monteverde Parrots",
+      "short_name": "Monteverde",
+      "logo": "/assets/teams/2026-27/parrots.webp",
+      "home_venue": "Pala Cerioli",
+      "home_address": "Via Filippo Taiani 50, Roma",
+      "home_day": "Sabato",
+      "home_time": "16:00"
     },
     "pomezia-csi": {
       "name": "Polisportiva Virtus Settanza Pomezia",
       "short_name": "Pomezia CSI",
-      "logo": "/assets/teams/2026-27/pomezia.png"
+      "logo": "/assets/teams/2026-27/pomezia.png",
+      "home_venue": "Pala Margherita Hack",
+      "home_address": "Via Singen, 00071 Pomezia (RM)"
     },
     "samurai-csi": {
       "name": "Samurai Basket Aprilia CSI",
       "short_name": "Samurai CSI",
-      "logo": "/assets/teams/2026-27/samurai.png"
+      "logo": "/assets/teams/2026-27/samurai.png",
+      "home_venue": "Istituto Carlo e Nello Rosselli",
+      "home_address": "Via Carroceto, Aprilia (LT)"
     },
     "samurai": {
       "name": "Samurai DR3",
@@ -35,16 +268,6 @@ export const sportsData: SportsData = {
       "short_name": "San Lorenzo",
       "logo": "/assets/teams/2025-26/atletico-san-lorenzo.webp"
     },
-    "evergreen-la-squad": {
-      "name": "Pol. Evergreen La Squad",
-      "short_name": "La Squad",
-      "logo": "/assets/teams/2025-26/evergreen-la-squad.webp"
-    },
-    "delfino-basket-anzio": {
-      "name": "Delfino Basket Anzio",
-      "short_name": "Delfino Anzio",
-      "logo": "/assets/teams/2025-26/delfino-basket-anzio.webp"
-    },
     "tivoli-basket": {
       "name": "Tivoli Basket",
       "short_name": "Tivoli",
@@ -55,11 +278,6 @@ export const sportsData: SportsData = {
       "short_name": "Marino Lions",
       "logo": "/assets/teams/2025-26/club-marino-lions.webp"
     },
-    "elite-roma-all-saints": {
-      "name": "Elite Roma All Saints",
-      "short_name": "Elite Roma",
-      "logo": "/assets/teams/2025-26/elite-roma-all-saints.webp"
-    },
     "free-mind-roma": {
       "name": "Free Mind Roma",
       "short_name": "Free Mind",
@@ -69,11 +287,6 @@ export const sportsData: SportsData = {
       "name": "Basket Palestrina",
       "short_name": "Palestrina",
       "logo": "/assets/teams/2025-26/basket-palestrina.webp"
-    },
-    "boys-90-fiumicino": {
-      "name": "Boys 90 Fiumicino",
-      "short_name": "Boys 90",
-      "logo": "/assets/teams/2025-26/boys-90-fiumicino.webp"
     }
   },
   "players": [
@@ -413,7 +626,7 @@ export const sportsData: SportsData = {
     },
     {
       "season": "2026-27",
-      "competition": "platinum",
+      "competition": "gold",
       "team_id": "nerone-bounganvillae",
       "player_id": "michele-magrini",
       "number": 5,
@@ -422,7 +635,7 @@ export const sportsData: SportsData = {
     },
     {
       "season": "2026-27",
-      "competition": "platinum",
+      "competition": "gold",
       "team_id": "nerone-bounganvillae",
       "player_id": "marco-paterlini",
       "number": 9,
@@ -431,7 +644,7 @@ export const sportsData: SportsData = {
     },
     {
       "season": "2026-27",
-      "competition": "platinum",
+      "competition": "gold",
       "team_id": "nerone-bounganvillae",
       "player_id": "lorenzo-de-vita",
       "number": 18,
@@ -440,7 +653,7 @@ export const sportsData: SportsData = {
     },
     {
       "season": "2026-27",
-      "competition": "platinum",
+      "competition": "gold",
       "team_id": "nerone-bounganvillae",
       "player_id": "matteo-ceci",
       "number": 36,
@@ -449,7 +662,7 @@ export const sportsData: SportsData = {
     },
     {
       "season": "2026-27",
-      "competition": "platinum",
+      "competition": "gold",
       "team_id": "nerone-bounganvillae",
       "player_id": "matteo-bertoni",
       "number": null,
@@ -458,7 +671,7 @@ export const sportsData: SportsData = {
     },
     {
       "season": "2026-27",
-      "competition": "platinum",
+      "competition": "gold",
       "team_id": "nerone-bounganvillae",
       "player_id": "alessandro-bucci",
       "number": null,
@@ -467,7 +680,7 @@ export const sportsData: SportsData = {
     },
     {
       "season": "2026-27",
-      "competition": "platinum",
+      "competition": "gold",
       "team_id": "nerone-bounganvillae",
       "player_id": "fabio-cheli",
       "number": null,
@@ -476,7 +689,7 @@ export const sportsData: SportsData = {
     },
     {
       "season": "2026-27",
-      "competition": "platinum",
+      "competition": "gold",
       "team_id": "nerone-bounganvillae",
       "player_id": "stefano-ciuffetti",
       "number": null,
@@ -485,7 +698,7 @@ export const sportsData: SportsData = {
     },
     {
       "season": "2026-27",
-      "competition": "platinum",
+      "competition": "gold",
       "team_id": "nerone-bounganvillae",
       "player_id": "valerio-di-cicco",
       "number": null,
@@ -494,7 +707,7 @@ export const sportsData: SportsData = {
     },
     {
       "season": "2026-27",
-      "competition": "platinum",
+      "competition": "gold",
       "team_id": "nerone-bounganvillae",
       "player_id": "cristiano-fabbri",
       "number": null,
@@ -503,7 +716,7 @@ export const sportsData: SportsData = {
     },
     {
       "season": "2026-27",
-      "competition": "platinum",
+      "competition": "gold",
       "team_id": "nerone-bounganvillae",
       "player_id": "davide-incoronato",
       "number": null,
@@ -512,7 +725,7 @@ export const sportsData: SportsData = {
     },
     {
       "season": "2026-27",
-      "competition": "platinum",
+      "competition": "gold",
       "team_id": "nerone-bounganvillae",
       "player_id": "matteo-virzi",
       "number": null,
@@ -521,7 +734,7 @@ export const sportsData: SportsData = {
     },
     {
       "season": "2026-27",
-      "competition": "platinum",
+      "competition": "gold",
       "team_id": "nerone-bounganvillae",
       "player_id": "francesco-menicucci",
       "number": null,
@@ -530,7 +743,7 @@ export const sportsData: SportsData = {
     },
     {
       "season": "2026-27",
-      "competition": "platinum",
+      "competition": "gold",
       "team_id": "nerone-bounganvillae",
       "player_id": "andrea-di-stella",
       "number": null,
@@ -539,7 +752,7 @@ export const sportsData: SportsData = {
     },
     {
       "season": "2026-27",
-      "competition": "platinum",
+      "competition": "gold",
       "team_id": "nerone-bounganvillae",
       "player_id": "alberto-balzani",
       "number": null,
@@ -548,7 +761,7 @@ export const sportsData: SportsData = {
     },
     {
       "season": "2026-27",
-      "competition": "platinum",
+      "competition": "gold",
       "team_id": "nerone-bounganvillae",
       "player_id": "lorenzo-maccotta",
       "number": null,
@@ -739,35 +952,34 @@ export const sportsData: SportsData = {
   "competitions": [
     {
       "id": "platinum",
-      "name": "Amatori UISP",
-      "teams": [
-        "nerone",
-        "nerone-bounganvillae"
+      "name": "Amatori UISP Platinum",
+      "team": "nerone",
+      "description": "Le sei squadre iniziano con due gironi preliminari da tre, con gare di andata e ritorno. I punti conquistati restano validi nella seconda fase, disputata in un girone unico di andata e ritorno per altre dieci gare. La fase finale sarà comunicata in seguito.",
+      "notice": "* Regolamento e partecipazione ai campionati non ancora ufficiali.",
+      "source_url": "https://www.campionatiuisproma.it/",
+      "groups": [
+        {
+          "name": "Girone King A",
+          "teams": [
+            "delfino-basket-anzio",
+            "evergreen-la-squad",
+            "boys-90-fiumicino"
+          ]
+        },
+        {
+          "name": "Girone King B",
+          "teams": [
+            "cavese-93-blu",
+            "nerone",
+            "supernova-fiumicino-a"
+          ]
+        }
       ],
       "standings_points": {
         "win": null,
         "loss": null
       },
       "games": [
-        {
-          "id": "2026-27-uisp-friendly-01",
-          "date": "2026-10-15",
-          "time": "21:00",
-          "status": "played",
-          "home_team": "samurai-csi",
-          "away_team": "nerone-bounganvillae",
-          "home_score": null,
-          "away_score": null,
-          "venue": "Istituto \"Carlo e Nello Rosselli\"",
-          "address": "Istituto \"Carlo e Nello Rosselli\", Via Carroceto, Aprilia (LT)",
-          "instagram_url": "",
-          "youtube_url": "",
-          "notes": "Amichevole",
-          "phase": "friendly",
-          "round": "",
-          "social_urls": [],
-          "competition": "platinum"
-        },
         {
           "id": "2026-27-uisp-friendly-02",
           "date": "2026-10-21",
@@ -790,6 +1002,76 @@ export const sportsData: SportsData = {
       ],
       "playerStats": [],
       "standings": []
+    },
+    {
+      "id": "gold",
+      "name": "Amatori UISP Gold",
+      "team": "nerone-bounganvillae",
+      "description": "Nella prima fase le 34 squadre sono distribuite in tre gironi Prime da sei e due gironi Amatoriali da otto, tutti con gare di andata e ritorno. Le prime tre di ogni girone Prime e la migliore quarta accederanno alla seconda fase; formula e fase finale saranno definite successivamente.",
+      "notice": "* Regolamento e partecipazione ai campionati non ancora ufficiali.",
+      "source_url": "https://www.campionatiuisproma.it/",
+      "groups": [
+        {
+          "name": "Girone Prime 1",
+          "teams": [
+            "uisp-xviii",
+            "virtus-monterotondo",
+            "guidonia-basketball-academy",
+            "settecamini-caserosse",
+            "game-time",
+            "wibe-roma-aeterna"
+          ]
+        },
+        {
+          "name": "Girone Prime 2",
+          "teams": [
+            "lokomotiv-prenestino",
+            "san-giuda-taddeo",
+            "santanna-morena",
+            "cavese-93-bianco",
+            "pgs-salgen",
+            "pgs-flipper"
+          ]
+        },
+        {
+          "name": "Girone Prime 3",
+          "teams": [
+            "elite-roma-all-saints",
+            "elite-roma-young",
+            "cor-basket-villa-flaminia",
+            "nerone-bounganvillae",
+            "r3-bombers",
+            "monteverde-parrots"
+          ]
+        }
+      ],
+      "standings_points": {
+        "win": null,
+        "loss": null
+      },
+      "games": [
+        {
+          "id": "2026-27-uisp-friendly-01",
+          "date": "2026-10-15",
+          "time": "21:00",
+          "status": "played",
+          "home_team": "samurai-csi",
+          "away_team": "nerone-bounganvillae",
+          "home_score": null,
+          "away_score": null,
+          "venue": "Istituto \"Carlo e Nello Rosselli\"",
+          "address": "Via Carroceto, Aprilia (LT)",
+          "instagram_url": "",
+          "youtube_url": "",
+          "notes": "Amichevole",
+          "phase": "friendly",
+          "round": "",
+          "social_urls": [],
+          "competition": "gold"
+        }
+      ],
+      "playerStats": [],
+      "standings": []
     }
   ],
   "seasons": [
@@ -798,35 +1080,34 @@ export const sportsData: SportsData = {
       "competitions": [
         {
           "id": "platinum",
-          "name": "Amatori UISP",
-          "teams": [
-            "nerone",
-            "nerone-bounganvillae"
+          "name": "Amatori UISP Platinum",
+          "team": "nerone",
+          "description": "Le sei squadre iniziano con due gironi preliminari da tre, con gare di andata e ritorno. I punti conquistati restano validi nella seconda fase, disputata in un girone unico di andata e ritorno per altre dieci gare. La fase finale sarà comunicata in seguito.",
+          "notice": "* Regolamento e partecipazione ai campionati non ancora ufficiali.",
+          "source_url": "https://www.campionatiuisproma.it/",
+          "groups": [
+            {
+              "name": "Girone King A",
+              "teams": [
+                "delfino-basket-anzio",
+                "evergreen-la-squad",
+                "boys-90-fiumicino"
+              ]
+            },
+            {
+              "name": "Girone King B",
+              "teams": [
+                "cavese-93-blu",
+                "nerone",
+                "supernova-fiumicino-a"
+              ]
+            }
           ],
           "standings_points": {
             "win": null,
             "loss": null
           },
           "games": [
-            {
-              "id": "2026-27-uisp-friendly-01",
-              "date": "2026-10-15",
-              "time": "21:00",
-              "status": "played",
-              "home_team": "samurai-csi",
-              "away_team": "nerone-bounganvillae",
-              "home_score": null,
-              "away_score": null,
-              "venue": "Istituto \"Carlo e Nello Rosselli\"",
-              "address": "Istituto \"Carlo e Nello Rosselli\", Via Carroceto, Aprilia (LT)",
-              "instagram_url": "",
-              "youtube_url": "",
-              "notes": "Amichevole",
-              "phase": "friendly",
-              "round": "",
-              "social_urls": [],
-              "competition": "platinum"
-            },
             {
               "id": "2026-27-uisp-friendly-02",
               "date": "2026-10-21",
@@ -845,6 +1126,76 @@ export const sportsData: SportsData = {
               "round": "",
               "social_urls": [],
               "competition": "platinum"
+            }
+          ],
+          "playerStats": [],
+          "standings": []
+        },
+        {
+          "id": "gold",
+          "name": "Amatori UISP Gold",
+          "team": "nerone-bounganvillae",
+          "description": "Nella prima fase le 34 squadre sono distribuite in tre gironi Prime da sei e due gironi Amatoriali da otto, tutti con gare di andata e ritorno. Le prime tre di ogni girone Prime e la migliore quarta accederanno alla seconda fase; formula e fase finale saranno definite successivamente.",
+          "notice": "* Regolamento e partecipazione ai campionati non ancora ufficiali.",
+          "source_url": "https://www.campionatiuisproma.it/",
+          "groups": [
+            {
+              "name": "Girone Prime 1",
+              "teams": [
+                "uisp-xviii",
+                "virtus-monterotondo",
+                "guidonia-basketball-academy",
+                "settecamini-caserosse",
+                "game-time",
+                "wibe-roma-aeterna"
+              ]
+            },
+            {
+              "name": "Girone Prime 2",
+              "teams": [
+                "lokomotiv-prenestino",
+                "san-giuda-taddeo",
+                "santanna-morena",
+                "cavese-93-bianco",
+                "pgs-salgen",
+                "pgs-flipper"
+              ]
+            },
+            {
+              "name": "Girone Prime 3",
+              "teams": [
+                "elite-roma-all-saints",
+                "elite-roma-young",
+                "cor-basket-villa-flaminia",
+                "nerone-bounganvillae",
+                "r3-bombers",
+                "monteverde-parrots"
+              ]
+            }
+          ],
+          "standings_points": {
+            "win": null,
+            "loss": null
+          },
+          "games": [
+            {
+              "id": "2026-27-uisp-friendly-01",
+              "date": "2026-10-15",
+              "time": "21:00",
+              "status": "played",
+              "home_team": "samurai-csi",
+              "away_team": "nerone-bounganvillae",
+              "home_score": null,
+              "away_score": null,
+              "venue": "Istituto \"Carlo e Nello Rosselli\"",
+              "address": "Via Carroceto, Aprilia (LT)",
+              "instagram_url": "",
+              "youtube_url": "",
+              "notes": "Amichevole",
+              "phase": "friendly",
+              "round": "",
+              "social_urls": [],
+              "competition": "gold"
             }
           ],
           "playerStats": [],
@@ -1394,7 +1745,7 @@ export const sportsData: SportsData = {
             },
             {
               "team_id": "evergreen-la-squad",
-              "name": "Pol. Evergreen La Squad",
+              "name": "ASD Polisportiva Evergreen La Squad",
               "played": 18,
               "wins": 13,
               "losses": 5,
@@ -1405,7 +1756,7 @@ export const sportsData: SportsData = {
             },
             {
               "team_id": "delfino-basket-anzio",
-              "name": "Delfino Basket Anzio",
+              "name": "ASD Delfino Basket Anzio",
               "played": 18,
               "wins": 12,
               "losses": 6,
@@ -1449,7 +1800,7 @@ export const sportsData: SportsData = {
             },
             {
               "team_id": "elite-roma-all-saints",
-              "name": "Elite Roma All Saints",
+              "name": "Polisportiva EBR Elite Roma All Saints",
               "played": 18,
               "wins": 8,
               "losses": 10,
@@ -1482,7 +1833,7 @@ export const sportsData: SportsData = {
             },
             {
               "team_id": "boys-90-fiumicino",
-              "name": "Boys 90 Fiumicino",
+              "name": "ASCD Boys 90",
               "played": 18,
               "wins": 2,
               "losses": 16,

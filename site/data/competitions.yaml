@@ -3,10 +3,34 @@ seasons:
   - id: 2026-27
     competitions:
       - id: platinum
-        name: Amatori UISP
-        teams:
-          - nerone
-          - nerone-bounganvillae
+        name: Amatori UISP Platinum
+        team: nerone
+        description: >-
+          Le sei squadre iniziano con due gironi preliminari da tre, con gare di andata e ritorno. I punti conquistati restano validi nella seconda fase, disputata in un girone unico di andata e ritorno per altre dieci gare. La fase finale sarà comunicata in seguito.
+        notice: "* Regolamento e partecipazione ai campionati non ancora ufficiali."
+        source_url: https://www.campionatiuisproma.it/
+        groups:
+          - name: Girone King A
+            teams: [delfino-basket-anzio, evergreen-la-squad, boys-90-fiumicino]
+          - name: Girone King B
+            teams: [cavese-93-blu, nerone, supernova-fiumicino-a]
+        standings_points:
+          win:
+          loss:
+      - id: gold
+        name: Amatori UISP Gold
+        team: nerone-bounganvillae
+        description: >-
+          Nella prima fase le 34 squadre sono distribuite in tre gironi Prime da sei e due gironi Amatoriali da otto, tutti con gare di andata e ritorno. Le prime tre di ogni girone Prime e la migliore quarta accederanno alla seconda fase; formula e fase finale saranno definite successivamente.
+        notice: "* Regolamento e partecipazione ai campionati non ancora ufficiali."
+        source_url: https://www.campionatiuisproma.it/
+        groups:
+          - name: Girone Prime 1
+            teams: [uisp-xviii, virtus-monterotondo, guidonia-basketball-academy, settecamini-caserosse, game-time, wibe-roma-aeterna]
+          - name: Girone Prime 2
+            teams: [lokomotiv-prenestino, san-giuda-taddeo, santanna-morena, cavese-93-bianco, pgs-salgen, pgs-flipper]
+          - name: Girone Prime 3
+            teams: [elite-roma-all-saints, elite-roma-young, cor-basket-villa-flaminia, nerone-bounganvillae, r3-bombers, monteverde-parrots]
         standings_points:
           win:
           loss:

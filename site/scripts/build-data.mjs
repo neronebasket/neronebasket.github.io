@@ -64,6 +64,12 @@ for (const membership of rosters) {
 }
 
 function buildCompetition(seasonId, competition) {
+  for (const group of competition.groups ?? []) {
+    if (!group.name) errors.push(`${seasonId}/${competition.id}: un girone non ha un nome.`);
+    for (const teamId of group.teams ?? []) {
+      if (!teams[teamId]) errors.push(`${seasonId}/${competition.id}: squadra ${teamId} del girone ${group.name || 'senza nome'} non definita in teams.yaml.`);
+    }
+  }
   const gameRows = csv(join('games', seasonId, `${competition.id}.csv`));
   const games = gameRows.map((row) => ({
     ...row,

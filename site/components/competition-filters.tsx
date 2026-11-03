@@ -28,7 +28,7 @@ export function CompetitionFilters({
           const option = seasonOptions.find((item) => item.id === value);
           if (option) window.location.assign(sitePath(option.href));
         }}>
-          <SelectTrigger id="season-filter" className="filter-trigger"><SelectValue /></SelectTrigger>
+          <SelectTrigger id="season-filter" className="filter-trigger"><SelectValue>{season.replace('-', '/')}</SelectValue></SelectTrigger>
           <SelectContent>{seasonOptions.map((item) => (
             <SelectItem value={item.id} key={item.id}>{item.id.replace('-', '/')}</SelectItem>
           ))}</SelectContent>
@@ -40,7 +40,7 @@ export function CompetitionFilters({
           const option = competitionOptions.find((item) => item.id === value);
           if (option) window.location.assign(sitePath(option.href));
         }}>
-          <SelectTrigger id="competition-filter" className="filter-trigger"><SelectValue /></SelectTrigger>
+          <SelectTrigger id="competition-filter" className="filter-trigger"><SelectValue>{competitionOptions.find((item) => item.id === current)?.label ?? current}</SelectValue></SelectTrigger>
           <SelectContent>
             {competitionOptions.map((competition) => (
               <SelectItem value={competition.id} key={competition.id}>{competition.label}</SelectItem>

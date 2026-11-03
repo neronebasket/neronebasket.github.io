@@ -1,6 +1,6 @@
 [package]
 name = "webmaker-studio"
-version = "0.2.3"
+version = "0.2.4"
 description = "Editor locale per il sito Nerone Basket Anzio"
 authors = ["Nerone Basket Anzio"]
 edition = "2021"

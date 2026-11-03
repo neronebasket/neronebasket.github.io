@@ -1,4 +1,4 @@
-import { Trophy } from 'lucide-react';
+import { ExternalLink, Trophy } from 'lucide-react';
 import { SiteHeader } from '@/components/site-header';
 import { SiteFooter } from '@/components/site-footer';
 import { CompetitionFilters } from '@/components/competition-filters';
@@ -75,6 +75,29 @@ export function CompetitionPageView({ competition, seasonId }: { competition: Co
           <CompetitionFilters current={competition.slug} season={seasonId} seasonOptions={seasonOptions} competitionOptions={competitionOptions} />
           <Link className="button archive-link" href={sitePath(archivePath('partite', competition.slug, seasonId))}>Vedi tutte le partite</Link>
         </div>
+        {(data?.description || data?.groups?.length) && <section className="competition-format" aria-labelledby="competition-format-title">
+          <div className="competition-format-copy">
+            <p className="eyebrow dark">Formula e partecipanti</p>
+            <h2 id="competition-format-title">La stagione {seasonId.replace('-', '/')}</h2>
+            {data.description && <p>{data.description}</p>}
+            {data.notice && <small>{data.notice}</small>}
+            {data.source_url && <a href={data.source_url} target="_blank" rel="noreferrer">Risultati e classifiche su Campionati UISP Roma <ExternalLink size={15} aria-hidden="true" /></a>}
+          </div>
+          {data.groups?.length ? <div className="competition-groups">
+            {data.groups.map((group) => <article className="competition-group" key={group.name}>
+              <h3>{group.name}</h3>
+              <ul>{group.teams.map((teamId) => {
+                const team = sportsData.teams[teamId];
+                return <li className={isClubTeam(teamId) ? 'club-team' : ''} key={teamId}>
+                  <span className={`competition-team-logo${team?.logo ? '' : ' competition-team-logo-empty'}`}>{team?.logo
+                    ? <img src={assetPath(team.logo)} alt="" />
+                    : <b aria-hidden="true">{(team?.short_name ?? teamId).split(/\s+/).map((word) => word[0]).join('').slice(0, 3)}</b>}</span>
+                  <span><strong>{team?.short_name ?? teamId}</strong><small>{team?.name ?? teamId}</small></span>
+                </li>;
+              })}</ul>
+            </article>)}
+          </div> : null}
+        </section>}
         <div className="standings-panel standings-panel-wide">
             <div className="content-heading">
               <p className="eyebrow dark">Classifica</p>
