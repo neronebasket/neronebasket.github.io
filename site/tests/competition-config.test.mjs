@@ -52,6 +52,18 @@ test('il calendario Gold 2026/27 contiene tutte le gare e le dieci partite del N
   assert.match(goldCsv, /2026-27-gold-291,2027-02-18,21:15,scheduled,cor-basket-villa-flaminia,nerone-bounganvillae/);
 });
 
+test('il calendario Platinum 2026/27 contiene le sei gare del Girone King B', () => {
+  const platinumCsv = readFileSync(join(testsRoot, '../data/games/2026-27/platinum.csv'), 'utf8');
+  const rows = platinumCsv.trim().split(/\r?\n/).slice(1);
+  const regularSeason = rows.filter((row) => row.includes(',regular-season,'));
+  const neroneGames = regularSeason.filter((row) => /,nerone,|,nerone,,,/.test(row));
+
+  assert.equal(regularSeason.length, 6);
+  assert.equal(neroneGames.length, 4);
+  assert.match(platinumCsv, /2026-27-platinum-98,2026-11-15,20:30,scheduled,nerone,cavese-93-blu/);
+  assert.match(platinumCsv, /2026-27-platinum-103,2026-12-19,21:00,scheduled,supernova-fiumicino-a,cavese-93-blu/);
+});
+
 test('Francesco Menichelli usa il cognome corretto nei dati e nel roster', () => {
   const player = readFileSync(join(testsRoot, '../data/players/francesco.yaml'), 'utf8');
   const roster = readFileSync(join(testsRoot, '../data/rosters.csv'), 'utf8');
