@@ -73,3 +73,14 @@ test('Francesco Menichelli usa il cognome corretto nei dati e nel roster', () =>
   assert.match(roster, /francesco-menichelli/);
   assert.doesNotMatch(`${player}\n${roster}`, /menicucci/i);
 });
+
+test('le partite sono ordinate per fasi finali, stagione regolare e amichevoli', () => {
+  const gamesView = readFileSync(join(testsRoot, '../components/games-page-view.tsx'), 'utf8');
+  const finals = gamesView.indexOf("id: 'finals'");
+  const regularSeason = gamesView.indexOf("id: 'regular-season'");
+  const friendly = gamesView.indexOf("id: 'friendly'");
+
+  assert.ok(finals >= 0 && finals < regularSeason);
+  assert.ok(regularSeason < friendly);
+  assert.match(gamesView, /title: 'Fasi finali'.*game\.phase === 'final-four'.*game\.phase === 'play-in'/s);
+});

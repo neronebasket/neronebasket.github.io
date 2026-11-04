@@ -71,10 +71,9 @@ export function GamesPageView({ competition, seasonId }: { competition: Competit
     .sort((first, second) => `${first.date}T${first.time}`.localeCompare(`${second.date}T${second.time}`))[0];
   const groups = [
     { id: 'upcoming', title: 'Prossima partita', games: nextGame ? [nextGame] : [] },
+    { id: 'finals', title: 'Fasi finali', games: orderedGames(neroneGames.filter((game) => game.phase === 'final-four' || game.phase === 'play-in')) },
+    { id: 'regular-season', title: 'Stagione regolare', games: orderedGames(neroneGames.filter((game) => (!game.phase || game.phase === 'regular-season') && game.id !== nextGame?.id)) },
     { id: 'friendly', title: 'Amichevoli', games: orderedGames(neroneGames.filter((game) => game.phase === 'friendly' && game.id !== nextGame?.id)) },
-    { id: 'final-four', title: 'Final Four', games: orderedGames(neroneGames.filter((game) => game.phase === 'final-four')) },
-    { id: 'play-in', title: 'Play-in', games: orderedGames(neroneGames.filter((game) => game.phase === 'play-in')) },
-    { id: 'regular-season', title: 'Stagione regolare', games: orderedGames(neroneGames.filter((game) => !game.phase || game.phase === 'regular-season')) },
   ].filter((group) => group.games.length > 0);
 
   return <main>

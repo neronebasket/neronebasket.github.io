@@ -199,7 +199,7 @@ export const sportsData: SportsData = {
     },
     "elite-roma-all-saints": {
       "name": "Polisportiva EBR Elite Roma All Saints",
-      "short_name": "Elite Roma",
+      "short_name": "EBR All Saints",
       "logo": "/assets/teams/2026-27/elite-roma-all-saints.webp",
       "home_venue": "Colle La Salle",
       "home_address": "Via dell'Imbrecciato 181, Roma",
@@ -1121,7 +1121,7 @@ export const sportsData: SportsData = {
       "id": "gold",
       "name": "Amatori UISP Gold",
       "team": "nerone-bounganvillae",
-      "description": "Nella prima fase le 34 squadre sono distribuite in tre gironi Prime da sei e due gironi Amatoriali da otto, tutti con gare di andata e ritorno. Le prime tre di ogni girone Prime e la migliore quarta accederanno alla seconda fase; formula e fase finale saranno definite successivamente.",
+      "description": "Nella prima fase le 18 squadre sono distribuite in tre gironi da sei, tutti con gare di andata e ritorno. Le prime tre di ogni girone e la migliore quarta accederanno alla seconda fase; formula e fase finale saranno definite successivamente.",
       "notice": "* Regolamento e partecipazione ai campionati non ancora ufficiali.",
       "source_url": "https://www.campionatiuisproma.it/",
       "groups": [
@@ -1933,7 +1933,7 @@ export const sportsData: SportsData = {
           "id": "gold",
           "name": "Amatori UISP Gold",
           "team": "nerone-bounganvillae",
-          "description": "Nella prima fase le 34 squadre sono distribuite in tre gironi Prime da sei e due gironi Amatoriali da otto, tutti con gare di andata e ritorno. Le prime tre di ogni girone Prime e la migliore quarta accederanno alla seconda fase; formula e fase finale saranno definite successivamente.",
+          "description": "Nella prima fase le 18 squadre sono distribuite in tre gironi da sei, tutti con gare di andata e ritorno. Le prime tre di ogni girone e la migliore quarta accederanno alla seconda fase; formula e fase finale saranno definite successivamente.",
           "notice": "* Regolamento e partecipazione ai campionati non ancora ufficiali.",
           "source_url": "https://www.campionatiuisproma.it/",
           "groups": [
