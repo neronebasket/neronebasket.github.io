@@ -1,2 +1,32 @@
 id,date,time,status,home_team,away_team,home_score,away_score,venue,address,instagram_url,youtube_url,notes,phase,round
 2026-27-uisp-friendly-01,2026-10-15,21:00,played,samurai-csi,nerone-bounganvillae,,,"Istituto ""Carlo e Nello Rosselli""","Via Carroceto, Aprilia (LT)",,,Amichevole,friendly,
+2026-27-gold-262,2026-11-23,20:10,scheduled,elite-roma-all-saints,elite-roma-young,,,Colle La Salle,"Via dell'Imbrecciato 181, Roma",,,,regular-season,Giornata 1
+2026-27-gold-263,2026-11-21,16:00,scheduled,monteverde-parrots,cor-basket-villa-flaminia,,,Pala Cerioli,"Via Filippo Taiani 50, Roma",,,,regular-season,Giornata 1
+2026-27-gold-264,2026-11-20,21:45,scheduled,r3-bombers,nerone-bounganvillae,,,Pala De Pinedo,"Via Francesco Morandini 30, Roma",,,,regular-season,Giornata 1
+2026-27-gold-265,2026-11-26,21:15,scheduled,cor-basket-villa-flaminia,elite-roma-all-saints,,,Villa Flaminia,"Via Donatello 20, Roma",,,,regular-season,Giornata 2
+2026-27-gold-266,2026-12-01,21:30,scheduled,nerone-bounganvillae,elite-roma-young,,,Campo 4Kasette,"Via Nettunense Km 36,500, Anzio (RM)",,,,regular-season,Giornata 2
+2026-27-gold-267,2026-11-27,21:45,scheduled,r3-bombers,monteverde-parrots,,,Pala De Pinedo,"Via Francesco Morandini 30, Roma",,,,regular-season,Giornata 2
+2026-27-gold-268,2026-12-07,20:10,scheduled,elite-roma-all-saints,nerone-bounganvillae,,,Colle La Salle,"Via dell'Imbrecciato 181, Roma",,,,regular-season,Giornata 3
+2026-27-gold-269,2026-12-03,21:15,scheduled,cor-basket-villa-flaminia,r3-bombers,,,Villa Flaminia,"Via Donatello 20, Roma",,,,regular-season,Giornata 3
+2026-27-gold-270,2026-12-07,21:20,scheduled,elite-roma-young,monteverde-parrots,,,Colle La Salle,"Via dell'Imbrecciato 181, Roma",,,,regular-season,Giornata 3
+2026-27-gold-271,2026-12-11,21:45,scheduled,r3-bombers,elite-roma-all-saints,,,Pala De Pinedo,"Via Francesco Morandini 30, Roma",,,,regular-season,Giornata 4
+2026-27-gold-272,2026-12-12,16:00,scheduled,monteverde-parrots,nerone-bounganvillae,,,Pala Cerioli,"Via Filippo Taiani 50, Roma",,,,regular-season,Giornata 4
+2026-27-gold-273,2026-12-14,21:20,scheduled,elite-roma-young,cor-basket-villa-flaminia,,,Colle La Salle,"Via dell'Imbrecciato 181, Roma",,,,regular-season,Giornata 4
+2026-27-gold-274,2026-12-21,20:10,scheduled,elite-roma-all-saints,monteverde-parrots,,,Colle La Salle,"Via dell'Imbrecciato 181, Roma",,,,regular-season,Giornata 5
+2026-27-gold-275,2026-12-18,21:45,scheduled,r3-bombers,elite-roma-young,,,Pala De Pinedo,"Via Francesco Morandini 30, Roma",,,,regular-season,Giornata 5
+2026-27-gold-276,2026-12-22,21:30,scheduled,nerone-bounganvillae,cor-basket-villa-flaminia,,,Campo 4Kasette,"Via Nettunense Km 36,500, Anzio (RM)",,,,regular-season,Giornata 5
+2026-27-gold-277,2027-01-11,21:20,scheduled,elite-roma-young,elite-roma-all-saints,,,Colle La Salle,"Via dell'Imbrecciato 181, Roma",,,,regular-season,Giornata 6
+2026-27-gold-278,2027-01-07,21:15,scheduled,cor-basket-villa-flaminia,monteverde-parrots,,,Villa Flaminia,"Via Donatello 20, Roma",,,,regular-season,Giornata 6
+2026-27-gold-279,2027-01-12,21:30,scheduled,nerone-bounganvillae,r3-bombers,,,Campo 4Kasette,"Via Nettunense Km 36,500, Anzio (RM)",,,,regular-season,Giornata 6
+2026-27-gold-280,2027-01-18,20:10,scheduled,elite-roma-all-saints,cor-basket-villa-flaminia,,,Colle La Salle,"Via dell'Imbrecciato 181, Roma",,,,regular-season,Giornata 7
+2026-27-gold-281,2027-01-18,21:20,scheduled,elite-roma-young,nerone-bounganvillae,,,Colle La Salle,"Via dell'Imbrecciato 181, Roma",,,,regular-season,Giornata 7
+2026-27-gold-282,2027-01-16,16:00,scheduled,monteverde-parrots,r3-bombers,,,Pala Cerioli,"Via Filippo Taiani 50, Roma",,,,regular-season,Giornata 7
+2026-27-gold-283,2027-02-02,21:30,scheduled,nerone-bounganvillae,elite-roma-all-saints,,,Campo 4Kasette,"Via Nettunense Km 36,500, Anzio (RM)",,,,regular-season,Giornata 8
+2026-27-gold-284,2027-01-29,21:45,scheduled,r3-bombers,cor-basket-villa-flaminia,,,Pala De Pinedo,"Via Francesco Morandini 30, Roma",,,,regular-season,Giornata 8
+2026-27-gold-285,2027-01-30,16:00,scheduled,monteverde-parrots,elite-roma-young,,,Pala Cerioli,"Via Filippo Taiani 50, Roma",,,,regular-season,Giornata 8
+2026-27-gold-286,2027-02-15,20:10,scheduled,elite-roma-all-saints,r3-bombers,,,Colle La Salle,"Via dell'Imbrecciato 181, Roma",,,,regular-season,Giornata 9
+2026-27-gold-287,2027-02-16,21:30,scheduled,nerone-bounganvillae,monteverde-parrots,,,Campo 4Kasette,"Via Nettunense Km 36,500, Anzio (RM)",,,,regular-season,Giornata 9
+2026-27-gold-288,2027-02-11,21:15,scheduled,cor-basket-villa-flaminia,elite-roma-young,,,Villa Flaminia,"Via Donatello 20, Roma",,,,regular-season,Giornata 9
+2026-27-gold-289,2027-02-20,16:00,scheduled,monteverde-parrots,elite-roma-all-saints,,,Pala Cerioli,"Via Filippo Taiani 50, Roma",,,,regular-season,Giornata 10
+2026-27-gold-290,2027-02-22,21:20,scheduled,elite-roma-young,r3-bombers,,,Colle La Salle,"Via dell'Imbrecciato 181, Roma",,,,regular-season,Giornata 10
+2026-27-gold-291,2027-02-18,21:15,scheduled,cor-basket-villa-flaminia,nerone-bounganvillae,,,Villa Flaminia,"Via Donatello 20, Roma",,,,regular-season,Giornata 10

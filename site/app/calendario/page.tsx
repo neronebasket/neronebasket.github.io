@@ -10,7 +10,9 @@ export const metadata: Metadata = { title: 'Calendario' };
 export const dynamic = 'force-static';
 
 export default function CalendarPage() {
-  const games = sportsData.competitions.flatMap((competition) => competition.games.map((game) => ({
+  const games = sportsData.competitions.flatMap((competition) => competition.games
+    .filter((game) => isClubTeam(game.home_team) || isClubTeam(game.away_team))
+    .map((game) => ({
     id: game.id,
     date: game.date,
     time: game.time,

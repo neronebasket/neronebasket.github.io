@@ -39,3 +39,25 @@ test('la stagione 2026/27 espone Platinum e Gold con i gironi ufficialmente comu
   assert.match(sitemap, /\/partite\/platinum\/27/);
   assert.match(sitemap, /\/partite\/gold\/27/);
 });
+
+test('il calendario Gold 2026/27 contiene tutte le gare e le dieci partite del Nerone BGV', () => {
+  const goldCsv = readFileSync(join(testsRoot, '../data/games/2026-27/gold.csv'), 'utf8');
+  const rows = goldCsv.trim().split(/\r?\n/).slice(1);
+  const regularSeason = rows.filter((row) => row.includes(',regular-season,'));
+  const neroneBgvGames = regularSeason.filter((row) => row.includes('nerone-bounganvillae'));
+
+  assert.equal(regularSeason.length, 30);
+  assert.equal(neroneBgvGames.length, 10);
+  assert.match(goldCsv, /2026-27-gold-264,2026-11-20,21:45,scheduled,r3-bombers,nerone-bounganvillae/);
+  assert.match(goldCsv, /2026-27-gold-291,2027-02-18,21:15,scheduled,cor-basket-villa-flaminia,nerone-bounganvillae/);
+});
+
+test('Francesco Menichelli usa il cognome corretto nei dati e nel roster', () => {
+  const player = readFileSync(join(testsRoot, '../data/players/francesco.yaml'), 'utf8');
+  const roster = readFileSync(join(testsRoot, '../data/rosters.csv'), 'utf8');
+
+  assert.match(player, /id: francesco-menichelli/);
+  assert.match(player, /name: Francesco Menichelli/);
+  assert.match(roster, /francesco-menichelli/);
+  assert.doesNotMatch(`${player}\n${roster}`, /menicucci/i);
+});
