@@ -202,7 +202,25 @@ async function calendario(ctx: CanvasRenderingContext2D, s: GraphicState) {
   text(ctx, 'CALENDARIO', 540, 265, 700, 104, '"Bebas Neue", Impact, sans-serif', '700', 'center', 70);
   text(ctx, s.month.toUpperCase(), 540, 365, 600, 60, '"Bebas Neue", Impact, sans-serif', '700', 'center', 40);
   text(ctx, s.leftName.toUpperCase(), 61, 472, 450, 70, '"Bebas Neue", Impact, sans-serif', '700', 'left', 38);
-  text(ctx, s.rightName.toUpperCase(), 1020, 472, 450, 70, '"Bebas Neue", Impact, sans-serif', '700', 'right', 38);
+  const rightName = s.rightName.toUpperCase();
+  if (rightName.endsWith(' BGV')) {
+    const family = '"Bebas Neue", Impact, sans-serif';
+    let size = 70;
+    ctx.font = `700 ${size}px ${family}`;
+    while (ctx.measureText(rightName).width > 450 && size > 38) {
+      ctx.font = `700 ${--size}px ${family}`;
+    }
+    const bgvWidth = ctx.measureText('BGV').width;
+    ctx.textAlign = 'right'; ctx.textBaseline = 'top';
+    ctx.fillText(rightName.slice(0, -3), 1020 - bgvWidth, 472);
+    ctx.fillStyle = '#ff00bf';
+    ctx.fillText('BGV', 1020, 472);
+    ctx.fillStyle = '#fff';
+  } else {
+    text(ctx, rightName, 1020, 472, 450, 70, '"Bebas Neue", Impact, sans-serif', '700', 'right', 38);
+  }
+  text(ctx, 'UISP PLATINUM', 61, 536, 450, 26, 'Arimo, Arial, sans-serif', '700', 'left', 20);
+  text(ctx, 'UISP GOLD', 1020, 536, 450, 26, 'Arimo, Arial, sans-serif', '700', 'right', 20);
   ctx.shadowBlur = 0;
   const groups = [s.appointments.filter(a => a.club === 'nerone'), s.appointments.filter(a => a.club === 'nerone-bounganvillae')];
   groups.forEach((group, column) => {
