@@ -48,8 +48,10 @@ test('il calendario Gold 2026/27 contiene tutte le gare e le dieci partite del N
 
   assert.equal(regularSeason.length, 30);
   assert.equal(neroneBgvGames.length, 10);
-  assert.match(goldCsv, /2026-27-gold-264,2026-11-20,21:45,scheduled,r3-bombers,nerone-bounganvillae/);
-  assert.match(goldCsv, /2026-27-gold-291,2027-02-18,21:15,scheduled,cor-basket-villa-flaminia,nerone-bounganvillae/);
+  assert.match(goldCsv, /2026-27-gold-164,2026-11-19,21:15,scheduled,cor-basket-villa-flaminia,monteverde-parrots/);
+  assert.match(goldCsv, /2026-27-gold-166,2026-11-23,21:20,scheduled,elite-roma-young,nerone-bounganvillae/);
+  assert.match(goldCsv, /2026-27-gold-193,2027-03-05,21:45,scheduled,r3-bombers,nerone-bounganvillae/);
+  assert.doesNotMatch(goldCsv, /2026-27-gold-2(?:6[2-9]|[7-8][0-9]|9[0-1])/);
 });
 
 test('il calendario Platinum 2026/27 contiene le sei gare del Girone King B', () => {
