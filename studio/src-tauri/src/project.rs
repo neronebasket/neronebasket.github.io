@@ -259,7 +259,7 @@ mod tests {
         assert!(!catalog.players.is_empty());
         assert!(!catalog.games.is_empty());
         let nerone = catalog.team_details.get("nerone").unwrap();
-        assert_eq!(nerone.venue, "Campo 4Kasette");
+        assert_eq!(nerone.venue, "Campo Quattro Casette");
         assert_eq!(nerone.time, "20:30");
     }
     #[test]

@@ -86,3 +86,18 @@ test('le partite sono ordinate per fasi finali, stagione regolare e amichevoli',
   assert.ok(regularSeason < friendly);
   assert.match(gamesView, /title: 'Fasi finali'.*game\.phase === 'final-four'.*game\.phase === 'play-in'/s);
 });
+
+test('il campo del Nerone usa il nome Quattro Casette in tutto il sito', () => {
+  const sources = [
+    '../data/teams.yaml',
+    '../data/games/2025-26/platinum.csv',
+    '../data/games/2026-27/platinum.csv',
+    '../data/games/2026-27/gold.csv',
+    '../app/club/page.tsx',
+    '../components/graphic-generator.tsx',
+    '../lib/generated-data.ts',
+  ].map((path) => readFileSync(join(testsRoot, path), 'utf8')).join('\n');
+
+  assert.match(sources, /Campo Quattro Casette/);
+  assert.doesNotMatch(sources, /4\s*(?:k|c)asette/i);
+});

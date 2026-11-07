@@ -3,7 +3,7 @@ nerone:
   short_name: Nerone
   logo: /assets/logo-testo-nero.png
   logo_on_dark: /assets/logo-testo-bianco.png
-  home_venue: Campo 4Kasette
+  home_venue: Campo Quattro Casette
   home_address: Via Nettunense Km 36,500, Anzio (RM)
   home_day: Domenica
   home_time: "20:30"
@@ -13,7 +13,7 @@ nerone-bounganvillae:
   short_name: Nerone BGV
   logo: /assets/bgv-logo-testo-nero.png
   logo_on_dark: /assets/bgv-logo-testo-bianco.png
-  home_venue: Campo 4Kasette
+  home_venue: Campo Quattro Casette
   home_address: Via Nettunense Km 36,500, Anzio (RM)
   home_day: Martedì
   home_time: "21:30"

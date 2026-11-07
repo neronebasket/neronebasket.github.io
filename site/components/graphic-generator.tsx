@@ -16,7 +16,7 @@ const defaultWeekMatch: WeekMatch = {
   gameId: '', title: 'NEXT MATCH', homeTeam: 'NERONE', awayTeam: 'SAMURAI',
   homeLogo: '/assets/logo-testo-bianco.png', awayLogo: '/assets/teams/2026-27/samurai.png',
   competition: 'Campionato Amatori UISP Giornata 15', dateTime: 'Mercoledì 21 Ottobre, 21:00',
-  address: 'Via Olimpica, 46B (4Kasette) Anzio (RM)',
+  address: 'Via Olimpica, 46B (Quattro Casette) Anzio (RM)',
 };
 const initialState: GraphicState = {
   type: 'calendario', month: 'OTTOBRE 2026', leftName: 'NERONE', rightName: 'NERONE BGV',
@@ -26,7 +26,7 @@ const initialState: GraphicState = {
   homeTeam: 'NERONE', awayTeam: 'SAMURAI',
   homeLogo: '/assets/logo-testo-bianco.png', awayLogo: '/assets/teams/2026-27/samurai.png',
   competition: 'Campionato Amatori UISP Giornata 15', dateTime: 'Mercoledì 21 Ottobre, 21:00',
-  address: 'Via Olimpica, 46B (4Kasette) Anzio (RM)', homeScore: '76', awayScore: '51', resultClubSide: 'home',
+  address: 'Via Olimpica, 46B (Quattro Casette) Anzio (RM)', homeScore: '76', awayScore: '51', resultClubSide: 'home',
   matchdayBackground: '#c80b1d', matchdaySubject: '', matchdayTeamName: 'NERONE BASKET ANZIO', matchdayPlayerName: 'NOME GIOCATORE',
   matchdayDate: '2026-10-21', matchdayTime: '21:00', matchdaySubjectX: 0, matchdaySubjectY: 0, matchdaySubjectZoom: 1,
   matchdayShadowX: 0, matchdayShadowY: 18, matchdayShadowWidth: 260, matchdayShadowHeight: 58,

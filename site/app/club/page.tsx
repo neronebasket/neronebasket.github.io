@@ -73,7 +73,7 @@ export default function ClubPage() {
           <div className="venue-photo"><img src={assetPath('/assets/calendar-bg.jpg')} alt="Campo da basket" /></div>
           <div className="venue-copy">
             <p className="eyebrow dark">Come raggiungerci</p>
-            <h2>Campo 4Kasette (Anzio Basket Club)</h2>
+            <h2>Campo Quattro Casette (Anzio Basket Club)</h2>
             <p><MapPin size={18} /> Via Olimpica, 46B<br />00042 Anzio RM</p>
             <a className="button button-dark" href={mapsUrl} target="_blank" rel="noreferrer">Apri in Google Maps <ExternalLink size={17} /></a>
           </div>

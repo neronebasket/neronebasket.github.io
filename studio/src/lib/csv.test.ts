@@ -6,9 +6,9 @@ test('CSV conserva righe non toccate, colonne ignote e campi con virgole/newline
   const source = 'id,address,custom\r\na,"Via Roma, 1",x\r\nb,"prima\nseconda",y\r\n';
   const doc = new CsvDocument(source);
   assert.equal(doc.get(1).address, 'prima\nseconda');
-  doc.update(0, { address: 'Via Anzio, "4Kasette"' });
+  doc.update(0, { address: 'Via Anzio, "Quattro Casette"' });
   const output = doc.serialize();
-  assert.ok(output.includes('a,"Via Anzio, ""4Kasette""",x\r\n'));
+  assert.ok(output.includes('a,"Via Anzio, ""Quattro Casette""",x\r\n'));
   assert.ok(output.endsWith('b,"prima\nseconda",y\r\n'));
 });
 
