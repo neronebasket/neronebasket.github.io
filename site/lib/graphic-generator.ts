@@ -30,6 +30,8 @@ export const SPONSORS = [
   { id: 'superette', name: 'Superettè', logo: '/assets/sponsors/superette.png' },
   { id: 'silviomarsili', name: 'Silvio Marsili', logo: '/assets/sponsors/neg/silviomarsili_white.png' },
   { id: 'mastroianni', name: 'Mastroianni', logo: '/assets/sponsors/mastroianni.png' },
+  { id: 'laboradoro', name: 'Laboradoro', logo: '/assets/sponsors/neg/laboradoro_w.png' },
+  { id: 'essence-academy', name: 'Essence Academy', logo: '/assets/sponsors/essence.png' },
 ] as const;
 export const LOGOS = [
   { id: 'nerone', name: 'Nerone', logo: '/assets/logo-testo-bianco.png', mono: '/assets/teams/2026-27/mono_white/nerone_white_text.png' },

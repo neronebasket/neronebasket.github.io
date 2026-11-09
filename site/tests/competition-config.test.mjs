@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { copyFileSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { copyFileSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -73,6 +73,18 @@ test('la home seleziona come prossima partita soltanto una gara del Nerone', () 
   const home = readFileSync(join(testsRoot, '../app/page.tsx'), 'utf8');
 
   assert.match(home, /isClubTeam\(game\.home_team\) \|\| isClubTeam\(game\.away_team\)/);
+});
+
+test('Laboradoro ed Essence Academy sono disponibili come sponsor', () => {
+  const club = readFileSync(join(testsRoot, '../app/club/page.tsx'), 'utf8');
+  const generator = readFileSync(join(testsRoot, '../lib/graphic-generator.ts'), 'utf8');
+
+  assert.match(club, /name: 'Laboradoro'/);
+  assert.match(club, /name: 'Essence Academy'/);
+  assert.match(generator, /id: 'laboradoro'/);
+  assert.match(generator, /id: 'essence-academy'/);
+  assert.ok(existsSync(join(testsRoot, '../public/assets/sponsors/laboradoro.png')));
+  assert.ok(existsSync(join(testsRoot, '../public/assets/sponsors/essence.png')));
 });
 
 test('Francesco Menichelli usa il cognome corretto nei dati e nel roster', () => {

@@ -50,6 +50,18 @@ const sponsors = [
       { label: '338 201 1585', href: 'tel:+393382011585', type: 'phone' },
     ],
   },
+  {
+    name: 'Laboradoro',
+    logo: '/assets/sponsors/laboradoro.png',
+    description: 'La descrizione dello sponsor sarà disponibile a breve.',
+    links: [],
+  },
+  {
+    name: 'Essence Academy',
+    logo: '/assets/sponsors/essence.png',
+    description: 'La descrizione dello sponsor sarà disponibile a breve.',
+    links: [],
+  },
 ] as const;
 
 export default function ClubPage() {
@@ -103,12 +115,12 @@ export default function ClubPage() {
                 {'subtitle' in sponsor && <p className="sponsor-subtitle">{sponsor.subtitle}</p>}
               </div>
               <p className="sponsor-description">{sponsor.description}</p>
-              <div className="sponsor-links" aria-label={`Contatti ${sponsor.name}`}>
+              {sponsor.links.length > 0 && <div className="sponsor-links" aria-label={`Contatti ${sponsor.name}`}>
                 {sponsor.links.map((link) => <a href={link.href} key={link.label} target={link.type === 'phone' ? undefined : '_blank'} rel={link.type === 'phone' ? undefined : 'noreferrer'}>
                   {link.type === 'map' ? <MapPin size={17} /> : link.type === 'phone' ? <Phone size={17} /> : <ExternalLink size={17} />}
                   <span>{link.label}</span>
                 </a>)}
-              </div>
+              </div>}
             </div>
           </article>)}
         </div>
