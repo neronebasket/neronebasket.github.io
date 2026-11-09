@@ -13,16 +13,15 @@ export type SiteGame = {
 
 const TYPE_LABELS: Record<GraphicType, string> = { calendario: 'Calendario', week: 'Week', matchday: 'Matchday', risultato: 'Risultato' };
 const defaultWeekMatch: WeekMatch = {
-  gameId: '', title: 'NEXT MATCH', homeTeam: 'NERONE', awayTeam: 'SAMURAI',
+  gameId: '', title: 'UISP Platinum', homeTeam: 'NERONE', awayTeam: 'SAMURAI',
   homeLogo: '/assets/logo-testo-bianco.png', awayLogo: '/assets/teams/2026-27/samurai.png',
-  competition: 'Campionato Amatori UISP Giornata 15', dateTime: 'Mercoledì 21 Ottobre, 21:00',
-  address: 'Via Olimpica, 46B (Quattro Casette) Anzio (RM)',
+  dateTime: 'Mercoledì 21 Ottobre, 21:00', address: 'Via Olimpica, 46B (Quattro Casette) Anzio (RM)',
 };
 const initialState: GraphicState = {
   type: 'calendario', month: 'OTTOBRE 2026', leftName: 'NERONE', rightName: 'NERONE BGV',
   appointments: [], sponsor: 'maisondali', photo: '', subjectPhoto: '', photoX: 0, photoY: 0, photoZoom: 1,
-  weekFormat: 'post', backgroundBlur: 0,
-  glasses: [{ id: 'glass-1', kind: 'match', x: 58, y: 54, width: 440, height: 500, layer: 'behind', match: { ...defaultWeekMatch } }, { id: 'glass-2', kind: 'match', x: 568, y: 734, width: 440, height: 500, layer: 'front', match: { ...defaultWeekMatch } }, { id: 'glass-sponsor', kind: 'sponsor', x: 58, y: 1127, width: 388, height: 161, layer: 'front', sponsorId: 'mastroianni' }],
+  weekFormat: 'post', weekTitle: 'LA SETTIMANA NERONE', backgroundBlur: 0,
+  glasses: [{ id: 'glass-1', kind: 'match', x: 58, y: 140, width: 440, height: 500, layer: 'behind', match: { ...defaultWeekMatch } }, { id: 'glass-2', kind: 'match', x: 568, y: 700, width: 440, height: 500, layer: 'front', match: { ...defaultWeekMatch } }, { id: 'glass-sponsor', kind: 'sponsor', x: 58, y: 1127, width: 388, height: 161, layer: 'front', sponsorId: 'mastroianni' }],
   homeTeam: 'NERONE', awayTeam: 'SAMURAI',
   homeLogo: '/assets/logo-testo-bianco.png', awayLogo: '/assets/teams/2026-27/samurai.png',
   competition: 'Campionato Amatori UISP Giornata 15', dateTime: 'Mercoledì 21 Ottobre, 21:00',
@@ -58,10 +57,10 @@ function formattedDateTime(date: string, time: string) {
   return `${formattedDate(date)}, ${time || 'orario da definire'}`;
 }
 function weekMatchFromGame(game?: SiteGame): WeekMatch {
-  if (!game) return { ...defaultWeekMatch, gameId: '', homeTeam: '', awayTeam: '', homeLogo: '', awayLogo: '', competition: '', dateTime: '', address: '' };
+  if (!game) return { ...defaultWeekMatch, gameId: '', homeTeam: '', awayTeam: '', homeLogo: '', awayLogo: '', dateTime: '', address: '' };
   return {
-    gameId: game.id, title: 'NEXT MATCH', homeTeam: game.home, awayTeam: game.away,
-    homeLogo: game.homeLogo, awayLogo: game.awayLogo, competition: game.competition,
+    gameId: game.id, title: game.club === 'nerone-bounganvillae' ? 'UISP Gold' : 'UISP Platinum', homeTeam: game.home, awayTeam: game.away,
+    homeLogo: game.homeLogo, awayLogo: game.awayLogo,
     dateTime: formattedDateTime(game.date, game.time), address: game.address,
   };
 }
@@ -81,6 +80,13 @@ function Select({ label, value, onChange, options }: { label: string; value: str
 }
 function ColorField({ label, value, onChange }: { label: string; value: string; onChange: (value: string) => void }) {
   return <div className="gg-field gg-color-field"><span>{label}</span><div className="gg-color-control"><input type="color" aria-label="Seleziona colore dello sfondo" value={/^#[0-9a-f]{6}$/i.test(value) ? value : '#c80b1d'} onChange={event => onChange(event.target.value)} /><input type="text" aria-label="Colore dello sfondo HEX" inputMode="text" maxLength={7} value={value.toUpperCase()} onChange={event => onChange(event.target.value)} /></div></div>;
+}
+function RangeField({ label, value, min, max, step = 1, suffix = '', onChange }: { label: string; value: number; min: number; max: number; step?: number; suffix?: string; onChange: (value: number) => void }) {
+  const setValue = (raw: string) => {
+    const parsed = Number(raw);
+    if (Number.isFinite(parsed)) onChange(Math.max(min, Math.min(max, parsed)));
+  };
+  return <label className="gg-field"><span>{label} · {value}{suffix}</span><div className="gg-range-control"><input type="range" min={min} max={max} step={step} value={value} onChange={event => onChange(Number(event.target.value))} /><input type="number" aria-label={`${label} valore numerico`} min={min} max={max} step={step} value={value} onChange={event => setValue(event.target.value)} /></div></label>;
 }
 
 export function GraphicGenerator({ games, teamLogos }: { games: SiteGame[]; teamLogos: { id: string; name: string; logo: string }[] }) {
@@ -261,7 +267,7 @@ export function GraphicGenerator({ games, teamLogos }: { games: SiteGame[]; team
     const game = games.find(item => item.id === gameId);
     if (!game) { updateGlassMatch(id, { gameId: '' }); return; }
     setMessage('');
-    setState(current => ({ ...current, glasses: current.glasses.map(item => item.id === id && item.kind === 'match' ? { ...item, match: { ...weekMatchFromGame(game), title: item.match.title } } : item) }));
+    setState(current => ({ ...current, glasses: current.glasses.map(item => item.id === id && item.kind === 'match' ? { ...item, match: weekMatchFromGame(game) } : item) }));
   }
   async function changeGlassSponsor(id: string, sponsorId: string) {
     setState(current => ({ ...current, glasses: current.glasses.map(item => item.id === id && item.kind === 'sponsor' ? { ...item, sponsorId } : item) }));
@@ -274,8 +280,8 @@ export function GraphicGenerator({ games, teamLogos }: { games: SiteGame[]; team
   }
   function addGlass() {
     const game = games.find(item => !state.glasses.some(glass => glass.kind === 'match' && glass.match.gameId === item.id));
-    const lowerY = state.weekFormat === 'story' ? 1210 : 734;
-    const slots = [{ x: 58, y: 54 }, { x: 568, y: 54 }, { x: 58, y: lowerY }, { x: 568, y: lowerY }];
+    const lowerY = state.weekFormat === 'story' ? 1210 : 700;
+    const slots = [{ x: 58, y: 140 }, { x: 568, y: 140 }, { x: 58, y: lowerY }, { x: 568, y: lowerY }];
     const position = slots.find(slot => !state.glasses.some(glass => Math.abs(glass.x - slot.x) < 200 && Math.abs(glass.y - slot.y) < 200)) ?? { x: 320, y: 420 };
     setMessage('');
     setState(current => ({ ...current, glasses: [...current.glasses, { id: newId(), kind: 'match', ...position, width: 440, height: 500, layer: 'front', match: weekMatchFromGame(game) }] }));
@@ -313,7 +319,7 @@ export function GraphicGenerator({ games, teamLogos }: { games: SiteGame[]; team
 
         <Fragment key={state.type}>
 
-        {state.type === 'week' && <section className="gg-panel"><div className="gg-panel-head"><span>01</span><h3>Formato Week</h3></div><div className="gg-format-choice" role="group" aria-label="Formato Week"><button type="button" className={state.weekFormat === 'post' ? 'active' : ''} aria-pressed={state.weekFormat === 'post'} onClick={() => changeWeekFormat('post')}>Post <small>1080 × 1350</small></button><button type="button" className={state.weekFormat === 'story' ? 'active' : ''} aria-pressed={state.weekFormat === 'story'} onClick={() => changeWeekFormat('story')}>Storia <small>1080 × 1920</small></button></div></section>}
+        {state.type === 'week' && <section className="gg-panel"><div className="gg-panel-head"><span>01</span><h3>Formato Week</h3></div><div className="gg-format-choice" role="group" aria-label="Formato Week"><button type="button" className={state.weekFormat === 'post' ? 'active' : ''} aria-pressed={state.weekFormat === 'post'} onClick={() => changeWeekFormat('post')}>Post <small>1080 × 1350</small></button><button type="button" className={state.weekFormat === 'story' ? 'active' : ''} aria-pressed={state.weekFormat === 'story'} onClick={() => changeWeekFormat('story')}>Storia <small>1080 × 1920</small></button></div><div className="gg-week-title-field"><Field label="Titolo in alto" value={state.weekTitle} onChange={value => update('weekTitle', value)} placeholder="LA SETTIMANA NERONE" /></div><p className="gg-local-note">Bebas Neue, maiuscolo e centrato, con una sottile linea fucsia.</p></section>}
 
         {state.type === 'calendario' ? <>
           <section className="gg-panel"><div className="gg-panel-head"><span>01</span><h3>Intestazione</h3></div><div className="gg-grid"><Field label="Mese e anno" value={state.month} onChange={value => update('month', value)} placeholder="OTTOBRE 2026" /><Field label="Squadra sinistra" value={state.leftName} onChange={value => update('leftName', value)} /><Field label="Squadra destra" value={state.rightName} onChange={value => update('rightName', value)} /></div></section>
@@ -346,25 +352,25 @@ export function GraphicGenerator({ games, teamLogos }: { games: SiteGame[]; team
             <label className="gg-upload gg-matchday-upload"><ImagePlus size={22} /><span>{state.matchdaySubject ? 'Sostituisci PNG del giocatore' : 'Carica PNG del giocatore'}</span><small>Immagine già scontornata · resta nel browser</small><input type="file" accept="image/png" onChange={event => { uploadMatchdaySubject(event.target.files?.[0]); event.target.value = ''; }} /></label>
             {state.matchdaySubject && <button className="gg-remove-image" type="button" onClick={() => update('matchdaySubject', '')}>Rimuovi giocatore</button>}
             <div className="gg-grid gg-sliders">
-              <label className="gg-field"><span>Posizione orizzontale · {state.matchdaySubjectX} px</span><input type="range" min="-280" max="280" step="1" value={state.matchdaySubjectX} onChange={event => update('matchdaySubjectX', Number(event.target.value))} /></label>
-              <label className="gg-field"><span>Posizione verticale · {state.matchdaySubjectY} px</span><input type="range" min="-300" max="300" step="1" value={state.matchdaySubjectY} onChange={event => update('matchdaySubjectY', Number(event.target.value))} /></label>
-              <label className="gg-field"><span>Dimensione giocatore · {Math.round(state.matchdaySubjectZoom * 100)}%</span><input type="range" min="0.5" max="2" step="0.05" value={state.matchdaySubjectZoom} onChange={event => update('matchdaySubjectZoom', Number(event.target.value))} /></label>
+              <RangeField label="Posizione orizzontale" value={state.matchdaySubjectX} min={-280} max={280} suffix=" px" onChange={value => update('matchdaySubjectX', value)} />
+              <RangeField label="Posizione verticale" value={state.matchdaySubjectY} min={-300} max={300} suffix=" px" onChange={value => update('matchdaySubjectY', value)} />
+              <RangeField label="Dimensione giocatore" value={state.matchdaySubjectZoom} min={0.5} max={2} step={0.05} onChange={value => update('matchdaySubjectZoom', value)} />
             </div>
             <div className="gg-matchday-shadow"><h4>Ombra a terra</h4><p>Un solo ovale sotto il PNG. Regolalo guardando l’anteprima.</p>
               <div className="gg-grid gg-sliders">
-                <label className="gg-field"><span>Posizione orizzontale · {state.matchdayShadowX} px</span><input type="range" min="-250" max="250" step="1" value={state.matchdayShadowX} onChange={event => update('matchdayShadowX', Number(event.target.value))} /></label>
-                <label className="gg-field"><span>Posizione verticale · {state.matchdayShadowY} px</span><input type="range" min="-100" max="120" step="1" value={state.matchdayShadowY} onChange={event => update('matchdayShadowY', Number(event.target.value))} /></label>
-                <label className="gg-field"><span>Larghezza · {state.matchdayShadowWidth} px</span><input type="range" min="80" max="550" step="2" value={state.matchdayShadowWidth} onChange={event => update('matchdayShadowWidth', Number(event.target.value))} /></label>
-                <label className="gg-field"><span>Altezza · {state.matchdayShadowHeight} px</span><input type="range" min="10" max="120" step="2" value={state.matchdayShadowHeight} onChange={event => update('matchdayShadowHeight', Number(event.target.value))} /></label>
-                <label className="gg-field"><span>Sfocatura · {state.matchdayShadowBlur} px</span><input type="range" min="0" max="50" step="1" value={state.matchdayShadowBlur} onChange={event => update('matchdayShadowBlur', Number(event.target.value))} /></label>
-                <label className="gg-field"><span>Opacità · {state.matchdayShadowOpacity}%</span><input type="range" min="0" max="100" step="1" value={state.matchdayShadowOpacity} onChange={event => update('matchdayShadowOpacity', Number(event.target.value))} /></label>
+                <RangeField label="Posizione orizzontale" value={state.matchdayShadowX} min={-250} max={250} suffix=" px" onChange={value => update('matchdayShadowX', value)} />
+                <RangeField label="Posizione verticale" value={state.matchdayShadowY} min={-100} max={120} suffix=" px" onChange={value => update('matchdayShadowY', value)} />
+                <RangeField label="Larghezza" value={state.matchdayShadowWidth} min={80} max={550} step={2} suffix=" px" onChange={value => update('matchdayShadowWidth', value)} />
+                <RangeField label="Altezza" value={state.matchdayShadowHeight} min={10} max={120} step={2} suffix=" px" onChange={value => update('matchdayShadowHeight', value)} />
+                <RangeField label="Sfocatura" value={state.matchdayShadowBlur} min={0} max={50} suffix=" px" onChange={value => update('matchdayShadowBlur', value)} />
+                <RangeField label="Opacità" value={state.matchdayShadowOpacity} min={0} max={100} suffix="%" onChange={value => update('matchdayShadowOpacity', value)} />
               </div>
             </div>
           </section>
         </> : <>
           {state.type === 'risultato' && <section className="gg-panel"><div className="gg-panel-head"><span>01</span><h3>Partita</h3></div><div className="gg-grid"><Select label="Prendi dal calendario" value={selectedGame} onChange={pickGame} options={[{ value: '', label: 'Seleziona una partita' }, ...games.map(game => ({ value: game.id, label: `${game.date} · ${game.home} – ${game.away}` }))]} /><Field label="Squadra di casa" value={state.homeTeam} onChange={value => updateTeam('home', value)} /><Field label="Squadra ospite" value={state.awayTeam} onChange={value => updateTeam('away', value)} /><Select label="Logo casa" value={state.homeLogo} onChange={value => update('homeLogo', value)} options={[{ value: '', label: 'Nessuno' }, ...logoOptions]} /><Select label="Logo ospite" value={state.awayLogo} onChange={value => update('awayLogo', value)} options={[{ value: '', label: 'Nessuno' }, ...logoOptions]} /><Select label="Squadra Nerone (numero pieno)" value={state.resultClubSide} onChange={value => update('resultClubSide', value as GraphicState['resultClubSide'])} options={[{ value: 'home', label: 'In casa' }, { value: 'away', label: 'In trasferta' }, { value: 'none', label: 'Nessuna delle due' }]} /></div></section>}
           {state.type === 'risultato' && <section className="gg-panel"><div className="gg-panel-head"><span>02</span><h3>Contenuti</h3></div><p className="gg-help">Loghi mono bianchi disponibili: Nerone, Nerone BGV e Ciampino. Per altre squadre aggiungi il relativo PNG in assets/teams/2026-27/mono_white.</p><div className="gg-grid"><Field label="Campionato e giornata" value={state.competition} onChange={value => update('competition', value)} /><Field label="Punti casa" value={state.homeScore} onChange={value => update('homeScore', value.replace(/\D/g, '').slice(0, 3))} /><Field label="Punti ospite" value={state.awayScore} onChange={value => update('awayScore', value.replace(/\D/g, '').slice(0, 3))} /></div></section>}
-          <section className="gg-panel"><div className="gg-panel-head"><span>{state.type === 'week' ? '02' : '03'}</span><h3>Immagine</h3></div><label className="gg-upload"><ImagePlus size={22} /><span>{state.photo ? 'Sostituisci immagine' : 'Carica immagine di sfondo'}</span><small>JPG, PNG o WebP · resta nel browser</small><input type="file" accept="image/*" onChange={event => uploadPhoto(event.target.files?.[0])} /></label><div className="gg-grid gg-sliders"><label className="gg-field"><span>Spostamento orizzontale</span><input type="range" min="-100" max="100" value={state.photoX} onChange={event => update('photoX', Number(event.target.value))} /></label><label className="gg-field"><span>Spostamento verticale</span><input type="range" min="-100" max="100" value={state.photoY} onChange={event => update('photoY', Number(event.target.value))} /></label><label className="gg-field"><span>Zoom · {Math.round(state.photoZoom * 100)}%</span><input type="range" min="1" max="2" step="0.05" value={state.photoZoom} onChange={event => update('photoZoom', Number(event.target.value))} /></label>{state.type === 'week' && <label className="gg-field"><span>Sfocatura sfondo · {state.backgroundBlur} px</span><input type="range" min="0" max="12" step="1" value={state.backgroundBlur} onChange={event => update('backgroundBlur', Number(event.target.value))} /></label>}</div></section>
+          <section className="gg-panel"><div className="gg-panel-head"><span>{state.type === 'week' ? '02' : '03'}</span><h3>Immagine</h3></div><label className="gg-upload"><ImagePlus size={22} /><span>{state.photo ? 'Sostituisci immagine' : 'Carica immagine di sfondo'}</span><small>JPG, PNG o WebP · resta nel browser</small><input type="file" accept="image/*" onChange={event => uploadPhoto(event.target.files?.[0])} /></label><div className="gg-grid gg-sliders"><RangeField label="Spostamento orizzontale" value={state.photoX} min={-100} max={100} onChange={value => update('photoX', value)} /><RangeField label="Spostamento verticale" value={state.photoY} min={-100} max={100} onChange={value => update('photoY', value)} /><RangeField label="Zoom" value={state.photoZoom} min={1} max={2} step={0.05} onChange={value => update('photoZoom', value)} />{state.type === 'week' && <RangeField label="Sfocatura sfondo" value={state.backgroundBlur} min={0} max={12} suffix=" px" onChange={value => update('backgroundBlur', value)} />}</div></section>
         </>}
 
         {state.type === 'week' && <section className="gg-panel"><div className="gg-panel-head"><span>03</span><h3>Soggetto in primo piano</h3></div><p className="gg-help">Carica un PNG del soggetto già scontornato per disporre i GLASS davanti o dietro di lui.</p><div className="gg-actions"><label className="gg-csv-upload">Carica PNG trasparente<input type="file" accept="image/png" onChange={event => { uploadSubject(event.target.files?.[0]); event.target.value = ''; }} /></label>{state.subjectPhoto && <button type="button" onClick={() => update('subjectPhoto', '')}>Rimuovi soggetto</button>}</div><p className="gg-local-note">Il PNG deve avere la stessa dimensione della foto originale, così i due livelli restano allineati.</p></section>}
@@ -378,17 +384,16 @@ export function GraphicGenerator({ games, teamLogos }: { games: SiteGame[]; team
               <Select label="Livello del glass" value={glass.layer} onChange={value => updateGlass(glass.id, { layer: value as Glass['layer'] })} options={[{ value: 'behind', label: 'Dietro il soggetto' }, { value: 'front', label: 'Davanti al soggetto' }]} />
               {glass.kind === 'sponsor' ? <Select label="Logo sponsor" value={glass.sponsorId} onChange={value => changeGlassSponsor(glass.id, value)} options={sponsorOptions} /> : <>
               <Select label="Partita dal calendario" value={glass.match.gameId} onChange={value => pickWeekGame(glass.id, value)} options={[{ value: '', label: 'Compila manualmente' }, ...games.filter(game => !state.glasses.some(item => item.id !== glass.id && item.kind === 'match' && item.match.gameId === game.id)).map(game => ({ value: game.id, label: `${game.date} · ${game.home} – ${game.away}` }))]} />
-              <Field label="Titolo" value={glass.match.title} onChange={value => updateGlassMatch(glass.id, { title: value })} />
+              <Select label="Campionato" value={glass.match.title} onChange={value => updateGlassMatch(glass.id, { title: value })} options={[{ value: 'UISP Gold', label: 'UISP Gold' }, { value: 'UISP Platinum', label: 'UISP Platinum' }]} />
               <Field label="Squadra di casa" value={glass.match.homeTeam} onChange={value => updateGlassMatch(glass.id, { homeTeam: value })} />
               <Field label="Squadra ospite" value={glass.match.awayTeam} onChange={value => updateGlassMatch(glass.id, { awayTeam: value })} />
               <Select label="Logo casa" value={glass.match.homeLogo} onChange={value => updateGlassMatch(glass.id, { homeLogo: value })} options={[{ value: '', label: 'Nessuno' }, ...logoOptions]} />
               <Select label="Logo ospite" value={glass.match.awayLogo} onChange={value => updateGlassMatch(glass.id, { awayLogo: value })} options={[{ value: '', label: 'Nessuno' }, ...logoOptions]} />
-              <Field label="Campionato e giornata" value={glass.match.competition} onChange={value => updateGlassMatch(glass.id, { competition: value })} />
               <Field label="Data e ora" value={glass.match.dateTime} onChange={value => updateGlassMatch(glass.id, { dateTime: value })} />
               <Field label="Indirizzo" value={glass.match.address} onChange={value => updateGlassMatch(glass.id, { address: value })} />
               </>}
             </div>
-            <div className="gg-grid gg-sliders">{(['x', 'y', 'width', 'height'] as const).map(key => <label className="gg-field" key={key}><span>{key === 'x' ? 'X' : key === 'y' ? 'Y' : key === 'width' ? 'Larghezza' : 'Altezza'} · {glass[key]} px</span><input type="range" min={key === 'width' ? (glass.kind === 'sponsor' ? 120 : 280) : key === 'height' ? (glass.kind === 'sponsor' ? 80 : 380) : 0} max={key === 'x' ? 1080 - glass.width : key === 'y' ? canvasHeight - glass.height : key === 'width' ? (glass.kind === 'sponsor' ? 800 : 660) : (glass.kind === 'sponsor' ? 400 : 680)} step="1" value={glass[key]} onChange={event => updateGlass(glass.id, { [key]: Number(event.target.value) })} /></label>)}</div>
+            <div className="gg-grid gg-sliders">{(['x', 'y', 'width', 'height'] as const).map(key => <RangeField key={key} label={key === 'x' ? 'X' : key === 'y' ? 'Y' : key === 'width' ? 'Larghezza' : 'Altezza'} value={glass[key]} min={key === 'width' ? (glass.kind === 'sponsor' ? 120 : 280) : key === 'height' ? (glass.kind === 'sponsor' ? 80 : 380) : 0} max={key === 'x' ? 1080 - glass.width : key === 'y' ? canvasHeight - glass.height : key === 'width' ? (glass.kind === 'sponsor' ? 800 : 660) : (glass.kind === 'sponsor' ? 400 : 680)} suffix=" px" onChange={value => updateGlass(glass.id, { [key]: value })} />)}</div>
           </div>)}
           <button className="gg-add" type="button" onClick={addGlass}><Plus size={17} /> Aggiungi glass</button>
         </section>}

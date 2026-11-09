@@ -6,7 +6,7 @@ export type GlassLayer = 'behind' | 'front';
 export type Appointment = { id: string; club: 'nerone' | 'nerone-bounganvillae'; date: string; time: string; opponent: string; atHome: boolean };
 export type WeekMatch = {
   gameId: string; title: string; homeTeam: string; awayTeam: string; homeLogo: string; awayLogo: string;
-  competition: string; dateTime: string; address: string;
+  dateTime: string; address: string;
 };
 type GlassBase = { id: string; x: number; y: number; width: number; height: number; layer: GlassLayer };
 export type MatchGlass = GlassBase & { kind: 'match'; match: WeekMatch };
@@ -15,7 +15,7 @@ export type Glass = MatchGlass | SponsorGlass;
 export type GraphicState = {
   type: GraphicType; month: string; leftName: string; rightName: string; appointments: Appointment[];
   sponsor: string; photo: string; subjectPhoto: string; photoX: number; photoY: number; photoZoom: number;
-  weekFormat: WeekFormat; backgroundBlur: number;
+  weekFormat: WeekFormat; weekTitle: string; backgroundBlur: number;
   glasses: Glass[]; homeTeam: string; awayTeam: string;
   homeLogo: string; awayLogo: string; competition: string; dateTime: string; address: string;
   homeScore: string; awayScore: string; resultClubSide: 'home' | 'away' | 'none';
@@ -138,9 +138,8 @@ function lines(ctx: CanvasRenderingContext2D, value: string, x: number, y: numbe
 }
 function weekDetails(ctx: CanvasRenderingContext2D, match: WeekMatch, centerX: number, top: number, width: number, height: number, scale: number) {
   const fields = [
-    { value: match.competition, size: 42, maxLines: 2 },
-    { value: match.dateTime, size: 33, maxLines: 3 },
-    { value: match.address, size: 30, maxLines: 4 },
+    { value: match.dateTime, size: 38, maxLines: 3 },
+    { value: match.address, size: 34, maxLines: 4 },
   ].filter(field => field.value.trim());
   if (!fields.length) return;
   const gap = Math.max(8, 12 * scale);
@@ -198,7 +197,7 @@ function dateLabel(date: string, time: string) {
 async function calendario(ctx: CanvasRenderingContext2D, s: GraphicState) {
   const bg = await image('/assets/elementi_social/calendario_bg.png');
   ctx.drawImage(bg, 0, 0, 1080, 1350);
-  ctx.fillStyle = '#fff'; ctx.shadowColor = 'rgba(0, 0, 0, .4)'; ctx.shadowBlur = 8;
+  ctx.fillStyle = '#fff';
   text(ctx, 'CALENDARIO', 540, 265, 700, 104, '"Bebas Neue", Impact, sans-serif', '700', 'center', 70);
   text(ctx, s.month.toUpperCase(), 540, 365, 600, 60, '"Bebas Neue", Impact, sans-serif', '700', 'center', 40);
   text(ctx, s.leftName.toUpperCase(), 61, 472, 450, 70, '"Bebas Neue", Impact, sans-serif', '700', 'left', 38);
@@ -221,7 +220,6 @@ async function calendario(ctx: CanvasRenderingContext2D, s: GraphicState) {
   }
   text(ctx, 'UISP PLATINUM', 61, 536, 450, 26, 'Arimo, Arial, sans-serif', '700', 'left', 20);
   text(ctx, 'UISP GOLD', 1020, 536, 450, 26, 'Arimo, Arial, sans-serif', '700', 'right', 20);
-  ctx.shadowBlur = 0;
   const groups = [s.appointments.filter(a => a.club === 'nerone'), s.appointments.filter(a => a.club === 'nerone-bounganvillae')];
   groups.forEach((group, column) => {
     const max = Math.max(1, group.length);
@@ -285,7 +283,7 @@ async function week(ctx: CanvasRenderingContext2D, s: GraphicState) {
     const scale = Math.min(w / 440, h / 500);
     const inset = Math.max(18, w * .075);
     const textWidth = w - inset * 2;
-    text(ctx, g.match.title.toUpperCase(), x + w / 2, y + h * .055, textWidth, Math.round(55 * scale), 'Aharoni, "Archivo Black", "Arial Black", Arial, sans-serif', '700', 'center', Math.round(30 * scale));
+    text(ctx, g.match.title, x + w / 2, y + h * .055, textWidth, Math.round(55 * scale), 'Aharoni, "Archivo Black", "Arial Black", Arial, sans-serif', '700', 'center', Math.round(30 * scale));
     const logoGap = Math.max(12, w * .06);
     const logoWidth = (textWidth - logoGap) / 2;
     const logoTop = y + h * .185;
@@ -299,6 +297,13 @@ async function week(ctx: CanvasRenderingContext2D, s: GraphicState) {
   const subject = await optionalImage(s.subjectPhoto);
   if (subject) cover(ctx, subject, 0, 0, 1080, canvasHeight, s.photoZoom, s.photoX, s.photoY);
   s.glasses.forEach((g, index) => { if (g.layer === 'front') drawGlass(g, index); });
+  ctx.save();
+  ctx.fillStyle = '#fff';
+  ctx.font = '700 64px "Bebas Neue", Impact, sans-serif';
+  trackedText(ctx, s.weekTitle || 'LA SETTIMANA NERONE', 540, 34, 960, 2.5);
+  ctx.fillStyle = '#ff00bf';
+  ctx.fillRect(430, 109, 220, 5);
+  ctx.restore();
 }
 let matchdayGrain: HTMLCanvasElement | null = null;
 function drawMatchdayGrain(ctx: CanvasRenderingContext2D) {
