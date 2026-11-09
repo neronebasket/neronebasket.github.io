@@ -28,10 +28,10 @@ test('un nuovo campionato appare nei dati e nella sitemap senza archivi CSV pree
   }
 });
 
-test('la stagione 2026/27 espone Platinum e Gold con i gironi ufficialmente comunicati', () => {
+test('la stagione 2026/27 espone Platinum e Gold con i gironi comunicati', () => {
   const generated = readFileSync(join(testsRoot, '../lib/generated-data.ts'), 'utf8');
   const sitemap = readFileSync(join(testsRoot, '../public/sitemap.xml'), 'utf8');
-  assert.match(generated, /"name": "Girone King B"/);
+  assert.match(generated, /"name": "Girone prima fase"/);
   assert.match(generated, /"name": "Girone Prime 3"/);
   assert.match(generated, /"team": "nerone-bounganvillae"/);
   assert.match(sitemap, /\/campionato\/platinum\/27/);
@@ -54,16 +54,25 @@ test('il calendario Gold 2026/27 contiene tutte le gare e le dieci partite del N
   assert.doesNotMatch(goldCsv, /2026-27-gold-2(?:6[2-9]|[7-8][0-9]|9[0-1])/);
 });
 
-test('il calendario Platinum 2026/27 contiene le sei gare del Girone King B', () => {
+test('il calendario Platinum 2026/27 contiene le otto partite del Nerone', () => {
   const platinumCsv = readFileSync(join(testsRoot, '../data/games/2026-27/platinum.csv'), 'utf8');
   const rows = platinumCsv.trim().split(/\r?\n/).slice(1);
   const regularSeason = rows.filter((row) => row.includes(',regular-season,'));
   const neroneGames = regularSeason.filter((row) => /,nerone,|,nerone,,,/.test(row));
 
-  assert.equal(regularSeason.length, 6);
-  assert.equal(neroneGames.length, 4);
-  assert.match(platinumCsv, /2026-27-platinum-98,2026-11-15,20:30,scheduled,nerone,cavese-93-blu/);
-  assert.match(platinumCsv, /2026-27-platinum-103,2026-12-19,21:00,scheduled,supernova-fiumicino-a,cavese-93-blu/);
+  assert.equal(regularSeason.length, 8);
+  assert.equal(neroneGames.length, 8);
+  assert.match(platinumCsv, /2026-27-platinum-nerone-g1,2026-11-22,20:30,scheduled,nerone,cavese-93-blu/);
+  assert.match(platinumCsv, /2026-27-platinum-nerone-g3,2026-12-13,20:30,scheduled,nerone,delfino-basket-anzio/);
+  assert.match(platinumCsv, /2026-27-platinum-nerone-g4,2026-12-19,20:30,scheduled,boys-90-fiumicino,nerone/);
+  assert.match(platinumCsv, /2026-27-platinum-nerone-g10,2027-02-27,21:00,scheduled,supernova-fiumicino-a,nerone/);
+  assert.doesNotMatch(platinumCsv, /,Giornata (?:2|7)$/m);
+});
+
+test('la home seleziona come prossima partita soltanto una gara del Nerone', () => {
+  const home = readFileSync(join(testsRoot, '../app/page.tsx'), 'utf8');
+
+  assert.match(home, /isClubTeam\(game\.home_team\) \|\| isClubTeam\(game\.away_team\)/);
 });
 
 test('Francesco Menichelli usa il cognome corretto nei dati e nel roster', () => {

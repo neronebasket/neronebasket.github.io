@@ -1,8 +1,10 @@
 id,date,time,status,home_team,away_team,home_score,away_score,venue,address,instagram_url,youtube_url,notes,phase,round
 2026-27-uisp-friendly-02,2026-10-21,21:00,played,nerone,samurai,,,Campo Quattro Casette,"Via Nettunense km36.5, Anzio (RM)",,https://www.youtube.com/embed/02jq5KSbxeY?si=ZGyisLCavDruLtV4,Amichevole,friendly,
-2026-27-platinum-98,2026-11-15,20:30,scheduled,nerone,cavese-93-blu,,,Campo Quattro Casette,"Via Nettunense Km 36,500, Anzio (RM)",,,,regular-season,Giornata 1
-2026-27-platinum-99,2026-11-21,21:00,scheduled,supernova-fiumicino-a,nerone,,,Pala Supernova - palestra I.C. Fregene Passoscuro,"Via Serrenti 70, Passoscuro (RM)",,,,regular-season,Giornata 2
-2026-27-platinum-100,2026-11-30,20:40,scheduled,cavese-93-blu,supernova-fiumicino-a,,,Tensostruttura Andrea Lucidi,"Via Giacomo Matteotti SNC, Cave (RM)",,,,regular-season,Giornata 3
-2026-27-platinum-101,2026-12-07,20:40,scheduled,cavese-93-blu,nerone,,,Tensostruttura Andrea Lucidi,"Via Giacomo Matteotti SNC, Cave (RM)",,,,regular-season,Giornata 4
-2026-27-platinum-102,2026-12-13,20:30,scheduled,nerone,supernova-fiumicino-a,,,Campo Quattro Casette,"Via Nettunense Km 36,500, Anzio (RM)",,,,regular-season,Giornata 5
-2026-27-platinum-103,2026-12-19,21:00,scheduled,supernova-fiumicino-a,cavese-93-blu,,,Pala Supernova - palestra I.C. Fregene Passoscuro,"Via Serrenti 70, Passoscuro (RM)",,,,regular-season,Giornata 6
+2026-27-platinum-nerone-g1,2026-11-22,20:30,scheduled,nerone,cavese-93-blu,,,Campo Quattro Casette,"Via Nettunense Km 36,500, Anzio (RM)",,,,regular-season,Giornata 1
+2026-27-platinum-nerone-g3,2026-12-13,20:30,scheduled,nerone,delfino-basket-anzio,,,Campo Quattro Casette,"Via Nettunense Km 36,500, Anzio (RM)",,,,regular-season,Giornata 3
+2026-27-platinum-nerone-g4,2026-12-19,20:30,scheduled,boys-90-fiumicino,nerone,,,Scuola SMS Segrè,"Via del Faro 225, Fiumicino (RM)",,,,regular-season,Giornata 4
+2026-27-platinum-nerone-g5,2027-01-10,20:30,scheduled,nerone,supernova-fiumicino-a,,,Campo Quattro Casette,"Via Nettunense Km 36,500, Anzio (RM)",,,,regular-season,Giornata 5
+2026-27-platinum-nerone-g6,2027-01-18,20:40,scheduled,cavese-93-blu,nerone,,,Tensostruttura Andrea Lucidi,"Via Giacomo Matteotti SNC, Cave (RM)",,,,regular-season,Giornata 6
+2026-27-platinum-nerone-g8,2027-02-04,21:15,scheduled,delfino-basket-anzio,nerone,,,Palestra Anzio,"Via Olimpica 46/B, Anzio (RM)",,,,regular-season,Giornata 8
+2026-27-platinum-nerone-g9,2027-02-14,20:30,scheduled,nerone,boys-90-fiumicino,,,Campo Quattro Casette,"Via Nettunense Km 36,500, Anzio (RM)",,,,regular-season,Giornata 9
+2026-27-platinum-nerone-g10,2027-02-27,21:00,scheduled,supernova-fiumicino-a,nerone,,,Pala Supernova - palestra I.C. Fregene Passoscuro,"Via Serrenti 70, Passoscuro (RM)",,,,regular-season,Giornata 10

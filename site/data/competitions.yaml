@@ -6,17 +6,16 @@ seasons:
         name: Amatori UISP Platinum
         team: nerone
         description: >-
-          Le sei squadre iniziano con due gironi preliminari da tre, con gare di
-          andata e ritorno. I punti conquistati restano validi nella seconda
-          fase, disputata in un girone unico di andata e ritorno per altre dieci
-          gare. La fase finale sarà comunicata in seguito.
+          La prima fase riunisce cinque squadre in un girone con gare di andata
+          e ritorno. Il Nerone disputa otto partite nell'arco di dieci giornate,
+          osservando un turno di riposo alla seconda e alla settima giornata.
+          La fase successiva sarà comunicata in seguito.
         notice: "* Regolamento e partecipazione ai campionati non ancora ufficiali."
         source_url: https://www.campionatiuisproma.it/
         groups:
-          - name: Girone King A
-            teams: [ delfino-basket-anzio, evergreen-la-squad, boys-90-fiumicino ]
-          - name: Girone King B
-            teams: [ cavese-93-blu, nerone, supernova-fiumicino-a ]
+          - name: Girone prima fase
+            teams:
+              [ nerone, cavese-93-blu, delfino-basket-anzio, boys-90-fiumicino, supernova-fiumicino-a ]
         standings_points:
           win:
           loss:

@@ -19,7 +19,11 @@ export default function Home() {
   const upcoming = sportsData.competitions.flatMap((competition) => competition.games.map((game) => ({
     ...game,
     competitionName: game.phase === 'friendly' ? 'Amichevole' : competition.name,
-  }))).filter((game) => game.status === 'scheduled' && game.date >= today).sort((a, b) => `${a.date}T${a.time}`.localeCompare(`${b.date}T${b.time}`));
+  }))).filter((game) =>
+    game.status === 'scheduled'
+    && game.date >= today
+    && (isClubTeam(game.home_team) || isClubTeam(game.away_team))
+  ).sort((a, b) => `${a.date}T${a.time}`.localeCompare(`${b.date}T${b.time}`));
   const nextGame = upcoming[0];
   const nextHome = nextGame ? sportsData.teams[nextGame.home_team]?.short_name ?? nextGame.home_team : '';
   const nextAway = nextGame ? sportsData.teams[nextGame.away_team]?.short_name ?? nextGame.away_team : '';
