@@ -46,6 +46,15 @@ export const MATCHDAY_WHITE_LOGOS = [
   { id: 'nerone-bounganvillae', name: 'Nerone BGV · simbolo', logo: '/assets/teams/2026-27/mono_white/nerone_bgv_white.png' },
   { id: 'nerone-bounganvillae', name: 'Nerone BGV · con scritta', logo: '/assets/teams/2026-27/mono_white/nerone_bgv_white_text.png' },
   { id: 'la-squad', name: 'La Squad', logo: '/assets/teams/2026-27/mono_white/ciampino_white.png' },
+  { id: 'cavese-93-blu', name: 'Cavese 93', logo: '/assets/teams/2026-27/mono_white/cavese.png' },
+  { id: 'delfino-basket-anzio', name: 'Delfino Basket Anzio', logo: '/assets/teams/2026-27/mono_white/delfino.png' },
+  { id: 'boys-90-fiumicino', name: 'Boys 90', logo: '/assets/teams/2026-27/mono_white/boys.png' },
+  { id: 'supernova-fiumicino-a', name: 'Supernova Fiumicino', logo: '/assets/teams/2026-27/mono_white/fiumicino.png' },
+  { id: 'elite-roma-all-saints', name: 'EBR All Saints', logo: '/assets/teams/2026-27/mono_white/ebr_as.png' },
+  { id: 'elite-roma-young', name: 'EBR Young', logo: '/assets/teams/2026-27/mono_white/ebr_young.png' },
+  { id: 'cor-basket-villa-flaminia', name: 'Villa Flaminia', logo: '/assets/teams/2026-27/mono_white/villa_flaminia.png' },
+  { id: 'r3-bombers', name: 'R3 Bombers', logo: '/assets/teams/2026-27/mono_white/bombers.png' },
+  { id: 'monteverde-parrots', name: 'Monteverde Parrots', logo: '/assets/teams/2026-27/mono_white/parrots.png' },
 ] as const;
 
 const imageCache = new Map<string, Promise<HTMLImageElement>>();

@@ -70,7 +70,8 @@ function gameAppointment(game: SiteGame): Appointment {
   return { id: game.id, club: game.club, date: game.date, time: game.time, opponent: atHome ? game.away : game.home, atHome };
 }
 function matchdayLogo(teamId: string) {
-  return MATCHDAY_WHITE_LOGOS.find(item => item.id === teamId)?.logo || '';
+  const normalizedId = teamId === 'cavese-93-bianco' ? 'cavese-93-blu' : teamId;
+  return MATCHDAY_WHITE_LOGOS.find(item => item.id === normalizedId)?.logo || '';
 }
 function Field({ label, value, onChange, placeholder, type = 'text' }: { label: string; value: string; onChange: (value: string) => void; placeholder?: string; type?: string }) {
   return <label className="gg-field"><span>{label}</span><input type={type} value={value} placeholder={placeholder} onChange={event => onChange(event.target.value)} /></label>;
@@ -329,7 +330,7 @@ export function GraphicGenerator({ games, teamLogos }: { games: SiteGame[]; team
           </section>
         </> : state.type === 'matchday' ? <>
           <section className="gg-panel"><div className="gg-panel-head"><span>01</span><h3>Partita</h3></div>
-            <p className="gg-help">Loghi bianchi disponibili: Nerone, Nerone BGV e La Squad. Per le altre squadre va aggiunto il relativo PNG nella cartella mono_white.</p>
+            <p className="gg-help">MATCHDAY usa direttamente i PNG caricati nella cartella mono_white, senza conversioni automatiche.</p>
             <div className="gg-grid">
               <Select label="Prendi dal calendario" value={selectedGame} onChange={pickGame} options={[{ value: '', label: 'Seleziona una partita' }, ...games.map(game => ({ value: game.id, label: `${game.date} · ${game.home} – ${game.away}` }))]} />
               <Field label="Nome squadra in alto" value={state.matchdayTeamName} onChange={value => update('matchdayTeamName', value)} />
