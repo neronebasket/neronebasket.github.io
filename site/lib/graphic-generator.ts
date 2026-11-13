@@ -38,7 +38,17 @@ export const LOGOS = [
   { id: 'nerone', name: 'Nerone', logo: '/assets/logo-testo-bianco.png', mono: '/assets/teams/2026-27/mono_white/nerone_white_text.png' },
   { id: 'nerone-bounganvillae', name: 'Nerone BGV', logo: '/assets/bgv-logo-testo-bianco.png', mono: '/assets/teams/2026-27/mono_white/nerone_bgv_white_text.png' },
   { id: 'samurai-csi', name: 'Samurai', logo: '/assets/teams/2026-27/samurai.png', mono: '' },
-  { id: 'ciampino', name: 'Ciampino', logo: '', mono: '/assets/teams/2026-27/mono_white/ciampino_white.png' },
+  { id: 'evergreen-la-squad', name: 'La Squad (Ciampino)', logo: '', mono: '/assets/teams/2026-27/mono_white/ciampino_white.png' },
+  { id: 'cavese-93-blu', name: 'Cavese Blu', logo: '', mono: '/assets/teams/2026-27/mono_white/cavese.png' },
+  { id: 'cavese-93-bianco', name: 'Cavese Bianco', logo: '', mono: '/assets/teams/2026-27/mono_white/cavese.png' },
+  { id: 'delfino-basket-anzio', name: 'Delfino Anzio', logo: '', mono: '/assets/teams/2026-27/mono_white/delfino.png' },
+  { id: 'boys-90-fiumicino', name: 'Boys 90', logo: '', mono: '/assets/teams/2026-27/mono_white/boys.png' },
+  { id: 'supernova-fiumicino-a', name: 'Supernova A', logo: '', mono: '/assets/teams/2026-27/mono_white/fiumicino.png' },
+  { id: 'elite-roma-all-saints', name: 'EBR All Saints', logo: '', mono: '/assets/teams/2026-27/mono_white/ebr_as.png' },
+  { id: 'elite-roma-young', name: 'EBR Young', logo: '', mono: '/assets/teams/2026-27/mono_white/ebr_young.png' },
+  { id: 'cor-basket-villa-flaminia', name: 'Villa Flaminia', logo: '', mono: '/assets/teams/2026-27/mono_white/villa_flaminia.png' },
+  { id: 'r3-bombers', name: 'R3 Bombers', logo: '', mono: '/assets/teams/2026-27/mono_white/bombers.png' },
+  { id: 'monteverde-parrots', name: 'Monteverde Parrots', logo: '', mono: '/assets/teams/2026-27/mono_white/parrots.png' },
 ] as const;
 
 export const MATCHDAY_WHITE_LOGOS = [
@@ -46,7 +56,7 @@ export const MATCHDAY_WHITE_LOGOS = [
   { id: 'nerone', name: 'Nerone · con scritta', logo: '/assets/teams/2026-27/mono_white/nerone_white_text.png' },
   { id: 'nerone-bounganvillae', name: 'Nerone BGV · simbolo', logo: '/assets/teams/2026-27/mono_white/nerone_bgv_white.png' },
   { id: 'nerone-bounganvillae', name: 'Nerone BGV · con scritta', logo: '/assets/teams/2026-27/mono_white/nerone_bgv_white_text.png' },
-  { id: 'la-squad', name: 'La Squad', logo: '/assets/teams/2026-27/mono_white/ciampino_white.png' },
+  { id: 'evergreen-la-squad', name: 'La Squad', logo: '/assets/teams/2026-27/mono_white/ciampino_white.png' },
   { id: 'cavese-93-blu', name: 'Cavese 93', logo: '/assets/teams/2026-27/mono_white/cavese.png' },
   { id: 'delfino-basket-anzio', name: 'Delfino Basket Anzio', logo: '/assets/teams/2026-27/mono_white/delfino.png' },
   { id: 'boys-90-fiumicino', name: 'Boys 90', logo: '/assets/teams/2026-27/mono_white/boys.png' },
@@ -281,7 +291,21 @@ async function week(ctx: CanvasRenderingContext2D, s: GraphicState) {
     if (g.kind === 'sponsor') {
       const scale = Math.min(w / 964, h / 166);
       const titleFamily = 'Aharoni, "Archivo Black", "Arial Black", Arial, sans-serif';
-      text(ctx, (s.weekTitle || 'LA SETTIMANA NERONE').toUpperCase(), x + w * .335, y + h * .34, w * .59, Math.round(50 * scale), titleFamily, '700', 'center', Math.round(24 * scale));
+      const title = 'QUESTA SETTIMANA';
+      const titleBox = { x: x + 28 * scale, y: y + 18 * scale, w: w * .655 - 56 * scale, h: h - 36 * scale };
+      let titleSize = Math.round(60 * scale);
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'alphabetic';
+      for (; titleSize > 20; titleSize--) {
+        ctx.font = `700 ${titleSize}px ${titleFamily}`;
+        const metrics = ctx.measureText(title);
+        const titleHeight = metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent;
+        if (metrics.width <= titleBox.w && titleHeight <= titleBox.h) {
+          const baseline = titleBox.y + (titleBox.h + metrics.actualBoundingBoxAscent - metrics.actualBoundingBoxDescent) / 2;
+          ctx.fillText(title, titleBox.x + titleBox.w / 2, baseline);
+          break;
+        }
+      }
       ctx.fillStyle = '#ffffff55';
       ctx.fillRect(x + w * .655, y + 23, 1.5, h - 46);
       ctx.fillStyle = '#fff';

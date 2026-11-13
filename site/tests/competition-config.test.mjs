@@ -91,6 +91,32 @@ test('Laboradoro ed Essence Academy sono disponibili come sponsor', () => {
   assert.ok(existsSync(join(testsRoot, '../public/assets/sponsors/essence.png')));
 });
 
+test('il generatore WEEK e RISULTATO usa i nuovi valori e loghi mono', () => {
+  const component = readFileSync(join(testsRoot, '../components/graphic-generator.tsx'), 'utf8');
+  const generator = readFileSync(join(testsRoot, '../lib/graphic-generator.ts'), 'utf8');
+  const monoMappings = [
+    ['evergreen-la-squad', 'ciampino_white.png'],
+    ['cavese-93-blu', 'cavese.png'],
+    ['cavese-93-bianco', 'cavese.png'],
+    ['delfino-basket-anzio', 'delfino.png'],
+    ['boys-90-fiumicino', 'boys.png'],
+    ['supernova-fiumicino-a', 'fiumicino.png'],
+    ['elite-roma-all-saints', 'ebr_as.png'],
+    ['elite-roma-young', 'ebr_young.png'],
+    ['cor-basket-villa-flaminia', 'villa_flaminia.png'],
+    ['r3-bombers', 'bombers.png'],
+    ['monteverde-parrots', 'parrots.png'],
+  ];
+
+  assert.match(component, /weekTitle: 'QUESTA SETTIMANA'/);
+  assert.match(component, /sponsorId: 'laboradoro'/);
+  assert.match(generator, /const title = 'QUESTA SETTIMANA'/);
+  for (const [teamId, file] of monoMappings) {
+    assert.match(generator, new RegExp(`id: '${teamId}'.*mono: '.*${file.replace('.', '\\.')}'`));
+    assert.ok(existsSync(join(testsRoot, `../public/assets/teams/2026-27/mono_white/${file}`)));
+  }
+});
+
 test('la condivisione usa una preview social dedicata su sfondo scuro', () => {
   const layout = readFileSync(join(testsRoot, '../app/layout.tsx'), 'utf8');
 
