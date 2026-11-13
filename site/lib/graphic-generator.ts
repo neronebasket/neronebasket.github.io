@@ -430,35 +430,40 @@ async function matchday(ctx: CanvasRenderingContext2D, s: GraphicState) {
   trackedText(ctx, s.matchdayPlayerName || 'NOME GIOCATORE', 540, 1276, 815, 5);
 }
 async function risultato(ctx: CanvasRenderingContext2D, s: GraphicState) {
+  const stripCenterX = 847;
   ctx.fillStyle = '#171717'; ctx.fillRect(0, 0, 1080, 1350);
   const photo = await optionalImage(s.photo);
   if (photo) cover(ctx, photo, 0, 0, 1080, 1350, s.photoZoom, s.photoX, s.photoY);
   ctx.drawImage(await image('/assets/elementi_social/black_strip.png'), 655, 0, 384, 1350);
   ctx.fillStyle = '#fff';
-  lines(ctx, s.competition.toUpperCase(), 847, 34, 290, 3, 29, 34, '"DM Sans", Arial, sans-serif', '700', 'center');
+  lines(ctx, s.competition.toUpperCase(), stripCenterX, 34, 290, 3, 29, 34, '"DM Sans", Arial, sans-serif', '700', 'center');
   const home = await optionalImage(s.homeLogo), away = await optionalImage(s.awayLogo);
-  if (home) containVisible(ctx, home, 767, 210, 160, 160);
-  const drawScore = (value: string, y: number, side: 'home' | 'away') => {
+  if (home) containVisible(ctx, home, stripCenterX - 90, 200, 180, 170);
+  const drawScore = (value: string, centerY: number, side: 'home' | 'away') => {
     const isNerone = s.resultClubSide === side;
+    const score = value || '0';
     ctx.save();
-    ctx.font = '158px Anton, Impact, sans-serif';
-    ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+    ctx.font = '150px Anton, Impact, sans-serif';
+    ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
     ctx.lineJoin = 'round';
+    const metrics = ctx.measureText(score);
+    const scoreX = stripCenterX + (metrics.actualBoundingBoxLeft - metrics.actualBoundingBoxRight) / 2;
+    const baseline = centerY + (metrics.actualBoundingBoxAscent - metrics.actualBoundingBoxDescent) / 2;
     if (!isNerone) {
       ctx.strokeStyle = '#fff'; ctx.lineWidth = 9;
-      ctx.strokeText(value || '0', 847, y, 295);
+      ctx.strokeText(score, scoreX, baseline);
     }
     ctx.fillStyle = isNerone ? '#fff' : '#111';
-    ctx.fillText(value || '0', 847, y, 295);
+    ctx.fillText(score, scoreX, baseline);
     ctx.restore();
   };
-  drawScore(s.homeScore, 440, 'home');
-  drawScore(s.awayScore, 720, 'away');
-  if (away) containVisible(ctx, away, 767, 890, 160, 145);
-  text(ctx, 'PRESENTED BY', 847, 1103, 270, 27, '"DM Sans", Arial, sans-serif', '700', 'center');
+  drawScore(s.homeScore, 485, 'home');
+  drawScore(s.awayScore, 740, 'away');
+  if (away) containVisible(ctx, away, stripCenterX - 90, 855, 180, 170);
+  text(ctx, 'PRESENTED BY', stripCenterX, 1090, 270, 27, '"DM Sans", Arial, sans-serif', '700', 'center');
   const sponsor = SPONSORS.find(item => item.id === s.sponsor) ?? SPONSORS[2];
   const logo = await optionalImage(sponsor.logo);
-  if (logo) containVisible(ctx, logo, 742, 1150, 210, 177);
+  if (logo) containVisible(ctx, logo, stripCenterX - 110, 1137, 220, 190);
 }
 export async function drawGraphic(canvas: HTMLCanvasElement, state: GraphicState) {
   canvas.width = 1080; canvas.height = state.type === 'week' && state.weekFormat === 'story' ? 1920 : 1350;
