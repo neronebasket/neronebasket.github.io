@@ -50,6 +50,8 @@ test('il calendario Gold 2026/27 contiene tutte le gare e le dieci partite del N
   assert.equal(neroneBgvGames.length, 10);
   assert.match(goldCsv, /2026-27-gold-164,2026-11-19,21:15,scheduled,cor-basket-villa-flaminia,monteverde-parrots/);
   assert.match(goldCsv, /2026-27-gold-166,2026-11-23,21:20,scheduled,elite-roma-young,nerone-bounganvillae/);
+  assert.match(goldCsv, /2026-27-gold-168,2026-12-02,21:30,scheduled,nerone-bounganvillae,monteverde-parrots/);
+  assert.match(goldCsv, /2026-27-gold-178,2027-01-12,21:30,scheduled,nerone-bounganvillae,r3-bombers/);
   assert.match(goldCsv, /2026-27-gold-193,2027-03-05,21:45,scheduled,r3-bombers,nerone-bounganvillae/);
   assert.doesNotMatch(goldCsv, /2026-27-gold-2(?:6[2-9]|[7-8][0-9]|9[0-1])/);
 });
@@ -85,6 +87,16 @@ test('Laboradoro ed Essence Academy sono disponibili come sponsor', () => {
   assert.match(generator, /id: 'essence-academy'/);
   assert.ok(existsSync(join(testsRoot, '../public/assets/sponsors/laboradoro.png')));
   assert.ok(existsSync(join(testsRoot, '../public/assets/sponsors/essence.png')));
+});
+
+test('la condivisione usa una preview social dedicata su sfondo scuro', () => {
+  const layout = readFileSync(join(testsRoot, '../app/layout.tsx'), 'utf8');
+
+  assert.match(layout, /openGraph:[\s\S]*social-preview\.png/);
+  assert.match(layout, /width: 1200/);
+  assert.match(layout, /height: 630/);
+  assert.match(layout, /card: 'summary_large_image'/);
+  assert.ok(existsSync(join(testsRoot, '../public/assets/social-preview.png')));
 });
 
 test('Francesco Menichelli usa il cognome corretto nei dati e nel roster', () => {

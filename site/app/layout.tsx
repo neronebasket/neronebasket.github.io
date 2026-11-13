@@ -18,7 +18,19 @@ export const metadata: Metadata = {
     title: 'Nerone Basket Anzio',
     description: 'Risultati, classifiche, calendario, roster e notizie del Nerone Basket Anzio.',
     url: absoluteSiteUrl('/'),
-    images: [{ url: absoluteSiteUrl('/assets/logo-testo-bianco.png'), alt: 'Nerone Basket Anzio' }],
+    images: [{
+      url: absoluteSiteUrl('/assets/social-preview.png'),
+      width: 1200,
+      height: 630,
+      alt: 'Nerone Basket Anzio',
+      type: 'image/png',
+    }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Nerone Basket Anzio',
+    description: 'Risultati, classifiche, calendario, roster e notizie del Nerone Basket Anzio.',
+    images: [absoluteSiteUrl('/assets/social-preview.png')],
   },
 };
 

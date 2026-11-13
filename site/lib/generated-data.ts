@@ -1293,7 +1293,7 @@ export const sportsData: SportsData = {
         },
         {
           "id": "2026-27-gold-168",
-          "date": "2026-12-01",
+          "date": "2026-12-02",
           "time": "21:30",
           "status": "scheduled",
           "home_team": "nerone-bounganvillae",
@@ -1483,7 +1483,7 @@ export const sportsData: SportsData = {
         },
         {
           "id": "2026-27-gold-178",
-          "date": "2027-01-19",
+          "date": "2027-01-12",
           "time": "21:30",
           "status": "scheduled",
           "home_team": "nerone-bounganvillae",
@@ -2137,7 +2137,7 @@ export const sportsData: SportsData = {
             },
             {
               "id": "2026-27-gold-168",
-              "date": "2026-12-01",
+              "date": "2026-12-02",
               "time": "21:30",
               "status": "scheduled",
               "home_team": "nerone-bounganvillae",
@@ -2327,7 +2327,7 @@ export const sportsData: SportsData = {
             },
             {
               "id": "2026-27-gold-178",
-              "date": "2027-01-19",
+              "date": "2027-01-12",
               "time": "21:30",
               "status": "scheduled",
               "home_team": "nerone-bounganvillae",
