@@ -100,17 +100,23 @@ h1 span { color: var(--red); }
 .photo-wash { position: absolute; inset: 0; background: linear-gradient(90deg, #080808 0%, transparent 35%), linear-gradient(0deg, rgba(8,8,8,.55), transparent 45%); }
 .side-word { position: absolute; right: -21px; bottom: 92px; margin: 0; color: transparent; font-family: var(--display); font-size: clamp(5rem, 11vw, 11rem); letter-spacing: .02em; line-height: .75; text-transform: uppercase; -webkit-text-stroke: 1px rgba(255,255,255,.42); transform: rotate(-90deg) translateX(100%); transform-origin: bottom right; }
 
-.next-game { position: absolute; z-index: 5; left: clamp(28px, 5.4vw, 82px); bottom: 0; display: grid; grid-template-columns: 190px 1fr; width: min(760px, calc(100% - 56px)); min-height: 135px; background: var(--red); color: #fff; }
+.next-games { position: absolute; z-index: 5; left: clamp(28px, 5.4vw, 82px); bottom: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; width: min(1040px, calc(100% - 56px)); }
+.next-game { position: relative; display: block; min-width: 0; min-height: 178px; padding: 19px 22px 48px; overflow: hidden; background: var(--red); color: #fff; }
+.next-game:nth-child(2) { background: #171717; box-shadow: inset 0 4px 0 var(--red); }
 .next-game:focus-visible { outline: 3px solid #fff; outline-offset: 4px; }
-.panel-label { display: flex; align-items: center; justify-content: center; margin: 0; border-right: 1px solid rgba(255,255,255,.25); font-size: .86rem; font-weight: 800; letter-spacing: .16em; line-height: 1.25; text-align: center; text-transform: uppercase; }
-.next-game-state { display: flex; align-items: center; gap: 18px; padding: 20px 26px 48px; }
-.next-game-state img { width: 62px; height: 62px; object-fit: contain; }
+.next-game-heading { display: flex; align-items: center; gap: 13px; margin-bottom: 14px; padding-right: 150px; }
+.next-game-heading img { width: 48px; height: 48px; object-fit: contain; }
+.next-game-heading p { margin: 0; line-height: 1.05; text-transform: uppercase; }
+.next-game-heading span, .next-game-heading strong { display: block; }
+.next-game-heading span { margin-bottom: 5px; color: rgba(255,255,255,.7); font-size: .62rem; font-weight: 800; letter-spacing: .13em; }
+.next-game-heading strong { font-size: .84rem; letter-spacing: .06em; }
+.next-game-state { min-width: 0; }
 .next-game-state strong, .next-game-state span { display: block; }
-.next-game-state strong { margin-bottom: 5px; font-size: 1.05rem; }
+.next-game-state strong { margin-bottom: 5px; overflow-wrap: anywhere; font-size: 1.02rem; }
 .next-game-state span { color: rgba(255,255,255,.72); font-size: .82rem; text-transform: uppercase; letter-spacing: .1em; }
-.next-game-meta { position: absolute; right: 0; bottom: 0; left: 190px; display: flex; gap: 28px; padding: 11px 26px; background: rgba(0,0,0,.2); font-size: .78rem; font-weight: 700; text-transform: uppercase; }
+.next-game-meta { position: absolute; right: 0; bottom: 0; left: 0; display: flex; gap: 20px; padding: 11px 22px; background: rgba(0,0,0,.2); font-size: .7rem; font-weight: 700; text-transform: uppercase; }
 .next-game-meta span { display: inline-flex; align-items: center; gap: 8px; }
-.countdown { position: absolute; top: 18px; right: 20px; display: flex; gap: 14px; text-align: center; }
+.countdown { position: absolute; top: 21px; right: 20px; display: flex; gap: 10px; text-align: center; }
 .countdown span { color: rgba(255,255,255,.68); font-size: .58rem; font-weight: 900; letter-spacing: .08em; text-transform: uppercase; }
 .countdown b { display: block; color: #fff; font-family: var(--display); font-size: 1.6rem; line-height: 1; }
 
@@ -530,8 +536,10 @@ a.bracket-match:hover { border-color: #d56d76; transform: translateY(-2px); }
   .hero-copy { padding-top: 125px; padding-bottom: 270px; }
   .hero-photo { position: absolute; inset: 80px 0 0; min-height: 0; margin-top: 0; opacity: .46; }
   .photo-wash { background: linear-gradient(90deg, #080808 0%, rgba(8,8,8,.78) 66%, rgba(8,8,8,.35)); }
-  .next-game { grid-template-columns: 145px 1fr; }
-  .next-game-meta { left: 145px; }
+  .next-games { left: 28px; width: calc(100% - 56px); }
+  .next-game { padding-inline: 18px; }
+  .next-game-heading { padding-right: 128px; }
+  .next-game-meta { padding-inline: 18px; }
   .promoted-social-heading { grid-template-columns: 1fr; }
   .promoted-social-grid { display: flex; margin-right: calc(clamp(24px, 5vw, 76px) * -1); padding-right: clamp(24px, 5vw, 76px); overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: thin; }
   .promoted-social-card { flex: 0 0 min(430px, 82vw); scroll-snap-align: start; }
@@ -558,16 +566,18 @@ a.bracket-match:hover { border-color: #d56d76; transform: translateY(-2px); }
   .brand .brand-mark { width: 48px; height: 53px; }
   .brand .brand-wordmark { width: min(155px, 42vw); }
   .season-chip { padding: 7px 9px; font-size: .7rem; }
-  .hero { min-height: 780px; }
-  .hero-copy { padding-inline: 24px; }
+  .hero { min-height: 1040px; }
+  .hero-copy { padding-inline: 24px; padding-bottom: 520px; }
   h1 { font-size: clamp(4rem, 19vw, 6rem); }
   .hero-actions { align-items: flex-start; flex-direction: column; gap: 18px; }
-  .next-game { left: 24px; width: calc(100% - 48px); grid-template-columns: 1fr; }
-  .panel-label { justify-content: flex-start; padding: 14px 18px; border-right: 0; border-bottom: 1px solid rgba(255,255,255,.2); }
-  .next-game-label-break { display: none; }
-  .next-game-state { padding: 16px 18px 54px; }
+  .next-games { left: 24px; grid-template-columns: 1fr; gap: 10px; width: calc(100% - 48px); }
+  .next-game { min-height: 202px; padding: 16px 18px 51px; }
+  .next-game-heading { margin-bottom: 12px; padding-right: 0; }
+  .next-game-heading img { width: 42px; height: 42px; }
+  .next-game-state strong { font-size: .94rem; }
+  .next-game-state span { font-size: .7rem; }
   .countdown { display: none; }
-  .next-game-meta { left: 0; padding-inline: 18px; gap: 18px; }
+  .next-game-meta { flex-direction: column; gap: 5px; padding: 8px 18px; }
   .promoted-social { padding-block: 70px 78px; }
   .promoted-social-heading { margin-bottom: 32px; }
   .promoted-social-heading h2 { font-size: clamp(2.7rem, 13vw, 4.1rem); }

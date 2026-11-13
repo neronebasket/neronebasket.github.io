@@ -71,10 +71,12 @@ test('il calendario Platinum 2026/27 contiene le otto partite del Nerone', () =>
   assert.doesNotMatch(platinumCsv, /,Giornata (?:2|7)$/m);
 });
 
-test('la home seleziona come prossima partita soltanto una gara del Nerone', () => {
+test('la home seleziona una prossima partita distinta per Nerone e BGV', () => {
   const home = readFileSync(join(testsRoot, '../app/page.tsx'), 'utf8');
 
   assert.match(home, /isClubTeam\(game\.home_team\) \|\| isClubTeam\(game\.away_team\)/);
+  assert.match(home, /clubTeams\.map/);
+  assert.match(home, /upcoming\.find\(\(game\) => game\.home_team === clubTeam\.id \|\| game\.away_team === clubTeam\.id\)/);
 });
 
 test('Laboradoro ed Essence Academy sono disponibili come sponsor', () => {
