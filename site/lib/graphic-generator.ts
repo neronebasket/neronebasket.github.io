@@ -14,6 +14,7 @@ export type SponsorGlass = GlassBase & { kind: 'sponsor'; sponsorId: string };
 export type Glass = MatchGlass | SponsorGlass;
 export type GraphicState = {
   type: GraphicType; month: string; leftName: string; rightName: string; appointments: Appointment[];
+  calendarLeftX: number; calendarRightX: number; calendarTopGap: number; calendarMatchGap: number;
   sponsor: string; photo: string; subjectPhoto: string; photoX: number; photoY: number; photoZoom: number;
   weekFormat: WeekFormat; weekTitle: string; backgroundBlur: number;
   glasses: Glass[]; homeTeam: string; awayTeam: string;
@@ -105,13 +106,6 @@ function containVisible(ctx: CanvasRenderingContext2D, img: HTMLImageElement, x:
   const scale = Math.min(w / bounds.w, h / bounds.h);
   const dw = bounds.w * scale, dh = bounds.h * scale;
   ctx.drawImage(img, bounds.x, bounds.y, bounds.w, bounds.h, x + (w - dw) / 2, y + (h - dh) / 2, dw, dh);
-}
-export async function sponsorGlassSize(sponsorId: string) {
-  const sponsor = SPONSORS.find(item => item.id === sponsorId) ?? SPONSORS[3];
-  const img = await image(sponsor.logo);
-  const bounds = visibleBounds(img);
-  const scale = Math.min(340 / bounds.w, 130 / bounds.h);
-  return { width: Math.round(bounds.w * scale + 48), height: Math.round(bounds.h * scale + 48) };
 }
 function cover(ctx: CanvasRenderingContext2D, img: HTMLImageElement, x: number, y: number, w: number, h: number, zoom = 1, panX = 0, panY = 0) {
   const scale = Math.max(w / img.width, h / img.height) * zoom;
@@ -233,12 +227,10 @@ async function calendario(ctx: CanvasRenderingContext2D, s: GraphicState) {
   text(ctx, 'UISP GOLD', 1020, 536, 450, 26, 'Arimo, Arial, sans-serif', '700', 'right', 20);
   const groups = [s.appointments.filter(a => a.club === 'nerone'), s.appointments.filter(a => a.club === 'nerone-bounganvillae')];
   groups.forEach((group, column) => {
-    const max = Math.max(1, group.length);
-    const step = Math.min(145, 510 / max);
     group.forEach((a, i) => {
-      const y = 576 + i * step;
+      const y = 536 + s.calendarTopGap + i * s.calendarMatchGap;
       const atRight = column === 1;
-      const x = atRight ? 1020 : 62;
+      const x = atRight ? s.calendarRightX : s.calendarLeftX;
       ctx.fillStyle = '#fff';
       const label = dateLabel(a.date, a.time);
       text(ctx, label, x, y, 395, 34, 'Arimo, Arial, sans-serif', '400', atRight ? 'right' : 'left', 23);
@@ -287,7 +279,14 @@ async function week(ctx: CanvasRenderingContext2D, s: GraphicState) {
     ctx.save(); ctx.shadowColor = '#fff8'; ctx.shadowBlur = 9; ctx.strokeStyle = '#ffffff9c'; ctx.lineWidth = 1.5; roundRect(ctx, x + 1, y + 1, w - 2, h - 2, 41); ctx.stroke(); ctx.restore();
     ctx.save(); roundRect(ctx, x, y, w, h, 42); ctx.clip(); ctx.fillStyle = '#fff';
     if (g.kind === 'sponsor') {
-      if (logos[index].sponsor) containVisible(ctx, logos[index].sponsor!, x + 24, y + 24, w - 48, h - 48);
+      const scale = Math.min(w / 964, h / 166);
+      const titleFamily = 'Aharoni, "Archivo Black", "Arial Black", Arial, sans-serif';
+      text(ctx, (s.weekTitle || 'LA SETTIMANA NERONE').toUpperCase(), x + w * .335, y + h * .34, w * .59, Math.round(50 * scale), titleFamily, '700', 'center', Math.round(24 * scale));
+      ctx.fillStyle = '#ffffff55';
+      ctx.fillRect(x + w * .655, y + 23, 1.5, h - 46);
+      ctx.fillStyle = '#fff';
+      text(ctx, 'POWERED BY', x + w * .82, y + h * .16, w * .28, Math.round(18 * scale), '"DM Sans", Arial, sans-serif', '700', 'center', Math.round(12 * scale));
+      if (logos[index].sponsor) containVisible(ctx, logos[index].sponsor!, x + w * .685, y + h * .38, w * .27, h * .45);
       ctx.restore();
       return;
     }
@@ -308,13 +307,6 @@ async function week(ctx: CanvasRenderingContext2D, s: GraphicState) {
   const subject = await optionalImage(s.subjectPhoto);
   if (subject) cover(ctx, subject, 0, 0, 1080, canvasHeight, s.photoZoom, s.photoX, s.photoY);
   s.glasses.forEach((g, index) => { if (g.layer === 'front') drawGlass(g, index); });
-  ctx.save();
-  ctx.fillStyle = '#fff';
-  ctx.font = '700 64px "Bebas Neue", Impact, sans-serif';
-  trackedText(ctx, s.weekTitle || 'LA SETTIMANA NERONE', 540, 34, 960, 2.5);
-  ctx.fillStyle = '#ff00bf';
-  ctx.fillRect(430, 109, 220, 5);
-  ctx.restore();
 }
 let matchdayGrain: HTMLCanvasElement | null = null;
 function drawMatchdayGrain(ctx: CanvasRenderingContext2D) {

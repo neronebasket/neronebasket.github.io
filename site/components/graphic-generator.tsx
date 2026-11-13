@@ -2,7 +2,7 @@
 
 import { Fragment, useEffect, useRef, useState } from 'react';
 import { ArrowDownToLine, CalendarDays, ImagePlus, Plus, Trash2 } from 'lucide-react';
-import { drawGraphic, LOGOS, MATCHDAY_WHITE_LOGOS, SPONSORS, sponsorGlassSize, type Appointment, type Glass, type GraphicState, type GraphicType, type WeekFormat, type WeekMatch } from '@/lib/graphic-generator';
+import { drawGraphic, LOGOS, MATCHDAY_WHITE_LOGOS, SPONSORS, type Appointment, type Glass, type GraphicState, type GraphicType, type WeekFormat, type WeekMatch } from '@/lib/graphic-generator';
 import './graphic-generator.css';
 
 export type SiteGame = {
@@ -19,9 +19,10 @@ const defaultWeekMatch: WeekMatch = {
 };
 const initialState: GraphicState = {
   type: 'calendario', month: 'OTTOBRE 2026', leftName: 'NERONE', rightName: 'NERONE BGV',
-  appointments: [], sponsor: 'maisondali', photo: '', subjectPhoto: '', photoX: 0, photoY: 0, photoZoom: 1,
+  appointments: [], calendarLeftX: 62, calendarRightX: 1020, calendarTopGap: 40, calendarMatchGap: 105,
+  sponsor: 'maisondali', photo: '', subjectPhoto: '', photoX: 0, photoY: 0, photoZoom: 1,
   weekFormat: 'post', weekTitle: 'LA SETTIMANA NERONE', backgroundBlur: 0,
-  glasses: [{ id: 'glass-1', kind: 'match', x: 58, y: 140, width: 440, height: 500, layer: 'behind', match: { ...defaultWeekMatch } }, { id: 'glass-2', kind: 'match', x: 568, y: 700, width: 440, height: 500, layer: 'front', match: { ...defaultWeekMatch } }, { id: 'glass-sponsor', kind: 'sponsor', x: 58, y: 1127, width: 388, height: 161, layer: 'front', sponsorId: 'mastroianni' }],
+  glasses: [{ id: 'glass-sponsor', kind: 'sponsor', x: 58, y: 44, width: 964, height: 166, layer: 'front', sponsorId: 'mastroianni' }, { id: 'glass-1', kind: 'match', x: 58, y: 240, width: 440, height: 500, layer: 'behind', match: { ...defaultWeekMatch } }, { id: 'glass-2', kind: 'match', x: 568, y: 730, width: 440, height: 500, layer: 'front', match: { ...defaultWeekMatch } }],
   homeTeam: 'NERONE', awayTeam: 'SAMURAI',
   homeLogo: '/assets/logo-testo-bianco.png', awayLogo: '/assets/teams/2026-27/samurai.png',
   competition: 'Campionato Amatori UISP Giornata 15', dateTime: 'Mercoledì 21 Ottobre, 21:00',
@@ -131,17 +132,6 @@ export function GraphicGenerator({ games, teamLogos }: { games: SiteGame[]; team
     }).catch(error => { if (renderId.current === id) { setReady(false); setMessage(error instanceof Error ? error.message : 'Errore nella generazione.'); } });
   }, [state]);
 
-  useEffect(() => {
-    let active = true;
-    sponsorGlassSize('mastroianni').then(size => {
-      if (!active) return;
-      setState(current => ({ ...current, glasses: current.glasses.map(glass => glass.kind === 'sponsor' && glass.id === 'glass-sponsor' && glass.sponsorId === 'mastroianni'
-        ? { ...glass, ...size, y: (current.weekFormat === 'story' ? 1920 : 1350) - size.height - 62 }
-        : glass) }));
-    }).catch(() => { /* Keep the initial dimensions if the logo cannot load. */ });
-    return () => { active = false; };
-  }, []);
-
   function pickGame(gameId: string) {
     setSelectedGame(gameId);
     const game = games.find(item => item.id === gameId);
@@ -234,7 +224,7 @@ export function GraphicGenerator({ games, teamLogos }: { games: SiteGame[]; team
       const fromHeight = current.weekFormat === 'story' ? 1920 : 1350;
       const toHeight = format === 'story' ? 1920 : 1350;
       return { ...current, weekFormat: format, glasses: current.glasses.map(glass => ({
-        ...glass, y: glass.kind === 'sponsor' ? toHeight - glass.height - 62
+        ...glass, y: glass.kind === 'sponsor' ? 44
           : Math.round(Math.min(toHeight - glass.height, glass.y * toHeight / fromHeight)),
       })) };
     });
@@ -270,19 +260,14 @@ export function GraphicGenerator({ games, teamLogos }: { games: SiteGame[]; team
     setMessage('');
     setState(current => ({ ...current, glasses: current.glasses.map(item => item.id === id && item.kind === 'match' ? { ...item, match: weekMatchFromGame(game) } : item) }));
   }
-  async function changeGlassSponsor(id: string, sponsorId: string) {
+  function changeGlassSponsor(id: string, sponsorId: string) {
     setState(current => ({ ...current, glasses: current.glasses.map(item => item.id === id && item.kind === 'sponsor' ? { ...item, sponsorId } : item) }));
-    try {
-      const size = await sponsorGlassSize(sponsorId);
-      setState(current => ({ ...current, glasses: current.glasses.map(item => item.id === id && item.kind === 'sponsor' && item.sponsorId === sponsorId
-        ? { ...item, ...size, x: Math.min(item.x, 1080 - size.width), y: Math.max(0, item.y + item.height - size.height) }
-        : item) }));
-    } catch { setMessage('Impossibile caricare il logo dello sponsor.'); }
   }
   function addGlass() {
     const game = games.find(item => !state.glasses.some(glass => glass.kind === 'match' && glass.match.gameId === item.id));
-    const lowerY = state.weekFormat === 'story' ? 1210 : 700;
-    const slots = [{ x: 58, y: 140 }, { x: 568, y: 140 }, { x: 58, y: lowerY }, { x: 568, y: lowerY }];
+    const lowerY = state.weekFormat === 'story' ? 1038 : 730;
+    const upperY = state.weekFormat === 'story' ? 341 : 240;
+    const slots = [{ x: 58, y: upperY }, { x: 568, y: upperY }, { x: 58, y: lowerY }, { x: 568, y: lowerY }];
     const position = slots.find(slot => !state.glasses.some(glass => Math.abs(glass.x - slot.x) < 200 && Math.abs(glass.y - slot.y) < 200)) ?? { x: 320, y: 420 };
     setMessage('');
     setState(current => ({ ...current, glasses: [...current.glasses, { id: newId(), kind: 'match', ...position, width: 440, height: 500, layer: 'front', match: weekMatchFromGame(game) }] }));
@@ -320,11 +305,12 @@ export function GraphicGenerator({ games, teamLogos }: { games: SiteGame[]; team
 
         <Fragment key={state.type}>
 
-        {state.type === 'week' && <section className="gg-panel"><div className="gg-panel-head"><span>01</span><h3>Formato Week</h3></div><div className="gg-format-choice" role="group" aria-label="Formato Week"><button type="button" className={state.weekFormat === 'post' ? 'active' : ''} aria-pressed={state.weekFormat === 'post'} onClick={() => changeWeekFormat('post')}>Post <small>1080 × 1350</small></button><button type="button" className={state.weekFormat === 'story' ? 'active' : ''} aria-pressed={state.weekFormat === 'story'} onClick={() => changeWeekFormat('story')}>Storia <small>1080 × 1920</small></button></div><div className="gg-week-title-field"><Field label="Titolo in alto" value={state.weekTitle} onChange={value => update('weekTitle', value)} placeholder="LA SETTIMANA NERONE" /></div><p className="gg-local-note">Bebas Neue, maiuscolo e centrato, con una sottile linea fucsia.</p></section>}
+        {state.type === 'week' && <section className="gg-panel"><div className="gg-panel-head"><span>01</span><h3>Formato Week</h3></div><div className="gg-format-choice" role="group" aria-label="Formato Week"><button type="button" className={state.weekFormat === 'post' ? 'active' : ''} aria-pressed={state.weekFormat === 'post'} onClick={() => changeWeekFormat('post')}>Post <small>1080 × 1350</small></button><button type="button" className={state.weekFormat === 'story' ? 'active' : ''} aria-pressed={state.weekFormat === 'story'} onClick={() => changeWeekFormat('story')}>Storia <small>1080 × 1920</small></button></div><div className="gg-week-title-field"><Field label="Titolo nel glass" value={state.weekTitle} onChange={value => update('weekTitle', value)} placeholder="LA SETTIMANA NERONE" /></div><p className="gg-local-note">Il titolo usa lo stesso font di “UISP Platinum”; sponsor e POWERED BY sono inseriti nello stesso glass.</p></section>}
 
         {state.type === 'calendario' ? <>
           <section className="gg-panel"><div className="gg-panel-head"><span>01</span><h3>Intestazione</h3></div><div className="gg-grid"><Field label="Mese e anno" value={state.month} onChange={value => update('month', value)} placeholder="OTTOBRE 2026" /><Field label="Squadra sinistra" value={state.leftName} onChange={value => update('leftName', value)} /><Field label="Squadra destra" value={state.rightName} onChange={value => update('rightName', value)} /></div></section>
-          <section className="gg-panel"><div className="gg-panel-head"><span>02</span><h3>Appuntamenti</h3></div><p className="gg-help">Inserisci le partite a mano, importa il mese dal sito o carica un CSV. Fino a 6 appuntamenti per colonna mantengono la grafica leggibile.</p><div className="gg-actions"><button type="button" onClick={importMonth}><CalendarDays size={16} /> Importa mese dal sito</button><button type="button" onClick={downloadCsv}><ArrowDownToLine size={16} /> Scarica CSV sito</button><label className="gg-csv-upload">Carica CSV<input ref={csvInput} type="file" accept=".csv,text/csv" onChange={event => uploadCsv(event.target.files?.[0])} /></label></div>
+          <section className="gg-panel"><div className="gg-panel-head"><span>02</span><h3>Posizione partite</h3></div><p className="gg-help">Regola le due colonne separatamente e scegli la distanza dall’intestazione e tra gli appuntamenti. Puoi scrivere il valore esatto accanto a ogni slider.</p><div className="gg-grid gg-sliders"><RangeField label="X colonna sinistra" value={state.calendarLeftX} min={40} max={420} suffix=" px" onChange={value => update('calendarLeftX', value)} /><RangeField label="X colonna destra" value={state.calendarRightX} min={660} max={1040} suffix=" px" onChange={value => update('calendarRightX', value)} /><RangeField label="Distanza dall’intestazione" value={state.calendarTopGap} min={15} max={180} suffix=" px" onChange={value => update('calendarTopGap', value)} /><RangeField label="Spazio tra le partite" value={state.calendarMatchGap} min={70} max={150} suffix=" px" onChange={value => update('calendarMatchGap', value)} /></div></section>
+          <section className="gg-panel"><div className="gg-panel-head"><span>03</span><h3>Appuntamenti</h3></div><p className="gg-help">Inserisci le partite a mano, importa il mese dal sito o carica un CSV. Fino a 6 appuntamenti per colonna mantengono la grafica leggibile.</p><div className="gg-actions"><button type="button" onClick={importMonth}><CalendarDays size={16} /> Importa mese dal sito</button><button type="button" onClick={downloadCsv}><ArrowDownToLine size={16} /> Scarica CSV sito</button><label className="gg-csv-upload">Carica CSV<input ref={csvInput} type="file" accept=".csv,text/csv" onChange={event => uploadCsv(event.target.files?.[0])} /></label></div>
             {state.appointments.map((item, index) => <div className="gg-appointment" key={item.id}><div className="gg-row-title"><strong>Partita {index + 1}</strong><button type="button" aria-label={`Elimina partita ${index + 1}`} onClick={() => update('appointments', state.appointments.filter(a => a.id !== item.id))}><Trash2 size={17} /></button></div><div className="gg-grid"><Select label="Squadra" value={item.club} onChange={value => updateAppointment(item.id, { club: value as Appointment['club'] })} options={[{ value: 'nerone', label: state.leftName }, { value: 'nerone-bounganvillae', label: state.rightName }]} /><Field label="Data" type="date" value={item.date} onChange={value => updateAppointment(item.id, { date: value })} /><Field label="Ora" type="time" value={item.time} onChange={value => updateAppointment(item.id, { time: value })} /><Field label="Avversaria" value={item.opponent} onChange={value => updateAppointment(item.id, { opponent: value })} /><Select label="Campo" value={item.atHome ? 'home' : 'away'} onChange={value => updateAppointment(item.id, { atHome: value === 'home' })} options={[{ value: 'home', label: 'Casa' }, { value: 'away', label: 'Trasferta' }]} /></div></div>)}
             <button className="gg-add" type="button" disabled={!nextClub} onClick={() => { if (nextClub) update('appointments', [...state.appointments, { id: newId(), club: nextClub, date: '', time: '21:00', opponent: '', atHome: true }]); }}><Plus size={17} /> Aggiungi partita</button>
           </section>
@@ -378,9 +364,9 @@ export function GraphicGenerator({ games, teamLogos }: { games: SiteGame[]; team
 
         {state.type === 'week' && <section className="gg-panel">
           <div className="gg-panel-head"><span>04</span><h3>Partite e glass</h3></div>
-          <p className="gg-help">Ogni glass partita contiene un incontro diverso. Il glass sponsor si adatta ai pixel visibili del logo con un margine di 24 px. Trascina i glass sull’anteprima anche con il dito.</p>
+          <p className="gg-help">Ogni glass partita contiene un incontro diverso. Il glass “Titolo e sponsor” contiene l’intestazione, POWERED BY e il logo scelto. Trascina i glass sull’anteprima anche con il dito.</p>
           {state.glasses.map((glass, index) => <div className="gg-appointment" key={glass.id}>
-            <div className="gg-row-title"><strong>Glass {index + 1} · {glass.kind === 'sponsor' ? 'Sponsor' : `${glass.match.homeTeam || 'Casa'} – ${glass.match.awayTeam || 'Ospite'}`}</strong><button type="button" aria-label={`Elimina glass ${index + 1}`} onClick={() => setState(current => ({ ...current, glasses: current.glasses.filter(item => item.id !== glass.id) }))}><Trash2 size={17} /></button></div>
+            <div className="gg-row-title"><strong>Glass {index + 1} · {glass.kind === 'sponsor' ? 'Titolo e sponsor' : `${glass.match.homeTeam || 'Casa'} – ${glass.match.awayTeam || 'Ospite'}`}</strong><button type="button" aria-label={`Elimina glass ${index + 1}`} onClick={() => setState(current => ({ ...current, glasses: current.glasses.filter(item => item.id !== glass.id) }))}><Trash2 size={17} /></button></div>
             <div className="gg-grid">
               <Select label="Livello del glass" value={glass.layer} onChange={value => updateGlass(glass.id, { layer: value as Glass['layer'] })} options={[{ value: 'behind', label: 'Dietro il soggetto' }, { value: 'front', label: 'Davanti al soggetto' }]} />
               {glass.kind === 'sponsor' ? <Select label="Logo sponsor" value={glass.sponsorId} onChange={value => changeGlassSponsor(glass.id, value)} options={sponsorOptions} /> : <>
@@ -394,12 +380,12 @@ export function GraphicGenerator({ games, teamLogos }: { games: SiteGame[]; team
               <Field label="Indirizzo" value={glass.match.address} onChange={value => updateGlassMatch(glass.id, { address: value })} />
               </>}
             </div>
-            <div className="gg-grid gg-sliders">{(['x', 'y', 'width', 'height'] as const).map(key => <RangeField key={key} label={key === 'x' ? 'X' : key === 'y' ? 'Y' : key === 'width' ? 'Larghezza' : 'Altezza'} value={glass[key]} min={key === 'width' ? (glass.kind === 'sponsor' ? 120 : 280) : key === 'height' ? (glass.kind === 'sponsor' ? 80 : 380) : 0} max={key === 'x' ? 1080 - glass.width : key === 'y' ? canvasHeight - glass.height : key === 'width' ? (glass.kind === 'sponsor' ? 800 : 660) : (glass.kind === 'sponsor' ? 400 : 680)} suffix=" px" onChange={value => updateGlass(glass.id, { [key]: value })} />)}</div>
+            <div className="gg-grid gg-sliders">{(['x', 'y', 'width', 'height'] as const).map(key => <RangeField key={key} label={key === 'x' ? 'X' : key === 'y' ? 'Y' : key === 'width' ? 'Larghezza' : 'Altezza'} value={glass[key]} min={key === 'width' ? (glass.kind === 'sponsor' ? 600 : 280) : key === 'height' ? (glass.kind === 'sponsor' ? 130 : 380) : 0} max={key === 'x' ? 1080 - glass.width : key === 'y' ? canvasHeight - glass.height : key === 'width' ? (glass.kind === 'sponsor' ? 964 : 660) : (glass.kind === 'sponsor' ? 280 : 680)} suffix=" px" onChange={value => updateGlass(glass.id, { [key]: value })} />)}</div>
           </div>)}
           <button className="gg-add" type="button" onClick={addGlass}><Plus size={17} /> Aggiungi glass</button>
         </section>}
 
-        {state.type !== 'week' && <section className="gg-panel"><div className="gg-panel-head"><span>{state.type === 'calendario' ? '03' : '04'}</span><h3>Sponsor</h3></div><Select label="Logo sponsor" value={state.sponsor} onChange={value => update('sponsor', value)} options={sponsorOptions} /></section>}
+        {state.type !== 'week' && <section className="gg-panel"><div className="gg-panel-head"><span>04</span><h3>Sponsor</h3></div><Select label="Logo sponsor" value={state.sponsor} onChange={value => update('sponsor', value)} options={sponsorOptions} /></section>}
         </Fragment>
         <p className="gg-local-note">Il lavoro resta in questa scheda: scarica il PNG prima di chiuderla.</p>
       </div>
