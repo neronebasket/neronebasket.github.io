@@ -48,10 +48,12 @@ test('il calendario Gold 2026/27 contiene tutte le gare e le dieci partite del N
 
   assert.equal(regularSeason.length, 30);
   assert.equal(neroneBgvGames.length, 10);
-  assert.match(goldCsv, /2026-27-gold-164,2026-11-19,21:15,scheduled,cor-basket-villa-flaminia,monteverde-parrots/);
-  assert.match(goldCsv, /2026-27-gold-166,2026-11-23,21:20,scheduled,elite-roma-young,nerone-bounganvillae/);
+  assert.match(goldCsv, /2026-27-gold-164,2026-11-19,21:15,played,cor-basket-villa-flaminia,monteverde-parrots,51,53/);
+  assert.match(goldCsv, /2026-27-gold-166,2027-02-01,21:30,scheduled,elite-roma-young,nerone-bounganvillae/);
   assert.match(goldCsv, /2026-27-gold-168,2026-12-02,21:30,scheduled,nerone-bounganvillae,monteverde-parrots/);
+  assert.match(goldCsv, /2026-27-gold-175,2027-01-29,21:45,scheduled,monteverde-parrots,r3-bombers/);
   assert.match(goldCsv, /2026-27-gold-178,2027-01-12,21:30,scheduled,nerone-bounganvillae,r3-bombers/);
+  assert.match(goldCsv, /2026-27-gold-192,2027-03-13,16:00,scheduled,monteverde-parrots,elite-roma-young/);
   assert.match(goldCsv, /2026-27-gold-193,2027-03-05,21:45,scheduled,r3-bombers,nerone-bounganvillae/);
   assert.doesNotMatch(goldCsv, /2026-27-gold-2(?:6[2-9]|[7-8][0-9]|9[0-1])/);
 });
