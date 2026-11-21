@@ -203,6 +203,14 @@ function car(ctx: CanvasRenderingContext2D, x: number, y: number, size: number) 
   }
   ctx.restore();
 }
+export function compareCalendarAppointments(a: Pick<Appointment, 'date' | 'time'>, b: Pick<Appointment, 'date' | 'time'>) {
+  if (!a.date || !b.date) return Number(!a.date) - Number(!b.date);
+  const dateOrder = a.date.localeCompare(b.date);
+  if (dateOrder) return dateOrder;
+  const timeKey = (time: string) => time.replace(/^(\d):/, '0$1:') || '24:00';
+  return timeKey(a.time).localeCompare(timeKey(b.time));
+}
+
 function dateLabel(date: string, time: string) {
   if (!date) return time || 'Data e ora';
   const parsed = new Date(`${date}T12:00:00`);
@@ -237,7 +245,7 @@ async function calendario(ctx: CanvasRenderingContext2D, s: GraphicState) {
   text(ctx, 'UISP GOLD', 1020, 536, 450, 26, 'Arimo, Arial, sans-serif', '700', 'right', 20);
   const groups = [s.appointments.filter(a => a.club === 'nerone'), s.appointments.filter(a => a.club === 'nerone-bounganvillae')];
   groups.forEach((group, column) => {
-    group.forEach((a, i) => {
+    group.sort(compareCalendarAppointments).forEach((a, i) => {
       const y = 536 + s.calendarTopGap + i * s.calendarMatchGap;
       const atRight = column === 1;
       const x = atRight ? s.calendarRightX : s.calendarLeftX;

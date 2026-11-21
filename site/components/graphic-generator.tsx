@@ -2,7 +2,7 @@
 
 import { Fragment, useEffect, useRef, useState } from 'react';
 import { ArrowDownToLine, CalendarDays, ImagePlus, Plus, Trash2 } from 'lucide-react';
-import { drawGraphic, LOGOS, MATCHDAY_WHITE_LOGOS, SPONSORS, type Appointment, type Glass, type GraphicState, type GraphicType, type WeekFormat, type WeekMatch } from '@/lib/graphic-generator';
+import { compareCalendarAppointments, drawGraphic, LOGOS, MATCHDAY_WHITE_LOGOS, SPONSORS, type Appointment, type Glass, type GraphicState, type GraphicType, type WeekFormat, type WeekMatch } from '@/lib/graphic-generator';
 import './graphic-generator.css';
 
 export type SiteGame = {
@@ -154,7 +154,7 @@ export function GraphicGenerator({ games, teamLogos }: { games: SiteGame[]; team
     const filtered = games.filter(game => {
       const date = new Date(`${game.date}T12:00:00`);
       return !Number.isNaN(date.getTime()) && new Intl.DateTimeFormat('it-IT', { month: 'long', year: 'numeric' }).format(date).toLocaleLowerCase('it-IT') === month;
-    });
+    }).sort(compareCalendarAppointments);
     const limited = filtered.filter((game, index, all) => all.slice(0, index).filter(previous => previous.club === game.club).length < 6);
     update('appointments', limited.map(gameAppointment));
     setMessage(filtered.length > limited.length ? `${limited.length} partite importate. ${filtered.length - limited.length} non entrano nella grafica: crea un secondo calendario per quelle partite.` : filtered.length ? `${filtered.length} partite importate dal calendario.` : 'Nessuna partita trovata per questo mese nel calendario del sito.');
@@ -180,7 +180,7 @@ export function GraphicGenerator({ games, teamLogos }: { games: SiteGame[]; team
       if (club !== 'nerone' && club !== 'nerone-bounganvillae') return null;
       const atHome = header.includes('at_home') ? /^(true|1|si|sì|casa)$/i.test(col(row, 'at_home')) : col(row, 'home_team') === club;
       return { id: newId(), club, date: col(row, 'date'), time: col(row, 'time'), opponent: col(row, 'opponent') || (atHome ? col(row, 'away_team') : col(row, 'home_team')), atHome } satisfies Appointment;
-    }).filter((a): a is Appointment => a !== null);
+    }).filter((a): a is Appointment => a !== null).sort(compareCalendarAppointments);
     const limited = appointments.filter((a, index, all) => all.slice(0, index).filter(previous => previous.club === a.club).length < 6);
     update('appointments', limited);
     setMessage(appointments.length > limited.length ? `${limited.length} appuntamenti importati. ${appointments.length - limited.length} non entrano nella grafica: crea un secondo calendario.` : `${limited.length} appuntamenti importati dal CSV.`);
