@@ -147,7 +147,10 @@ function buildCompetition(seasonId, competition) {
     return standings.get(teamId);
   };
 
-  for (const game of games.filter((item) => item.status === 'final' && item.home_score != null && item.away_score != null && (!item.phase || item.phase === 'regular-season'))) {
+  const clubGroups = (competition.groups ?? []).filter((group) => group.teams?.includes(competition.team));
+  for (const teamId of clubGroups.flatMap((group) => group.teams ?? [])) ensureTeam(teamId);
+
+  for (const game of games.filter((item) => ['final', 'played'].includes(item.status) && item.home_score != null && item.away_score != null && (!item.phase || item.phase === 'regular-season'))) {
     const home = ensureTeam(game.home_team);
     const away = ensureTeam(game.away_team);
     home.played += 1; away.played += 1;

@@ -954,7 +954,7 @@ export const sportsData: SportsData = {
       "id": "platinum",
       "name": "Amatori UISP Platinum",
       "team": "nerone",
-      "description": "La prima fase riunisce cinque squadre in un girone con gare di andata e ritorno. Il Nerone disputa otto partite nell'arco di dieci giornate, osservando un turno di riposo alla seconda e alla settima giornata. La fase successiva sarà comunicata in seguito.",
+      "description": "Dopo il ritiro della Supernova Fiumicino A, la prima fase riunisce quattro squadre in un girone con gare di andata e ritorno. Il Nerone disputa sei partite. La fase successiva sarà comunicata in seguito.",
       "notice": "* Regolamento e partecipazione ai campionati non ancora ufficiali.",
       "source_url": "https://www.campionatiuisproma.it/",
       "groups": [
@@ -964,8 +964,7 @@ export const sportsData: SportsData = {
             "nerone",
             "cavese-93-blu",
             "delfino-basket-anzio",
-            "boys-90-fiumicino",
-            "supernova-fiumicino-a"
+            "boys-90-fiumicino"
           ]
         }
       ],
@@ -995,7 +994,7 @@ export const sportsData: SportsData = {
         },
         {
           "id": "2026-27-platinum-nerone-g1",
-          "date": "2026-11-22",
+          "date": "2026-12-22",
           "time": "20:30",
           "status": "scheduled",
           "home_team": "nerone",
@@ -1047,25 +1046,6 @@ export const sportsData: SportsData = {
           "notes": "",
           "phase": "regular-season",
           "round": "Giornata 4",
-          "social_urls": [],
-          "competition": "platinum"
-        },
-        {
-          "id": "2026-27-platinum-nerone-g5",
-          "date": "2027-01-10",
-          "time": "20:30",
-          "status": "scheduled",
-          "home_team": "nerone",
-          "away_team": "supernova-fiumicino-a",
-          "home_score": null,
-          "away_score": null,
-          "venue": "Campo Quattro Casette",
-          "address": "Via Nettunense Km 36,500, Anzio (RM)",
-          "instagram_url": "",
-          "youtube_url": "",
-          "notes": "",
-          "phase": "regular-season",
-          "round": "Giornata 5",
           "social_urls": [],
           "competition": "platinum"
         },
@@ -1125,29 +1105,55 @@ export const sportsData: SportsData = {
           "round": "Giornata 9",
           "social_urls": [],
           "competition": "platinum"
-        },
-        {
-          "id": "2026-27-platinum-nerone-g10",
-          "date": "2027-02-27",
-          "time": "21:00",
-          "status": "scheduled",
-          "home_team": "supernova-fiumicino-a",
-          "away_team": "nerone",
-          "home_score": null,
-          "away_score": null,
-          "venue": "Pala Supernova - palestra I.C. Fregene Passoscuro",
-          "address": "Via Serrenti 70, Passoscuro (RM)",
-          "instagram_url": "",
-          "youtube_url": "",
-          "notes": "",
-          "phase": "regular-season",
-          "round": "Giornata 10",
-          "social_urls": [],
-          "competition": "platinum"
         }
       ],
       "playerStats": [],
-      "standings": []
+      "standings": [
+        {
+          "team_id": "nerone",
+          "played": 0,
+          "wins": 0,
+          "losses": 0,
+          "points_for": 0,
+          "points_against": 0,
+          "table_points": null,
+          "name": "Nerone Basket Anzio",
+          "difference": 0
+        },
+        {
+          "team_id": "cavese-93-blu",
+          "played": 0,
+          "wins": 0,
+          "losses": 0,
+          "points_for": 0,
+          "points_against": 0,
+          "table_points": null,
+          "name": "USD Basket Cavese 93 Blu",
+          "difference": 0
+        },
+        {
+          "team_id": "delfino-basket-anzio",
+          "played": 0,
+          "wins": 0,
+          "losses": 0,
+          "points_for": 0,
+          "points_against": 0,
+          "table_points": null,
+          "name": "ASD Delfino Basket Anzio",
+          "difference": 0
+        },
+        {
+          "team_id": "boys-90-fiumicino",
+          "played": 0,
+          "wins": 0,
+          "losses": 0,
+          "points_for": 0,
+          "points_against": 0,
+          "table_points": null,
+          "name": "ASCD Boys 90",
+          "difference": 0
+        }
+      ]
     },
     {
       "id": "gold",
@@ -1787,7 +1793,74 @@ export const sportsData: SportsData = {
         }
       ],
       "playerStats": [],
-      "standings": []
+      "standings": [
+        {
+          "team_id": "monteverde-parrots",
+          "played": 1,
+          "wins": 1,
+          "losses": 0,
+          "points_for": 53,
+          "points_against": 51,
+          "table_points": null,
+          "name": "ASD Monteverde Parrots",
+          "difference": 2
+        },
+        {
+          "team_id": "elite-roma-all-saints",
+          "played": 0,
+          "wins": 0,
+          "losses": 0,
+          "points_for": 0,
+          "points_against": 0,
+          "table_points": null,
+          "name": "Polisportiva EBR Elite Roma All Saints",
+          "difference": 0
+        },
+        {
+          "team_id": "elite-roma-young",
+          "played": 0,
+          "wins": 0,
+          "losses": 0,
+          "points_for": 0,
+          "points_against": 0,
+          "table_points": null,
+          "name": "Polisportiva EBR Elite Roma Young",
+          "difference": 0
+        },
+        {
+          "team_id": "nerone-bounganvillae",
+          "played": 0,
+          "wins": 0,
+          "losses": 0,
+          "points_for": 0,
+          "points_against": 0,
+          "table_points": null,
+          "name": "Nerone Basket Anzio BGV",
+          "difference": 0
+        },
+        {
+          "team_id": "r3-bombers",
+          "played": 0,
+          "wins": 0,
+          "losses": 0,
+          "points_for": 0,
+          "points_against": 0,
+          "table_points": null,
+          "name": "A.S.D. R3 Bombers",
+          "difference": 0
+        },
+        {
+          "team_id": "cor-basket-villa-flaminia",
+          "played": 1,
+          "wins": 0,
+          "losses": 1,
+          "points_for": 51,
+          "points_against": 53,
+          "table_points": null,
+          "name": "COR Basket Villa Flaminia",
+          "difference": -2
+        }
+      ]
     }
   ],
   "seasons": [
@@ -1798,7 +1871,7 @@ export const sportsData: SportsData = {
           "id": "platinum",
           "name": "Amatori UISP Platinum",
           "team": "nerone",
-          "description": "La prima fase riunisce cinque squadre in un girone con gare di andata e ritorno. Il Nerone disputa otto partite nell'arco di dieci giornate, osservando un turno di riposo alla seconda e alla settima giornata. La fase successiva sarà comunicata in seguito.",
+          "description": "Dopo il ritiro della Supernova Fiumicino A, la prima fase riunisce quattro squadre in un girone con gare di andata e ritorno. Il Nerone disputa sei partite. La fase successiva sarà comunicata in seguito.",
           "notice": "* Regolamento e partecipazione ai campionati non ancora ufficiali.",
           "source_url": "https://www.campionatiuisproma.it/",
           "groups": [
@@ -1808,8 +1881,7 @@ export const sportsData: SportsData = {
                 "nerone",
                 "cavese-93-blu",
                 "delfino-basket-anzio",
-                "boys-90-fiumicino",
-                "supernova-fiumicino-a"
+                "boys-90-fiumicino"
               ]
             }
           ],
@@ -1839,7 +1911,7 @@ export const sportsData: SportsData = {
             },
             {
               "id": "2026-27-platinum-nerone-g1",
-              "date": "2026-11-22",
+              "date": "2026-12-22",
               "time": "20:30",
               "status": "scheduled",
               "home_team": "nerone",
@@ -1891,25 +1963,6 @@ export const sportsData: SportsData = {
               "notes": "",
               "phase": "regular-season",
               "round": "Giornata 4",
-              "social_urls": [],
-              "competition": "platinum"
-            },
-            {
-              "id": "2026-27-platinum-nerone-g5",
-              "date": "2027-01-10",
-              "time": "20:30",
-              "status": "scheduled",
-              "home_team": "nerone",
-              "away_team": "supernova-fiumicino-a",
-              "home_score": null,
-              "away_score": null,
-              "venue": "Campo Quattro Casette",
-              "address": "Via Nettunense Km 36,500, Anzio (RM)",
-              "instagram_url": "",
-              "youtube_url": "",
-              "notes": "",
-              "phase": "regular-season",
-              "round": "Giornata 5",
               "social_urls": [],
               "competition": "platinum"
             },
@@ -1969,29 +2022,55 @@ export const sportsData: SportsData = {
               "round": "Giornata 9",
               "social_urls": [],
               "competition": "platinum"
-            },
-            {
-              "id": "2026-27-platinum-nerone-g10",
-              "date": "2027-02-27",
-              "time": "21:00",
-              "status": "scheduled",
-              "home_team": "supernova-fiumicino-a",
-              "away_team": "nerone",
-              "home_score": null,
-              "away_score": null,
-              "venue": "Pala Supernova - palestra I.C. Fregene Passoscuro",
-              "address": "Via Serrenti 70, Passoscuro (RM)",
-              "instagram_url": "",
-              "youtube_url": "",
-              "notes": "",
-              "phase": "regular-season",
-              "round": "Giornata 10",
-              "social_urls": [],
-              "competition": "platinum"
             }
           ],
           "playerStats": [],
-          "standings": []
+          "standings": [
+            {
+              "team_id": "nerone",
+              "played": 0,
+              "wins": 0,
+              "losses": 0,
+              "points_for": 0,
+              "points_against": 0,
+              "table_points": null,
+              "name": "Nerone Basket Anzio",
+              "difference": 0
+            },
+            {
+              "team_id": "cavese-93-blu",
+              "played": 0,
+              "wins": 0,
+              "losses": 0,
+              "points_for": 0,
+              "points_against": 0,
+              "table_points": null,
+              "name": "USD Basket Cavese 93 Blu",
+              "difference": 0
+            },
+            {
+              "team_id": "delfino-basket-anzio",
+              "played": 0,
+              "wins": 0,
+              "losses": 0,
+              "points_for": 0,
+              "points_against": 0,
+              "table_points": null,
+              "name": "ASD Delfino Basket Anzio",
+              "difference": 0
+            },
+            {
+              "team_id": "boys-90-fiumicino",
+              "played": 0,
+              "wins": 0,
+              "losses": 0,
+              "points_for": 0,
+              "points_against": 0,
+              "table_points": null,
+              "name": "ASCD Boys 90",
+              "difference": 0
+            }
+          ]
         },
         {
           "id": "gold",
@@ -2631,7 +2710,74 @@ export const sportsData: SportsData = {
             }
           ],
           "playerStats": [],
-          "standings": []
+          "standings": [
+            {
+              "team_id": "monteverde-parrots",
+              "played": 1,
+              "wins": 1,
+              "losses": 0,
+              "points_for": 53,
+              "points_against": 51,
+              "table_points": null,
+              "name": "ASD Monteverde Parrots",
+              "difference": 2
+            },
+            {
+              "team_id": "elite-roma-all-saints",
+              "played": 0,
+              "wins": 0,
+              "losses": 0,
+              "points_for": 0,
+              "points_against": 0,
+              "table_points": null,
+              "name": "Polisportiva EBR Elite Roma All Saints",
+              "difference": 0
+            },
+            {
+              "team_id": "elite-roma-young",
+              "played": 0,
+              "wins": 0,
+              "losses": 0,
+              "points_for": 0,
+              "points_against": 0,
+              "table_points": null,
+              "name": "Polisportiva EBR Elite Roma Young",
+              "difference": 0
+            },
+            {
+              "team_id": "nerone-bounganvillae",
+              "played": 0,
+              "wins": 0,
+              "losses": 0,
+              "points_for": 0,
+              "points_against": 0,
+              "table_points": null,
+              "name": "Nerone Basket Anzio BGV",
+              "difference": 0
+            },
+            {
+              "team_id": "r3-bombers",
+              "played": 0,
+              "wins": 0,
+              "losses": 0,
+              "points_for": 0,
+              "points_against": 0,
+              "table_points": null,
+              "name": "A.S.D. R3 Bombers",
+              "difference": 0
+            },
+            {
+              "team_id": "cor-basket-villa-flaminia",
+              "played": 1,
+              "wins": 0,
+              "losses": 1,
+              "points_for": 51,
+              "points_against": 53,
+              "table_points": null,
+              "name": "COR Basket Villa Flaminia",
+              "difference": -2
+            }
+          ]
         }
       ]
     },

@@ -6,16 +6,16 @@ seasons:
         name: Amatori UISP Platinum
         team: nerone
         description: >-
-          La prima fase riunisce cinque squadre in un girone con gare di andata
-          e ritorno. Il Nerone disputa otto partite nell'arco di dieci giornate,
-          osservando un turno di riposo alla seconda e alla settima giornata.
+          Dopo il ritiro della Supernova Fiumicino A, la prima fase riunisce
+          quattro squadre in un girone con gare di andata e ritorno. Il Nerone
+          disputa sei partite.
           La fase successiva sarà comunicata in seguito.
         notice: "* Regolamento e partecipazione ai campionati non ancora ufficiali."
         source_url: https://www.campionatiuisproma.it/
         groups:
           - name: Girone prima fase
             teams:
-              [ nerone, cavese-93-blu, delfino-basket-anzio, boys-90-fiumicino, supernova-fiumicino-a ]
+              [ nerone, cavese-93-blu, delfino-basket-anzio, boys-90-fiumicino ]
         standings_points:
           win:
           loss:
