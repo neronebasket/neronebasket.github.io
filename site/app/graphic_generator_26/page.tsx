@@ -21,6 +21,7 @@ export default function GraphicGeneratorPage() {
       homeLogo: sportsData.teams[game.home_team]?.logo_on_dark ?? sportsData.teams[game.home_team]?.logo ?? '',
       awayLogo: sportsData.teams[game.away_team]?.logo_on_dark ?? sportsData.teams[game.away_team]?.logo ?? '',
       competition: game.phase === 'friendly' ? 'Amichevole' : 'Campionato Amatori UISP',
+      round: game.round || (game.phase === 'friendly' ? 'Amichevole' : ''),
       address: game.address || game.venue,
       homeScore: game.home_score, awayScore: game.away_score,
     }));

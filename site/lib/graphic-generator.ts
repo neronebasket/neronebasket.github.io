@@ -6,17 +6,20 @@ export type GlassLayer = 'behind' | 'front';
 export type Appointment = { id: string; club: 'nerone' | 'nerone-bounganvillae'; date: string; time: string; opponent: string; atHome: boolean };
 export type WeekMatch = {
   gameId: string; title: string; homeTeam: string; awayTeam: string; homeLogo: string; awayLogo: string;
-  dateTime: string; address: string;
+  round: string; dateTime: string; address: string;
 };
+export const DEFAULT_WEEK_MATCH_FONT_SIZES = { title: 55, round: 36, dateTime: 38, address: 34 };
+export const DEFAULT_WEEK_HEADER_FONT_SIZES = { title: 60, poweredBy: 18 };
+export type WeekMatchFontSizes = typeof DEFAULT_WEEK_MATCH_FONT_SIZES;
 type GlassBase = { id: string; x: number; y: number; width: number; height: number; layer: GlassLayer };
-export type MatchGlass = GlassBase & { kind: 'match'; match: WeekMatch };
+export type MatchGlass = GlassBase & { kind: 'match'; match: WeekMatch; fontSizes: WeekMatchFontSizes };
 export type SponsorGlass = GlassBase & { kind: 'sponsor'; sponsorId: string };
 export type Glass = MatchGlass | SponsorGlass;
 export type GraphicState = {
   type: GraphicType; month: string; leftName: string; rightName: string; appointments: Appointment[];
   calendarLeftX: number; calendarRightX: number; calendarTopGap: number; calendarMatchGap: number;
   sponsor: string; photo: string; subjectPhoto: string; photoX: number; photoY: number; photoZoom: number;
-  weekFormat: WeekFormat; weekTitle: string; backgroundBlur: number;
+  weekFormat: WeekFormat; weekTitle: string; weekHeaderFontSizes: typeof DEFAULT_WEEK_HEADER_FONT_SIZES; backgroundBlur: number;
   glasses: Glass[]; homeTeam: string; awayTeam: string;
   homeLogo: string; awayLogo: string; competition: string; dateTime: string; address: string;
   homeScore: string; awayScore: string; resultClubSide: 'home' | 'away' | 'none';
@@ -52,9 +55,7 @@ export const LOGOS = [
 ] as const;
 
 export const MATCHDAY_WHITE_LOGOS = [
-  { id: 'nerone', name: 'Nerone · simbolo', logo: '/assets/teams/2026-27/mono_white/nerone_white.png' },
   { id: 'nerone', name: 'Nerone · con scritta', logo: '/assets/teams/2026-27/mono_white/nerone_white_text.png' },
-  { id: 'nerone-bounganvillae', name: 'Nerone BGV · simbolo', logo: '/assets/teams/2026-27/mono_white/nerone_bgv_white.png' },
   { id: 'nerone-bounganvillae', name: 'Nerone BGV · con scritta', logo: '/assets/teams/2026-27/mono_white/nerone_bgv_white_text.png' },
   { id: 'evergreen-la-squad', name: 'La Squad', logo: '/assets/teams/2026-27/mono_white/ciampino_white.png' },
   { id: 'cavese-93-blu', name: 'Cavese 93', logo: '/assets/teams/2026-27/mono_white/cavese.png' },
@@ -67,6 +68,25 @@ export const MATCHDAY_WHITE_LOGOS = [
   { id: 'r3-bombers', name: 'R3 Bombers', logo: '/assets/teams/2026-27/mono_white/bombers.png' },
   { id: 'monteverde-parrots', name: 'Monteverde Parrots', logo: '/assets/teams/2026-27/mono_white/parrots.png' },
 ] as const;
+
+export function matchdayLogo(teamId: string) {
+  const normalizedId = teamId === 'cavese-93-bianco' ? 'cavese-93-blu' : teamId;
+  return MATCHDAY_WHITE_LOGOS.find(item => item.id === normalizedId)?.logo ?? '';
+}
+
+function neroneTeamId(name: string) {
+  if (!/^nerone\b/i.test(name.trim())) return '';
+  return /\b(?:bgv|bounganvillae)\b/i.test(name) ? 'nerone-bounganvillae' : 'nerone';
+}
+
+export function matchdayClubLogo(teamName: string) {
+  return matchdayLogo(neroneTeamId(teamName));
+}
+
+function opponentName(homeTeam: string, awayTeam: string) {
+  const opponent = neroneTeamId(awayTeam) && !neroneTeamId(homeTeam) ? homeTeam : awayTeam;
+  return opponent.trim();
+}
 
 const imageCache = new Map<string, Promise<HTMLImageElement>>();
 function image(src: string): Promise<HTMLImageElement> {
@@ -151,39 +171,34 @@ function lines(ctx: CanvasRenderingContext2D, value: string, x: number, y: numbe
     return;
   }
 }
-function weekDetails(ctx: CanvasRenderingContext2D, match: WeekMatch, centerX: number, top: number, width: number, height: number, scale: number) {
+function weekDetails(ctx: CanvasRenderingContext2D, { match, fontSizes }: MatchGlass, centerX: number, top: number, width: number, height: number) {
+  const round = match.round.trim();
+  const roundLabel = /^\d/.test(round) ? `Giornata ${round}` : round;
+  const opponent = opponentName(match.homeTeam, match.awayTeam);
+  const matchup = [roundLabel, opponent && `vs ${opponent}`].filter(Boolean).join(' ');
   const fields = [
-    { value: match.dateTime, size: 38, maxLines: 3 },
-    { value: match.address, size: 34, maxLines: 4 },
+    { value: matchup, size: fontSizes.round },
+    { value: match.dateTime.toLocaleUpperCase('it-IT'), size: fontSizes.dateTime },
+    { value: match.address, size: fontSizes.address },
   ].filter(field => field.value.trim());
   if (!fields.length) return;
-  const gap = Math.max(8, 12 * scale);
-  let blocks: { rows: string[]; size: number; lineHeight: number; maxLines: number }[] = [];
-  for (let factor = 1; factor >= .35; factor -= .025) {
-    blocks = fields.map(field => {
-      const size = Math.max(15, Math.round(field.size * scale * factor));
-      ctx.font = `${size}px Arial, sans-serif`;
-      const rows: string[] = [];
-      let row = '';
-      for (const word of field.value.trim().split(/\s+/)) {
-        const next = row ? `${row} ${word}` : word;
-        if (ctx.measureText(next).width <= width || !row) row = next;
-        else { rows.push(row); row = word; }
-      }
-      if (row) rows.push(row);
-      return { rows, size, lineHeight: size * 1.14, maxLines: field.maxLines };
-    });
-    const totalHeight = blocks.reduce((sum, block) => sum + block.rows.length * block.lineHeight, 0) + gap * (blocks.length - 1);
-    if (blocks.every(block => block.rows.length <= block.maxLines) && totalHeight <= height) break;
-  }
-  const visibleHeight = blocks.reduce((sum, block) => sum + Math.min(block.rows.length, block.maxLines) * block.lineHeight, 0) + gap * (blocks.length - 1);
-  let cursorY = top + Math.max(0, (height - visibleHeight) / 2);
-  ctx.textAlign = 'center'; ctx.textBaseline = 'top';
-  blocks.forEach(block => {
-    ctx.font = `${block.size}px Arial, sans-serif`;
-    block.rows.slice(0, block.maxLines).forEach((row, index) => ctx.fillText(row, centerX, cursorY + index * block.lineHeight, width));
-    cursorY += Math.min(block.rows.length, block.maxLines) * block.lineHeight + gap;
+  const family = 'Arial, sans-serif';
+  const gap = 12;
+  const fitted = fields.map(({ value, size }) => {
+    ctx.font = `${size}px ${family}`;
+    const widthScale = Math.min(1, width / ctx.measureText(value).width);
+    return { value, size: Math.max(12, Math.floor(size * widthScale)) };
   });
+  const textHeight = fitted.reduce((sum, field) => sum + field.size * 1.2, 0);
+  const gapsHeight = gap * (fitted.length - 1);
+  const heightScale = Math.min(1, (height - gapsHeight) / textHeight);
+  let cursorY = top + (height - textHeight * heightScale - gapsHeight) / 2;
+  ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+  for (const { value, size } of fitted) {
+    ctx.font = `${size * heightScale}px ${family}`;
+    ctx.fillText(value, centerX, cursorY, width);
+    cursorY += size * heightScale * 1.2 + gap;
+  }
 }
 function roundRect(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number) {
   ctx.beginPath(); ctx.roundRect(x, y, w, h, r);
@@ -301,10 +316,10 @@ async function week(ctx: CanvasRenderingContext2D, s: GraphicState) {
       const titleFamily = 'Aharoni, "Archivo Black", "Arial Black", Arial, sans-serif';
       const title = 'QUESTA SETTIMANA';
       const titleBox = { x: x + 28 * scale, y: y + 18 * scale, w: w * .655 - 56 * scale, h: h - 36 * scale };
-      let titleSize = Math.round(60 * scale);
+      let titleSize = s.weekHeaderFontSizes.title;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'alphabetic';
-      for (; titleSize > 20; titleSize--) {
+      for (; titleSize >= 12; titleSize--) {
         ctx.font = `700 ${titleSize}px ${titleFamily}`;
         const metrics = ctx.measureText(title);
         const titleHeight = metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent;
@@ -317,22 +332,23 @@ async function week(ctx: CanvasRenderingContext2D, s: GraphicState) {
       ctx.fillStyle = '#ffffff55';
       ctx.fillRect(x + w * .655, y + 23, 1.5, h - 46);
       ctx.fillStyle = '#fff';
-      text(ctx, 'POWERED BY', x + w * .82, y + h * .16, w * .28, Math.round(18 * scale), '"DM Sans", Arial, sans-serif', '700', 'center', Math.round(12 * scale));
+      const poweredBySize = Math.min(s.weekHeaderFontSizes.poweredBy, Math.floor(h * .2));
+      text(ctx, 'POWERED BY', x + w * .82, y + h * .16, w * .28, poweredBySize, '"DM Sans", Arial, sans-serif', '700', 'center', 10);
       if (logos[index].sponsor) containVisible(ctx, logos[index].sponsor!, x + w * .685, y + h * .38, w * .27, h * .45);
       ctx.restore();
       return;
     }
-    const scale = Math.min(w / 440, h / 500);
     const inset = Math.max(18, w * .075);
     const textWidth = w - inset * 2;
-    text(ctx, g.match.title, x + w / 2, y + h * .055, textWidth, Math.round(55 * scale), 'Aharoni, "Archivo Black", "Arial Black", Arial, sans-serif', '700', 'center', Math.round(30 * scale));
+    const titleSize = Math.min(g.fontSizes.title, Math.floor(h * .12));
+    text(ctx, g.match.title, x + w / 2, y + h * .055, textWidth, titleSize, 'Aharoni, "Archivo Black", "Arial Black", Arial, sans-serif', '700', 'center', 12);
     const logoGap = Math.max(12, w * .06);
     const logoWidth = (textWidth - logoGap) / 2;
     const logoTop = y + h * .185;
     const logoHeight = h * .275;
     if (logos[index].home) contain(ctx, logos[index].home!, x + inset, logoTop, logoWidth, logoHeight);
     if (logos[index].away) contain(ctx, logos[index].away!, x + inset + logoWidth + logoGap, logoTop, logoWidth, logoHeight);
-    weekDetails(ctx, g.match, x + w / 2, y + h * .48, textWidth, h * .50, Math.min(1.25, h / 500));
+    weekDetails(ctx, g, x + w / 2, y + h * .48, textWidth, h * .46);
     ctx.restore();
   };
   s.glasses.forEach((g, index) => { if (g.layer === 'behind') drawGlass(g, index); });
@@ -397,9 +413,14 @@ async function matchday(ctx: CanvasRenderingContext2D, s: GraphicState) {
   text(ctx, matchdayDateLabel(s.matchdayDate), 767, 594, 263, 30, 'Georgia, serif', 'italic 700', 'left', 23);
   text(ctx, s.matchdayTime || 'ORARIO DA DEFINIRE', 767, 634, 263, 30, 'Georgia, serif', 'italic 700', 'left', 23);
   lines(ctx, s.address || 'LUOGO DA DEFINIRE', 767, 679, 265, 3, 25, 31, 'Georgia, serif', 'italic 700');
-  const [home, away] = await Promise.all([optionalImage(s.homeLogo), optionalImage(s.awayLogo)]);
+  const [home, away] = await Promise.all([
+    optionalImage(matchdayClubLogo(s.homeTeam) || s.homeLogo),
+    optionalImage(matchdayClubLogo(s.awayTeam) || s.awayLogo),
+  ]);
   if (home) containVisible(ctx, home, 766, 785, 104, 100);
   if (away) containVisible(ctx, away, 900, 785, 104, 100);
+  const opponent = opponentName(s.homeTeam, s.awayTeam);
+  if (opponent) text(ctx, `vs ${opponent}`, 885, 898, 265, 25, 'Georgia, serif', 'italic 700', 'center', 14);
 
   ctx.fillStyle = '#f7f3ee';
   ctx.font = '700 21px "DM Sans", Arial, sans-serif';

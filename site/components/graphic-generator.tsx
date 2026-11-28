@@ -2,27 +2,37 @@
 
 import { Fragment, useEffect, useRef, useState } from 'react';
 import { ArrowDownToLine, CalendarDays, ImagePlus, Plus, Trash2 } from 'lucide-react';
-import { compareCalendarAppointments, drawGraphic, LOGOS, MATCHDAY_WHITE_LOGOS, SPONSORS, type Appointment, type Glass, type GraphicState, type GraphicType, type WeekFormat, type WeekMatch } from '@/lib/graphic-generator';
+import { compareCalendarAppointments, DEFAULT_WEEK_HEADER_FONT_SIZES, DEFAULT_WEEK_MATCH_FONT_SIZES, drawGraphic, LOGOS, matchdayClubLogo, matchdayLogo, MATCHDAY_WHITE_LOGOS, SPONSORS, type Appointment, type Glass, type GraphicState, type GraphicType, type WeekFormat, type WeekMatch, type WeekMatchFontSizes } from '@/lib/graphic-generator';
 import './graphic-generator.css';
 
 export type SiteGame = {
   id: string; date: string; time: string; club: 'nerone' | 'nerone-bounganvillae';
   homeId: string; awayId: string; home: string; away: string; homeLogo: string; awayLogo: string;
-  competition: string; address: string; homeScore: number | null; awayScore: number | null;
+  competition: string; round: string; address: string; homeScore: number | null; awayScore: number | null;
 };
 
 const TYPE_LABELS: Record<GraphicType, string> = { calendario: 'Calendario', week: 'Week', matchday: 'Matchday', risultato: 'Risultato' };
 const defaultWeekMatch: WeekMatch = {
   gameId: '', title: 'UISP Platinum', homeTeam: 'NERONE', awayTeam: 'SAMURAI',
   homeLogo: '/assets/logo-testo-bianco.png', awayLogo: '/assets/teams/2026-27/samurai.png',
-  dateTime: 'Mercoledì 21 Ottobre, 21:00', address: 'Via Olimpica, 46B (Quattro Casette) Anzio (RM)',
+  round: '', dateTime: 'MERCOLEDÌ 21 OTTOBRE, 21:00', address: 'Via Olimpica, 46B (Quattro Casette) Anzio (RM)',
 };
+const WEEK_MATCH_FONT_CONTROLS = [
+  ['title', 'Font campionato', 80],
+  ['round', 'Font giornata e avversaria', 64],
+  ['dateTime', 'Font data e ora', 64],
+  ['address', 'Font luogo', 64],
+] as const;
 const initialState: GraphicState = {
   type: 'calendario', month: 'OTTOBRE 2026', leftName: 'NERONE', rightName: 'NERONE BGV',
   appointments: [], calendarLeftX: 62, calendarRightX: 1020, calendarTopGap: 40, calendarMatchGap: 105,
   sponsor: 'maisondali', photo: '', subjectPhoto: '', photoX: 0, photoY: 0, photoZoom: 1,
-  weekFormat: 'post', weekTitle: 'QUESTA SETTIMANA', backgroundBlur: 0,
-  glasses: [{ id: 'glass-sponsor', kind: 'sponsor', x: 58, y: 44, width: 964, height: 166, layer: 'front', sponsorId: 'laboradoro' }, { id: 'glass-1', kind: 'match', x: 58, y: 240, width: 440, height: 500, layer: 'behind', match: { ...defaultWeekMatch } }, { id: 'glass-2', kind: 'match', x: 568, y: 730, width: 440, height: 500, layer: 'front', match: { ...defaultWeekMatch } }],
+  weekFormat: 'post', weekTitle: 'QUESTA SETTIMANA', weekHeaderFontSizes: DEFAULT_WEEK_HEADER_FONT_SIZES, backgroundBlur: 0,
+  glasses: [
+    { id: 'glass-sponsor', kind: 'sponsor', x: 58, y: 44, width: 964, height: 166, layer: 'front', sponsorId: 'laboradoro' },
+    { id: 'glass-1', kind: 'match', x: 58, y: 240, width: 440, height: 500, layer: 'behind', match: defaultWeekMatch, fontSizes: DEFAULT_WEEK_MATCH_FONT_SIZES },
+    { id: 'glass-2', kind: 'match', x: 568, y: 730, width: 440, height: 500, layer: 'front', match: defaultWeekMatch, fontSizes: DEFAULT_WEEK_MATCH_FONT_SIZES },
+  ],
   homeTeam: 'NERONE', awayTeam: 'SAMURAI',
   homeLogo: '/assets/logo-testo-bianco.png', awayLogo: '/assets/teams/2026-27/samurai.png',
   competition: 'Campionato Amatori UISP Giornata 15', dateTime: 'Mercoledì 21 Ottobre, 21:00',
@@ -62,7 +72,7 @@ function weekMatchFromGame(game?: SiteGame): WeekMatch {
   return {
     gameId: game.id, title: game.club === 'nerone-bounganvillae' ? 'UISP Gold' : 'UISP Platinum', homeTeam: game.home, awayTeam: game.away,
     homeLogo: game.homeLogo, awayLogo: game.awayLogo,
-    dateTime: formattedDateTime(game.date, game.time), address: game.address,
+    round: game.round, dateTime: formattedDateTime(game.date, game.time).toLocaleUpperCase('it-IT'), address: game.address,
   };
 }
 function newId() { return `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`; }
@@ -70,15 +80,11 @@ function gameAppointment(game: SiteGame): Appointment {
   const atHome = game.homeId === game.club;
   return { id: game.id, club: game.club, date: game.date, time: game.time, opponent: atHome ? game.away : game.home, atHome };
 }
-function matchdayLogo(teamId: string) {
-  const normalizedId = teamId === 'cavese-93-bianco' ? 'cavese-93-blu' : teamId;
-  return MATCHDAY_WHITE_LOGOS.find(item => item.id === normalizedId)?.logo || '';
-}
 function Field({ label, value, onChange, placeholder, type = 'text' }: { label: string; value: string; onChange: (value: string) => void; placeholder?: string; type?: string }) {
   return <label className="gg-field"><span>{label}</span><input type={type} value={value} placeholder={placeholder} onChange={event => onChange(event.target.value)} /></label>;
 }
-function Select({ label, value, onChange, options }: { label: string; value: string; onChange: (value: string) => void; options: { value: string; label: string }[] }) {
-  return <label className="gg-field"><span>{label}</span><select value={value} onChange={event => onChange(event.target.value)}>{options.map(option => <option key={option.value} value={option.value}>{option.label}</option>)}</select></label>;
+function Select({ label, value, onChange, options, disabled = false }: { label: string; value: string; onChange: (value: string) => void; options: { value: string; label: string }[]; disabled?: boolean }) {
+  return <label className="gg-field"><span>{label}</span><select value={value} disabled={disabled} onChange={event => onChange(event.target.value)}>{options.map(option => <option key={option.value} value={option.value}>{option.label}</option>)}</select></label>;
 }
 function ColorField({ label, value, onChange }: { label: string; value: string; onChange: (value: string) => void }) {
   return <div className="gg-field gg-color-field"><span>{label}</span><div className="gg-color-control"><input type="color" aria-label="Seleziona colore dello sfondo" value={/^#[0-9a-f]{6}$/i.test(value) ? value : '#c80b1d'} onChange={event => onChange(event.target.value)} /><input type="text" aria-label="Colore dello sfondo HEX" inputMode="text" maxLength={7} value={value.toUpperCase()} onChange={event => onChange(event.target.value)} /></div></div>;
@@ -115,6 +121,14 @@ export function GraphicGenerator({ games, teamLogos }: { games: SiteGame[]; team
       const isNerone = (team: string) => /^nerone(?:$|[\s_-])/i.test(team.trim());
       const resultClubSide = isNerone(homeTeam) && !isNerone(awayTeam) ? 'home'
         : isNerone(awayTeam) && !isNerone(homeTeam) ? 'away' : 'none';
+      if (current.type === 'matchday') {
+        const previousTeam = side === 'home' ? current.homeTeam : current.awayTeam;
+        const clubLogo = matchdayClubLogo(value);
+        if (clubLogo || matchdayClubLogo(previousTeam)) {
+          const logoKey = side === 'home' ? 'homeLogo' : 'awayLogo';
+          return { ...current, homeTeam, awayTeam, resultClubSide, [logoKey]: clubLogo };
+        }
+      }
       return { ...current, homeTeam, awayTeam, resultClubSide };
     });
   }
@@ -254,6 +268,13 @@ export function GraphicGenerator({ games, teamLogos }: { games: SiteGame[]; team
     setMessage('');
     setState(current => ({ ...current, glasses: current.glasses.map(item => item.id === id && item.kind === 'match' ? { ...item, match: { ...item.match, ...patch } } : item) }));
   }
+  function updateGlassFont(id: string, key: keyof WeekMatchFontSizes, value: number) {
+    setState(current => ({ ...current, glasses: current.glasses.map(glass =>
+      glass.id === id && glass.kind === 'match'
+        ? { ...glass, fontSizes: { ...glass.fontSizes, [key]: value } }
+        : glass,
+    ) }));
+  }
   function pickWeekGame(id: string, gameId: string) {
     const game = games.find(item => item.id === gameId);
     if (!game) { updateGlassMatch(id, { gameId: '' }); return; }
@@ -270,7 +291,10 @@ export function GraphicGenerator({ games, teamLogos }: { games: SiteGame[]; team
     const slots = [{ x: 58, y: upperY }, { x: 568, y: upperY }, { x: 58, y: lowerY }, { x: 568, y: lowerY }];
     const position = slots.find(slot => !state.glasses.some(glass => Math.abs(glass.x - slot.x) < 200 && Math.abs(glass.y - slot.y) < 200)) ?? { x: 320, y: 420 };
     setMessage('');
-    setState(current => ({ ...current, glasses: [...current.glasses, { id: newId(), kind: 'match', ...position, width: 440, height: 500, layer: 'front', match: weekMatchFromGame(game) }] }));
+    setState(current => ({ ...current, glasses: [...current.glasses, {
+      id: newId(), kind: 'match', ...position, width: 440, height: 500, layer: 'front',
+      match: weekMatchFromGame(game), fontSizes: DEFAULT_WEEK_MATCH_FONT_SIZES,
+    }] }));
   }
   function pointerPosition(event: React.PointerEvent<HTMLCanvasElement>) {
     const bounds = event.currentTarget.getBoundingClientRect();
@@ -288,6 +312,8 @@ export function GraphicGenerator({ games, teamLogos }: { games: SiteGame[]; team
     setState(current => ({ ...current, glasses: current.glasses.map(g => g.id === active.id ? { ...g, x: Math.round(Math.max(0, Math.min(1080 - g.width, p.x - active.dx))), y: Math.round(Math.max(0, Math.min(canvasHeight - g.height, p.y - active.dy))) } : g) }));
   }
 
+  const matchdayHomeClubLogo = matchdayClubLogo(state.homeTeam);
+  const matchdayAwayClubLogo = matchdayClubLogo(state.awayTeam);
   const logoOptions = state.type === 'matchday'
     ? MATCHDAY_WHITE_LOGOS.map(item => ({ value: item.logo, label: item.name }))
     : state.type === 'risultato'
@@ -323,8 +349,8 @@ export function GraphicGenerator({ games, teamLogos }: { games: SiteGame[]; team
               <Field label="Nome squadra in alto" value={state.matchdayTeamName} onChange={value => update('matchdayTeamName', value)} />
               <Field label="Squadra di casa" value={state.homeTeam} onChange={value => updateTeam('home', value)} />
               <Field label="Squadra ospite" value={state.awayTeam} onChange={value => updateTeam('away', value)} />
-              <Select label="Logo bianco casa" value={state.homeLogo} onChange={value => update('homeLogo', value)} options={[{ value: '', label: 'Nessuno' }, ...logoOptions]} />
-              <Select label="Logo bianco ospite" value={state.awayLogo} onChange={value => update('awayLogo', value)} options={[{ value: '', label: 'Nessuno' }, ...logoOptions]} />
+              <Select label="Logo bianco casa" value={matchdayHomeClubLogo || state.homeLogo} disabled={Boolean(matchdayHomeClubLogo)} onChange={value => update('homeLogo', value)} options={[{ value: '', label: 'Nessuno' }, ...logoOptions]} />
+              <Select label="Logo bianco ospite" value={matchdayAwayClubLogo || state.awayLogo} disabled={Boolean(matchdayAwayClubLogo)} onChange={value => update('awayLogo', value)} options={[{ value: '', label: 'Nessuno' }, ...logoOptions]} />
             </div>
           </section>
           <section className="gg-panel"><div className="gg-panel-head"><span>02</span><h3>Dettagli</h3></div>
@@ -377,9 +403,18 @@ export function GraphicGenerator({ games, teamLogos }: { games: SiteGame[]; team
               <Field label="Squadra ospite" value={glass.match.awayTeam} onChange={value => updateGlassMatch(glass.id, { awayTeam: value })} />
               <Select label="Logo casa" value={glass.match.homeLogo} onChange={value => updateGlassMatch(glass.id, { homeLogo: value })} options={[{ value: '', label: 'Nessuno' }, ...logoOptions]} />
               <Select label="Logo ospite" value={glass.match.awayLogo} onChange={value => updateGlassMatch(glass.id, { awayLogo: value })} options={[{ value: '', label: 'Nessuno' }, ...logoOptions]} />
+              <Field label="Giornata" value={glass.match.round} placeholder="Es. 3" onChange={value => updateGlassMatch(glass.id, { round: value })} />
               <Field label="Data e ora" value={glass.match.dateTime} onChange={value => updateGlassMatch(glass.id, { dateTime: value })} />
-              <Field label="Indirizzo" value={glass.match.address} onChange={value => updateGlassMatch(glass.id, { address: value })} />
+              <Field label="Luogo" value={glass.match.address} onChange={value => updateGlassMatch(glass.id, { address: value })} />
               </>}
+            </div>
+            <div className="gg-grid gg-sliders" role="group" aria-label={`Dimensioni font glass ${index + 1}`}>
+              {glass.kind === 'sponsor' ? <>
+                <RangeField label="Font Questa settimana" value={state.weekHeaderFontSizes.title} min={12} max={100} suffix=" px" onChange={value => update('weekHeaderFontSizes', { ...state.weekHeaderFontSizes, title: value })} />
+                <RangeField label="Font Powered by" value={state.weekHeaderFontSizes.poweredBy} min={12} max={48} suffix=" px" onChange={value => update('weekHeaderFontSizes', { ...state.weekHeaderFontSizes, poweredBy: value })} />
+              </> : WEEK_MATCH_FONT_CONTROLS.map(([key, label, max]) => (
+                <RangeField key={key} label={label} value={glass.fontSizes[key]} min={12} max={max} suffix=" px" onChange={value => updateGlassFont(glass.id, key, value)} />
+              ))}
             </div>
             <div className="gg-grid gg-sliders">{(['x', 'y', 'width', 'height'] as const).map(key => <RangeField key={key} label={key === 'x' ? 'X' : key === 'y' ? 'Y' : key === 'width' ? 'Larghezza' : 'Altezza'} value={glass[key]} min={key === 'width' ? (glass.kind === 'sponsor' ? 600 : 280) : key === 'height' ? (glass.kind === 'sponsor' ? 130 : 380) : 0} max={key === 'x' ? 1080 - glass.width : key === 'y' ? canvasHeight - glass.height : key === 'width' ? (glass.kind === 'sponsor' ? 964 : 660) : (glass.kind === 'sponsor' ? 280 : 680)} suffix=" px" onChange={value => updateGlass(glass.id, { [key]: value })} />)}</div>
           </div>)}
