@@ -10,9 +10,10 @@ export type WeekMatch = {
 };
 export const DEFAULT_WEEK_MATCH_FONT_SIZES = { title: 55, round: 36, dateTime: 38, address: 34 };
 export const DEFAULT_WEEK_HEADER_FONT_SIZES = { title: 60, poweredBy: 18 };
+export const DEFAULT_WEEK_DETAILS_GAP = 18;
 export type WeekMatchFontSizes = typeof DEFAULT_WEEK_MATCH_FONT_SIZES;
 type GlassBase = { id: string; x: number; y: number; width: number; height: number; layer: GlassLayer };
-export type MatchGlass = GlassBase & { kind: 'match'; match: WeekMatch; fontSizes: WeekMatchFontSizes };
+export type MatchGlass = GlassBase & { kind: 'match'; match: WeekMatch; fontSizes: WeekMatchFontSizes; detailsGap: number };
 export type SponsorGlass = GlassBase & { kind: 'sponsor'; sponsorId: string };
 export type Glass = MatchGlass | SponsorGlass;
 export type GraphicState = {
@@ -104,7 +105,9 @@ async function optionalImage(src: string) { try { return src ? await image(src) 
 function contain(ctx: CanvasRenderingContext2D, img: HTMLImageElement, x: number, y: number, w: number, h: number) {
   const scale = Math.min(w / img.width, h / img.height);
   const width = img.width * scale, height = img.height * scale;
-  ctx.drawImage(img, x + (w - width) / 2, y + (h - height) / 2, width, height);
+  const top = y + (h - height) / 2;
+  ctx.drawImage(img, x + (w - width) / 2, top, width, height);
+  return { top, scale };
 }
 const visibleBoundsCache = new WeakMap<HTMLImageElement, { x: number; y: number; w: number; h: number }>();
 function visibleBounds(img: HTMLImageElement) {
@@ -192,11 +195,12 @@ function weekDetails(ctx: CanvasRenderingContext2D, { match, fontSizes }: MatchG
   const textHeight = fitted.reduce((sum, field) => sum + field.size * 1.2, 0);
   const gapsHeight = gap * (fitted.length - 1);
   const heightScale = Math.min(1, (height - gapsHeight) / textHeight);
-  let cursorY = top + (height - textHeight * heightScale - gapsHeight) / 2;
-  ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+  let cursorY = top;
+  ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic';
   for (const { value, size } of fitted) {
     ctx.font = `${size * heightScale}px ${family}`;
-    ctx.fillText(value, centerX, cursorY, width);
+    const ascent = ctx.measureText(value).actualBoundingBoxAscent;
+    ctx.fillText(value, centerX, cursorY + ascent, width);
     cursorY += size * heightScale * 1.2 + gap;
   }
 }
@@ -346,9 +350,15 @@ async function week(ctx: CanvasRenderingContext2D, s: GraphicState) {
     const logoWidth = (textWidth - logoGap) / 2;
     const logoTop = y + h * .185;
     const logoHeight = h * .275;
-    if (logos[index].home) contain(ctx, logos[index].home!, x + inset, logoTop, logoWidth, logoHeight);
-    if (logos[index].away) contain(ctx, logos[index].away!, x + inset + logoWidth + logoGap, logoTop, logoWidth, logoHeight);
-    weekDetails(ctx, g, x + w / 2, y + h * .48, textWidth, h * .46);
+    let logosBottom = logoTop;
+    [logos[index].home, logos[index].away].forEach((logo, side) => {
+      if (!logo) return;
+      const { top, scale } = contain(ctx, logo, x + inset + side * (logoWidth + logoGap), logoTop, logoWidth, logoHeight);
+      const bounds = visibleBounds(logo);
+      logosBottom = Math.max(logosBottom, top + (bounds.y + bounds.h) * scale);
+    });
+    const detailsTop = logosBottom + g.detailsGap;
+    weekDetails(ctx, g, x + w / 2, detailsTop, textWidth, y + h * .94 - detailsTop);
     ctx.restore();
   };
   s.glasses.forEach((g, index) => { if (g.layer === 'behind') drawGlass(g, index); });

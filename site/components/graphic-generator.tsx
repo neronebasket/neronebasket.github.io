@@ -2,7 +2,7 @@
 
 import { Fragment, useEffect, useRef, useState } from 'react';
 import { ArrowDownToLine, CalendarDays, ImagePlus, Plus, Trash2 } from 'lucide-react';
-import { compareCalendarAppointments, DEFAULT_WEEK_HEADER_FONT_SIZES, DEFAULT_WEEK_MATCH_FONT_SIZES, drawGraphic, LOGOS, matchdayClubLogo, matchdayLogo, MATCHDAY_WHITE_LOGOS, SPONSORS, type Appointment, type Glass, type GraphicState, type GraphicType, type WeekFormat, type WeekMatch, type WeekMatchFontSizes } from '@/lib/graphic-generator';
+import { compareCalendarAppointments, DEFAULT_WEEK_DETAILS_GAP, DEFAULT_WEEK_HEADER_FONT_SIZES, DEFAULT_WEEK_MATCH_FONT_SIZES, drawGraphic, LOGOS, matchdayClubLogo, matchdayLogo, MATCHDAY_WHITE_LOGOS, SPONSORS, type Appointment, type Glass, type GraphicState, type GraphicType, type WeekFormat, type WeekMatch, type WeekMatchFontSizes } from '@/lib/graphic-generator';
 import './graphic-generator.css';
 
 export type SiteGame = {
@@ -30,8 +30,8 @@ const initialState: GraphicState = {
   weekFormat: 'post', weekTitle: 'QUESTA SETTIMANA', weekHeaderFontSizes: DEFAULT_WEEK_HEADER_FONT_SIZES, backgroundBlur: 0,
   glasses: [
     { id: 'glass-sponsor', kind: 'sponsor', x: 58, y: 44, width: 964, height: 166, layer: 'front', sponsorId: 'laboradoro' },
-    { id: 'glass-1', kind: 'match', x: 58, y: 240, width: 440, height: 500, layer: 'behind', match: defaultWeekMatch, fontSizes: DEFAULT_WEEK_MATCH_FONT_SIZES },
-    { id: 'glass-2', kind: 'match', x: 568, y: 730, width: 440, height: 500, layer: 'front', match: defaultWeekMatch, fontSizes: DEFAULT_WEEK_MATCH_FONT_SIZES },
+    { id: 'glass-1', kind: 'match', x: 58, y: 240, width: 440, height: 500, layer: 'behind', match: defaultWeekMatch, fontSizes: DEFAULT_WEEK_MATCH_FONT_SIZES, detailsGap: DEFAULT_WEEK_DETAILS_GAP },
+    { id: 'glass-2', kind: 'match', x: 568, y: 730, width: 440, height: 500, layer: 'front', match: defaultWeekMatch, fontSizes: DEFAULT_WEEK_MATCH_FONT_SIZES, detailsGap: DEFAULT_WEEK_DETAILS_GAP },
   ],
   homeTeam: 'NERONE', awayTeam: 'SAMURAI',
   homeLogo: '/assets/logo-testo-bianco.png', awayLogo: '/assets/teams/2026-27/samurai.png',
@@ -256,7 +256,7 @@ export function GraphicGenerator({ games, teamLogos }: { games: SiteGame[]; team
     if (patch.club && state.appointments.filter(item => item.club === patch.club && item.id !== id).length >= 6) { setMessage('Questa colonna contiene già 6 partite.'); return; }
     update('appointments', state.appointments.map(item => item.id === id ? { ...item, ...patch } : item));
   }
-  function updateGlass(id: string, patch: Partial<Pick<Glass, 'x' | 'y' | 'width' | 'height' | 'layer'>>) {
+  function updateGlass(id: string, patch: Partial<Pick<Glass, 'x' | 'y' | 'width' | 'height' | 'layer'> & { detailsGap: number }>) {
     setState(current => ({ ...current, glasses: current.glasses.map(item => {
       if (item.id !== id) return item;
       const next = { ...item, ...patch };
@@ -293,7 +293,7 @@ export function GraphicGenerator({ games, teamLogos }: { games: SiteGame[]; team
     setMessage('');
     setState(current => ({ ...current, glasses: [...current.glasses, {
       id: newId(), kind: 'match', ...position, width: 440, height: 500, layer: 'front',
-      match: weekMatchFromGame(game), fontSizes: DEFAULT_WEEK_MATCH_FONT_SIZES,
+      match: weekMatchFromGame(game), fontSizes: DEFAULT_WEEK_MATCH_FONT_SIZES, detailsGap: DEFAULT_WEEK_DETAILS_GAP,
     }] }));
   }
   function pointerPosition(event: React.PointerEvent<HTMLCanvasElement>) {
@@ -406,6 +406,7 @@ export function GraphicGenerator({ games, teamLogos }: { games: SiteGame[]; team
               <Field label="Giornata" value={glass.match.round} placeholder="Es. 3" onChange={value => updateGlassMatch(glass.id, { round: value })} />
               <Field label="Data e ora" value={glass.match.dateTime} onChange={value => updateGlassMatch(glass.id, { dateTime: value })} />
               <Field label="Luogo" value={glass.match.address} onChange={value => updateGlassMatch(glass.id, { address: value })} />
+              <RangeField label="Distanza loghi–prima riga" value={glass.detailsGap} min={0} max={100} suffix=" px" onChange={value => updateGlass(glass.id, { detailsGap: value })} />
               </>}
             </div>
             <div className="gg-grid gg-sliders" role="group" aria-label={`Dimensioni font glass ${index + 1}`}>
