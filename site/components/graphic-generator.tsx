@@ -344,7 +344,7 @@ export function GraphicGenerator({ games, teamLogos }: { games: SiteGame[]; team
     : state.type === 'risultato'
     ? LOGOS.filter(item => item.mono).map(item => ({ value: item.mono, label: item.name }))
       .filter((item, index, all) => all.findIndex(candidate => candidate.value === item.value) === index)
-    : [{ value: '/assets/logo-testo-bianco.png', label: 'Nerone · bianco' }, { value: '/assets/logo-bianco.png', label: 'Nerone · simbolo' }, { value: '/assets/bgv-bianco.png', label: 'Nerone BGV · simbolo' }, ...teamLogos.map(item => ({ value: item.logo, label: item.name }))]
+    : [{ value: '/assets/logo-testo-bianco.png', label: isWeekPoster ? 'Nerone · nero' : 'Nerone · bianco' }, { value: '/assets/logo-bianco.png', label: 'Nerone · simbolo' }, { value: '/assets/bgv-bianco.png', label: 'Nerone BGV · simbolo' }, ...teamLogos.map(item => ({ value: item.logo, label: isWeekPoster && item.id === 'nerone-bounganvillae' ? 'Nerone BGV · nero' : item.name }))]
       .filter((item, index, all) => all.findIndex(candidate => candidate.value === item.value) === index);
   const nextClub: Appointment['club'] | null = state.appointments.filter(a => a.club === 'nerone').length < 6 ? 'nerone' : state.appointments.filter(a => a.club === 'nerone-bounganvillae').length < 6 ? 'nerone-bounganvillae' : null;
   const sponsorOptions = SPONSORS.map(item => ({ value: item.id, label: item.name }));

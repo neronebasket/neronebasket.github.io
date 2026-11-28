@@ -383,6 +383,13 @@ function posterDateTime(value: string) {
   };
 }
 
+const weekPosterDarkLogos: Partial<Record<string, string>> = {
+  '/assets/logo-testo-bianco.png': '/assets/logo-testo-nero.png',
+  '/assets/logo-bianco.png': '/assets/logo-nero.png',
+  '/assets/bgv-logo-testo-bianco.png': '/assets/bgv-logo-testo-nero.png',
+  '/assets/bgv-bianco.png': '/assets/bgv-nero.png',
+};
+
 async function weekPoster(ctx: CanvasRenderingContext2D, s: GraphicState, height: number) {
   const story = s.weekFormat === 'story';
   const width = 1080;
@@ -399,7 +406,10 @@ async function weekPoster(ctx: CanvasRenderingContext2D, s: GraphicState, height
   const [players, sponsorLogo, matchLogos] = await Promise.all([
     optionalImage(subject),
     optionalImage(sponsor?.logo ?? ''),
-    Promise.all(cards.map(({ match }) => Promise.all([optionalImage(match.homeLogo), optionalImage(match.awayLogo)]))),
+    Promise.all(cards.map(({ match }) => Promise.all([
+      optionalImage(weekPosterDarkLogos[match.homeLogo] ?? match.homeLogo),
+      optionalImage(weekPosterDarkLogos[match.awayLogo] ?? match.awayLogo),
+    ]))),
   ]);
 
   ctx.fillStyle = '#151515';
@@ -459,28 +469,34 @@ async function weekPoster(ctx: CanvasRenderingContext2D, s: GraphicState, height
     write(date, margin + dateWidth / 2, .18, dateWidth - 18, timeSize * .68, '700', 'center');
     write(time, margin + dateWidth / 2, .45, dateWidth - 18, timeSize, '900', 'center');
 
-    const emblems = matchLogos[index].filter(logo => logo !== null);
-    const emblemSize = Math.min(58, rowHeight * .55);
-    const emblemStart = contentLeft + 20;
-    for (const [side, logo] of emblems.entries()) {
-      const lx = emblemStart + side * (emblemSize + 6);
-      const ly = top + (rowHeight - emblemSize) / 2;
+    const emblemSize = Math.min(86, rowHeight * .72);
+    const homeLogoX = contentLeft + 18;
+    const awayLogoX = width - margin - 18 - emblemSize;
+    const logoY = top + (rowHeight - emblemSize) / 2;
+    const logoInset = emblemSize * .09;
+    const logoSize = emblemSize - logoInset * 2;
+    const [homeLogo, awayLogo] = matchLogos[index];
+    const emblems = [{ image: homeLogo, x: homeLogoX }, { image: awayLogo, x: awayLogoX }];
+    for (const { image: logo, x: logoX } of emblems) {
+      if (!logo) continue;
       ctx.fillStyle = '#ded9d2';
       ctx.beginPath();
-      ctx.arc(lx + emblemSize / 2, ly + emblemSize / 2, emblemSize / 2, 0, Math.PI * 2);
+      ctx.arc(logoX + emblemSize / 2, logoY + emblemSize / 2, emblemSize / 2, 0, Math.PI * 2);
       ctx.fill();
-      containVisible(ctx, logo, lx + 7 * size, ly + 7 * size, emblemSize - 14 * size, emblemSize - 14 * size);
+      containVisible(ctx, logo, logoX + logoInset, logoY + logoInset, logoSize, logoSize);
     }
-    const left = emblemStart + emblems.length * (emblemSize + 6) + (emblems.length ? 13 : 0);
-    const lineWidth = width - margin - left - 18;
+    const textLeft = homeLogoX + emblemSize + 18;
+    const textRight = awayLogoX - 18;
+    const textCenter = (textLeft + textRight) / 2;
+    const lineWidth = textRight - textLeft;
     ctx.fillStyle = '#65242a';
     const competition = [match.title, weekRoundLabel(match.round)].filter(Boolean).join(' · ');
-    if (competition) write(competition.toLocaleUpperCase('it-IT'), left, .10, lineWidth, Math.min(fontSizes.title * .43, 30), '700');
+    if (competition) write(competition.toLocaleUpperCase('it-IT'), textCenter, .10, lineWidth, Math.min(fontSizes.title * .43, 30), '700', 'center');
     ctx.fillStyle = '#171717';
     const matchup = [match.homeTeam, match.awayTeam].map(name => name.trim()).filter(Boolean).join(' VS ');
-    if (matchup) write(matchup.toLocaleUpperCase('it-IT'), left, .34, lineWidth, Math.min(fontSizes.round, 42), '900');
+    if (matchup) write(matchup.toLocaleUpperCase('it-IT'), textCenter, .34, lineWidth, Math.min(fontSizes.round, 42), '900', 'center');
     ctx.fillStyle = '#35302e';
-    if (match.address.trim()) write(match.address, left, .70, lineWidth, Math.min(fontSizes.address * .65, 29), '500');
+    if (match.address.trim()) write(match.address, textCenter, .70, lineWidth, Math.min(fontSizes.address * .65, 29), '500', 'center');
   }
 
   if (sponsorLogo) {
