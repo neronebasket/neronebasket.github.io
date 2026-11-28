@@ -27,7 +27,8 @@ const initialState: GraphicState = {
   type: 'calendario', month: 'OTTOBRE 2026', leftName: 'NERONE', rightName: 'NERONE BGV',
   appointments: [], calendarLeftX: 62, calendarRightX: 1020, calendarTopGap: 40, calendarMatchGap: 105,
   sponsor: 'maisondali', photo: '', subjectPhoto: '', photoX: 0, photoY: 0, photoZoom: 1,
-  weekFormat: 'post', weekTitle: 'QUESTA SETTIMANA', weekHeaderFontSizes: DEFAULT_WEEK_HEADER_FONT_SIZES, backgroundBlur: 0,
+  weekFormat: 'post', weekLayout: 'glass', weekTitle: 'QUESTA SETTIMANA', weekHeaderFontSizes: DEFAULT_WEEK_HEADER_FONT_SIZES, backgroundBlur: 0,
+  weekPoster: { subject: '', x: 0, y: 0, zoom: 1, sponsorId: 'laboradoro', titleSize: 112, sponsorLabelSize: 22 },
   glasses: [
     { id: 'glass-sponsor', kind: 'sponsor', x: 58, y: 44, width: 964, height: 166, layer: 'front', sponsorId: 'laboradoro' },
     { id: 'glass-1', kind: 'match', x: 58, y: 240, width: 440, height: 500, layer: 'behind', match: defaultWeekMatch, fontSizes: DEFAULT_WEEK_MATCH_FONT_SIZES, detailsGap: DEFAULT_WEEK_DETAILS_GAP },
@@ -111,8 +112,15 @@ export function GraphicGenerator({ games, teamLogos }: { games: SiteGame[]; team
   const drag = useRef<{ id: string; dx: number; dy: number } | null>(null);
   const photoFile = useRef<File | null>(null);
   const photoVersion = useRef(0);
+  const posterUploadVersion = useRef(0);
   const canvasHeight = state.type === 'week' && state.weekFormat === 'story' ? 1920 : 1350;
+  const isWeekPoster = state.type === 'week' && state.weekLayout === 'poster';
   const update = <K extends keyof GraphicState>(key: K, value: GraphicState[K]) => { setMessage(''); setState(current => ({ ...current, [key]: value })); };
+
+  function updateWeekPoster(patch: Partial<GraphicState['weekPoster']>) {
+    setMessage('');
+    setState(current => ({ ...current, weekPoster: { ...current.weekPoster, ...patch } }));
+  }
   function updateTeam(side: 'home' | 'away', value: string) {
     setMessage('');
     setState(current => {
@@ -232,6 +240,22 @@ export function GraphicGenerator({ games, teamLogos }: { games: SiteGame[]; team
       reader.readAsDataURL(file);
     } catch { setMessage('Impossibile leggere il PNG del soggetto.'); }
   }
+  function uploadWeekPosterSubject(file?: File) {
+    if (!file) return;
+    if (file.type !== 'image/png' && (file.type || !/\.png$/i.test(file.name))) {
+      setMessage('Per il Poster Week carica un PNG già scontornato.');
+      return;
+    }
+    const version = ++posterUploadVersion.current;
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (version === posterUploadVersion.current) updateWeekPoster({ subject: String(reader.result ?? '') });
+    };
+    reader.onerror = () => {
+      if (version === posterUploadVersion.current) setMessage('Impossibile leggere il PNG dei giocatori.');
+    };
+    reader.readAsDataURL(file);
+  }
   function changeWeekFormat(format: WeekFormat) {
     setState(current => {
       if (current.weekFormat === format) return current;
@@ -248,7 +272,8 @@ export function GraphicGenerator({ games, teamLogos }: { games: SiteGame[]; team
     canvasRef.current.toBlob(blob => {
       if (!blob) { setMessage('Download non riuscito.'); return; }
       const url = URL.createObjectURL(blob);
-      const a = document.createElement('a'); a.href = url; a.download = `nerone-${state.type}${state.type === 'week' ? `-${state.weekFormat}` : ''}-${Date.now()}.png`; a.click();
+      const weekSuffix = state.type === 'week' ? `${isWeekPoster ? '-poster' : ''}-${state.weekFormat}` : '';
+      const a = document.createElement('a'); a.href = url; a.download = `nerone-${state.type}${weekSuffix}-${Date.now()}.png`; a.click();
       setTimeout(() => URL.revokeObjectURL(url), 1000);
     }, 'image/png');
   }
@@ -301,7 +326,7 @@ export function GraphicGenerator({ games, teamLogos }: { games: SiteGame[]; team
     return { x: (event.clientX - bounds.left) * 1080 / bounds.width, y: (event.clientY - bounds.top) * canvasHeight / bounds.height };
   }
   function pointerDown(event: React.PointerEvent<HTMLCanvasElement>) {
-    if (state.type !== 'week') return;
+    if (state.type !== 'week' || isWeekPoster) return;
     const p = pointerPosition(event);
     const found = [...state.glasses].reverse().find(g => p.x >= g.x && p.x <= g.x + g.width && p.y >= g.y && p.y <= g.y + g.height);
     if (found) { drag.current = { id: found.id, dx: p.x - found.x, dy: p.y - found.y }; event.currentTarget.setPointerCapture(event.pointerId); }
@@ -332,7 +357,17 @@ export function GraphicGenerator({ games, teamLogos }: { games: SiteGame[]; team
 
         <Fragment key={state.type}>
 
-        {state.type === 'week' && <section className="gg-panel"><div className="gg-panel-head"><span>01</span><h3>Formato Week</h3></div><div className="gg-format-choice" role="group" aria-label="Formato Week"><button type="button" className={state.weekFormat === 'post' ? 'active' : ''} aria-pressed={state.weekFormat === 'post'} onClick={() => changeWeekFormat('post')}>Post <small>1080 × 1350</small></button><button type="button" className={state.weekFormat === 'story' ? 'active' : ''} aria-pressed={state.weekFormat === 'story'} onClick={() => changeWeekFormat('story')}>Storia <small>1080 × 1920</small></button></div><p className="gg-local-note"><strong>Titolo fisso:</strong> QUESTA SETTIMANA. È centrato nel suo spazio con margini uguali sui quattro lati; POWERED BY e sponsor restano nello stesso glass.</p></section>}
+        {state.type === 'week' && <section className="gg-panel">
+          <div className="gg-panel-head"><span>01</span><h3>Formato Week</h3></div>
+          <div className="gg-format-choice" role="group" aria-label="Formato Week">
+            <button type="button" className={state.weekFormat === 'post' ? 'active' : ''} aria-pressed={state.weekFormat === 'post'} onClick={() => changeWeekFormat('post')}>Post <small>1080 × 1350</small></button>
+            <button type="button" className={state.weekFormat === 'story' ? 'active' : ''} aria-pressed={state.weekFormat === 'story'} onClick={() => changeWeekFormat('story')}>Storia <small>1080 × 1920</small></button>
+          </div>
+          <div className="gg-format-choice gg-sliders" role="group" aria-label="Layout Week">
+            <button type="button" className={!isWeekPoster ? 'active' : ''} aria-pressed={!isWeekPoster} onClick={() => update('weekLayout', 'glass')}>Glass <small>Riquadri sovrapposti alla foto</small></button>
+            <button type="button" className={isWeekPoster ? 'active' : ''} aria-pressed={isWeekPoster} onClick={() => update('weekLayout', 'poster')}>Poster <small>Fascia diagonale e schede partita</small></button>
+          </div>
+        </section>}
 
         {state.type === 'calendario' ? <>
           <section className="gg-panel"><div className="gg-panel-head"><span>01</span><h3>Intestazione</h3></div><div className="gg-grid"><Field label="Mese e anno" value={state.month} onChange={value => update('month', value)} placeholder="OTTOBRE 2026" /><Field label="Squadra sinistra" value={state.leftName} onChange={value => update('leftName', value)} /><Field label="Squadra destra" value={state.rightName} onChange={value => update('rightName', value)} /></div></section>
@@ -384,18 +419,34 @@ export function GraphicGenerator({ games, teamLogos }: { games: SiteGame[]; team
         </> : <>
           {state.type === 'risultato' && <section className="gg-panel"><div className="gg-panel-head"><span>01</span><h3>Partita</h3></div><div className="gg-grid"><Select label="Prendi dal calendario" value={selectedGame} onChange={pickGame} options={[{ value: '', label: 'Seleziona una partita' }, ...games.map(game => ({ value: game.id, label: `${game.date} · ${game.home} – ${game.away}` }))]} /><Field label="Squadra di casa" value={state.homeTeam} onChange={value => updateTeam('home', value)} /><Field label="Squadra ospite" value={state.awayTeam} onChange={value => updateTeam('away', value)} /><Select label="Logo casa" value={state.homeLogo} onChange={value => update('homeLogo', value)} options={[{ value: '', label: 'Nessuno' }, ...logoOptions]} /><Select label="Logo ospite" value={state.awayLogo} onChange={value => update('awayLogo', value)} options={[{ value: '', label: 'Nessuno' }, ...logoOptions]} /><Select label="Squadra Nerone (numero pieno)" value={state.resultClubSide} onChange={value => update('resultClubSide', value as GraphicState['resultClubSide'])} options={[{ value: 'home', label: 'In casa' }, { value: 'away', label: 'In trasferta' }, { value: 'none', label: 'Nessuna delle due' }]} /></div></section>}
           {state.type === 'risultato' && <section className="gg-panel"><div className="gg-panel-head"><span>02</span><h3>Contenuti</h3></div><p className="gg-help">I loghi mono bianchi presenti nella cartella 2026-27 vengono associati automaticamente quando scegli una partita dal calendario; puoi comunque sostituirli dai due selettori.</p><div className="gg-grid"><Field label="Campionato e giornata" value={state.competition} onChange={value => update('competition', value)} /><Field label="Punti casa" value={state.homeScore} onChange={value => update('homeScore', value.replace(/\D/g, '').slice(0, 3))} /><Field label="Punti ospite" value={state.awayScore} onChange={value => update('awayScore', value.replace(/\D/g, '').slice(0, 3))} /></div></section>}
-          <section className="gg-panel"><div className="gg-panel-head"><span>{state.type === 'week' ? '02' : '03'}</span><h3>Immagine</h3></div><label className="gg-upload"><ImagePlus size={22} /><span>{state.photo ? 'Sostituisci immagine' : 'Carica immagine di sfondo'}</span><small>JPG, PNG o WebP · resta nel browser</small><input type="file" accept="image/*" onChange={event => uploadPhoto(event.target.files?.[0])} /></label><div className="gg-grid gg-sliders"><RangeField label="Spostamento orizzontale" value={state.photoX} min={-100} max={100} onChange={value => update('photoX', value)} /><RangeField label="Spostamento verticale" value={state.photoY} min={-100} max={100} onChange={value => update('photoY', value)} /><RangeField label="Zoom" value={state.photoZoom} min={1} max={2} step={0.05} onChange={value => update('photoZoom', value)} />{state.type === 'week' && <RangeField label="Sfocatura sfondo" value={state.backgroundBlur} min={0} max={12} suffix=" px" onChange={value => update('backgroundBlur', value)} />}</div></section>
+          {!isWeekPoster && <section className="gg-panel"><div className="gg-panel-head"><span>{state.type === 'week' ? '02' : '03'}</span><h3>Immagine</h3></div><label className="gg-upload"><ImagePlus size={22} /><span>{state.photo ? 'Sostituisci immagine' : 'Carica immagine di sfondo'}</span><small>JPG, PNG o WebP · resta nel browser</small><input type="file" accept="image/*" onChange={event => uploadPhoto(event.target.files?.[0])} /></label><div className="gg-grid gg-sliders"><RangeField label="Spostamento orizzontale" value={state.photoX} min={-100} max={100} onChange={value => update('photoX', value)} /><RangeField label="Spostamento verticale" value={state.photoY} min={-100} max={100} onChange={value => update('photoY', value)} /><RangeField label="Zoom" value={state.photoZoom} min={1} max={2} step={0.05} onChange={value => update('photoZoom', value)} />{state.type === 'week' && <RangeField label="Sfocatura sfondo" value={state.backgroundBlur} min={0} max={12} suffix=" px" onChange={value => update('backgroundBlur', value)} />}</div></section>}
         </>}
 
-        {state.type === 'week' && <section className="gg-panel"><div className="gg-panel-head"><span>03</span><h3>Soggetto in primo piano</h3></div><p className="gg-help">Carica un PNG del soggetto già scontornato per disporre i GLASS davanti o dietro di lui.</p><div className="gg-actions"><label className="gg-csv-upload">Carica PNG trasparente<input type="file" accept="image/png" onChange={event => { uploadSubject(event.target.files?.[0]); event.target.value = ''; }} /></label>{state.subjectPhoto && <button type="button" onClick={() => update('subjectPhoto', '')}>Rimuovi soggetto</button>}</div><p className="gg-local-note">Il PNG deve avere la stessa dimensione della foto originale, così i due livelli restano allineati.</p></section>}
+        {state.type === 'week' && (isWeekPoster ? <section className="gg-panel">
+          <div className="gg-panel-head"><span>02</span><h3>Giocatori e sponsor</h3></div>
+          <label className="gg-upload">
+            <ImagePlus size={22} /><span>{state.weekPoster.subject ? 'Sostituisci PNG dei giocatori' : 'Carica PNG dei giocatori'}</span>
+            <small>Uno o più giocatori in un solo PNG trasparente</small>
+            <input type="file" accept="image/png,.png" onChange={event => { uploadWeekPosterSubject(event.target.files?.[0]); event.target.value = ''; }} />
+          </label>
+          {state.weekPoster.subject && <button className="gg-remove-image" type="button" onClick={() => { posterUploadVersion.current++; updateWeekPoster({ subject: '' }); }}>Rimuovi PNG</button>}
+          <div className="gg-grid gg-sliders">
+            <RangeField label="Giocatori · posizione orizzontale" value={state.weekPoster.x} min={-360} max={360} suffix=" px" onChange={x => updateWeekPoster({ x })} />
+            <RangeField label="Giocatori · posizione verticale" value={state.weekPoster.y} min={-300} max={260} suffix=" px" onChange={y => updateWeekPoster({ y })} />
+            <RangeField label="Giocatori · zoom" value={state.weekPoster.zoom} min={0.65} max={2} step={0.05} onChange={zoom => updateWeekPoster({ zoom })} />
+            <Select label="Logo sponsor" value={state.weekPoster.sponsorId} onChange={sponsorId => updateWeekPoster({ sponsorId })} options={[{ value: '', label: 'Nessuno' }, ...sponsorOptions]} />
+            <RangeField label="Font Questa settimana" value={state.weekPoster.titleSize} min={68} max={140} suffix=" px" onChange={titleSize => updateWeekPoster({ titleSize })} />
+            <RangeField label="Font Powered by" value={state.weekPoster.sponsorLabelSize} min={12} max={36} suffix=" px" onChange={sponsorLabelSize => updateWeekPoster({ sponsorLabelSize })} />
+          </div>
+        </section> : <section className="gg-panel"><div className="gg-panel-head"><span>03</span><h3>Soggetto in primo piano</h3></div><p className="gg-help">Carica un PNG del soggetto già scontornato per disporre i GLASS davanti o dietro di lui.</p><div className="gg-actions"><label className="gg-csv-upload">Carica PNG trasparente<input type="file" accept="image/png" onChange={event => { uploadSubject(event.target.files?.[0]); event.target.value = ''; }} /></label>{state.subjectPhoto && <button type="button" onClick={() => update('subjectPhoto', '')}>Rimuovi soggetto</button>}</div><p className="gg-local-note">Il PNG deve avere la stessa dimensione della foto originale, così i due livelli restano allineati.</p></section>)}
 
         {state.type === 'week' && <section className="gg-panel">
-          <div className="gg-panel-head"><span>04</span><h3>Partite e glass</h3></div>
-          <p className="gg-help">Ogni glass partita contiene un incontro diverso. Il glass “Titolo e sponsor” contiene l’intestazione, POWERED BY e il logo scelto. Trascina i glass sull’anteprima anche con il dito.</p>
-          {state.glasses.map((glass, index) => <div className="gg-appointment" key={glass.id}>
-            <div className="gg-row-title"><strong>Glass {index + 1} · {glass.kind === 'sponsor' ? 'Titolo e sponsor' : `${glass.match.homeTeam || 'Casa'} – ${glass.match.awayTeam || 'Ospite'}`}</strong><button type="button" aria-label={`Elimina glass ${index + 1}`} onClick={() => setState(current => ({ ...current, glasses: current.glasses.filter(item => item.id !== glass.id) }))}><Trash2 size={17} /></button></div>
+          <div className="gg-panel-head"><span>{isWeekPoster ? '03' : '04'}</span><h3>{isWeekPoster ? 'Schede partita' : 'Partite e glass'}</h3></div>
+          <p className="gg-help">{isWeekPoster ? 'Le schede si dispongono in basso nell’ordine mostrato qui.' : 'Ogni glass partita contiene un incontro diverso. Il glass “Titolo e sponsor” contiene l’intestazione, POWERED BY e il logo scelto. Trascina i glass sull’anteprima anche con il dito.'}</p>
+          {state.glasses.filter(glass => !isWeekPoster || glass.kind === 'match').map((glass, index) => <div className="gg-appointment" key={glass.id}>
+            <div className="gg-row-title"><strong>{isWeekPoster ? 'Partita' : 'Glass'} {index + 1} · {glass.kind === 'sponsor' ? 'Titolo e sponsor' : `${glass.match.homeTeam || 'Casa'} – ${glass.match.awayTeam || 'Ospite'}`}</strong><button type="button" aria-label={`Elimina ${isWeekPoster ? 'partita' : 'glass'} ${index + 1}`} onClick={() => setState(current => ({ ...current, glasses: current.glasses.filter(item => item.id !== glass.id) }))}><Trash2 size={17} /></button></div>
             <div className="gg-grid">
-              <Select label="Livello del glass" value={glass.layer} onChange={value => updateGlass(glass.id, { layer: value as Glass['layer'] })} options={[{ value: 'behind', label: 'Dietro il soggetto' }, { value: 'front', label: 'Davanti al soggetto' }]} />
+              {!isWeekPoster && <Select label="Livello del glass" value={glass.layer} onChange={value => updateGlass(glass.id, { layer: value as Glass['layer'] })} options={[{ value: 'behind', label: 'Dietro il soggetto' }, { value: 'front', label: 'Davanti al soggetto' }]} />}
               {glass.kind === 'sponsor' ? <Select label="Logo sponsor" value={glass.sponsorId} onChange={value => changeGlassSponsor(glass.id, value)} options={sponsorOptions} /> : <>
               <Select label="Partita dal calendario" value={glass.match.gameId} onChange={value => pickWeekGame(glass.id, value)} options={[{ value: '', label: 'Compila manualmente' }, ...games.filter(game => !state.glasses.some(item => item.id !== glass.id && item.kind === 'match' && item.match.gameId === game.id)).map(game => ({ value: game.id, label: `${game.date} · ${game.home} – ${game.away}` }))]} />
               <Select label="Campionato" value={glass.match.title} onChange={value => updateGlassMatch(glass.id, { title: value })} options={[{ value: 'UISP Gold', label: 'UISP Gold' }, { value: 'UISP Platinum', label: 'UISP Platinum' }]} />
@@ -406,27 +457,27 @@ export function GraphicGenerator({ games, teamLogos }: { games: SiteGame[]; team
               <Field label="Giornata" value={glass.match.round} placeholder="Es. 3" onChange={value => updateGlassMatch(glass.id, { round: value })} />
               <Field label="Data e ora" value={glass.match.dateTime} onChange={value => updateGlassMatch(glass.id, { dateTime: value })} />
               <Field label="Luogo" value={glass.match.address} onChange={value => updateGlassMatch(glass.id, { address: value })} />
-              <RangeField label="Distanza loghi–prima riga" value={glass.detailsGap} min={0} max={100} suffix=" px" onChange={value => updateGlass(glass.id, { detailsGap: value })} />
+              {!isWeekPoster && <RangeField label="Distanza loghi–prima riga" value={glass.detailsGap} min={0} max={100} suffix=" px" onChange={value => updateGlass(glass.id, { detailsGap: value })} />}
               </>}
             </div>
-            <div className="gg-grid gg-sliders" role="group" aria-label={`Dimensioni font glass ${index + 1}`}>
+            <div className="gg-grid gg-sliders" role="group" aria-label={`Dimensioni font ${isWeekPoster ? 'partita' : 'glass'} ${index + 1}`}>
               {glass.kind === 'sponsor' ? <>
                 <RangeField label="Font Questa settimana" value={state.weekHeaderFontSizes.title} min={12} max={100} suffix=" px" onChange={value => update('weekHeaderFontSizes', { ...state.weekHeaderFontSizes, title: value })} />
                 <RangeField label="Font Powered by" value={state.weekHeaderFontSizes.poweredBy} min={12} max={48} suffix=" px" onChange={value => update('weekHeaderFontSizes', { ...state.weekHeaderFontSizes, poweredBy: value })} />
               </> : WEEK_MATCH_FONT_CONTROLS.map(([key, label, max]) => (
-                <RangeField key={key} label={label} value={glass.fontSizes[key]} min={12} max={max} suffix=" px" onChange={value => updateGlassFont(glass.id, key, value)} />
+                <RangeField key={key} label={isWeekPoster && key === 'round' ? 'Font squadre' : label} value={glass.fontSizes[key]} min={12} max={max} suffix=" px" onChange={value => updateGlassFont(glass.id, key, value)} />
               ))}
             </div>
-            <div className="gg-grid gg-sliders">{(['x', 'y', 'width', 'height'] as const).map(key => <RangeField key={key} label={key === 'x' ? 'X' : key === 'y' ? 'Y' : key === 'width' ? 'Larghezza' : 'Altezza'} value={glass[key]} min={key === 'width' ? (glass.kind === 'sponsor' ? 600 : 280) : key === 'height' ? (glass.kind === 'sponsor' ? 130 : 380) : 0} max={key === 'x' ? 1080 - glass.width : key === 'y' ? canvasHeight - glass.height : key === 'width' ? (glass.kind === 'sponsor' ? 964 : 660) : (glass.kind === 'sponsor' ? 280 : 680)} suffix=" px" onChange={value => updateGlass(glass.id, { [key]: value })} />)}</div>
+            {!isWeekPoster && <div className="gg-grid gg-sliders">{(['x', 'y', 'width', 'height'] as const).map(key => <RangeField key={key} label={key === 'x' ? 'X' : key === 'y' ? 'Y' : key === 'width' ? 'Larghezza' : 'Altezza'} value={glass[key]} min={key === 'width' ? (glass.kind === 'sponsor' ? 600 : 280) : key === 'height' ? (glass.kind === 'sponsor' ? 130 : 380) : 0} max={key === 'x' ? 1080 - glass.width : key === 'y' ? canvasHeight - glass.height : key === 'width' ? (glass.kind === 'sponsor' ? 964 : 660) : (glass.kind === 'sponsor' ? 280 : 680)} suffix=" px" onChange={value => updateGlass(glass.id, { [key]: value })} />)}</div>}
           </div>)}
-          <button className="gg-add" type="button" onClick={addGlass}><Plus size={17} /> Aggiungi glass</button>
+          <button className="gg-add" type="button" onClick={addGlass}><Plus size={17} /> {isWeekPoster ? 'Aggiungi partita' : 'Aggiungi glass'}</button>
         </section>}
 
         {state.type !== 'week' && <section className="gg-panel"><div className="gg-panel-head"><span>04</span><h3>Sponsor</h3></div><Select label="Logo sponsor" value={state.sponsor} onChange={value => update('sponsor', value)} options={sponsorOptions} /></section>}
         </Fragment>
         <p className="gg-local-note">Il lavoro resta in questa scheda: scarica il PNG prima di chiuderla.</p>
       </div>
-      <aside className="gg-preview"><div className="gg-preview-head"><div><p className="gg-eyebrow">ANTEPRIMA LIVE</p><h2>{TYPE_LABELS[state.type]}</h2></div><span>1080 × {canvasHeight} px</span></div><div className="gg-canvas-wrap"><canvas ref={canvasRef} width="1080" height={canvasHeight} aria-label={`Anteprima ${TYPE_LABELS[state.type]}`} onPointerDown={pointerDown} onPointerMove={pointerMove} onPointerUp={() => { drag.current = null; }} onPointerCancel={() => { drag.current = null; }} style={{ aspectRatio: `1080 / ${canvasHeight}`, touchAction: state.type === 'week' ? 'none' : 'auto' }} /></div>{message && <p className="gg-message" role="status">{message}</p>}<button className="gg-download" type="button" disabled={!ready} onClick={downloadPng}><ArrowDownToLine size={19} /> Scarica PNG</button><p className="gg-preview-note">{state.type === 'week' && state.weekFormat === 'story' ? 'Storia Instagram' : 'Post Instagram'} · esportazione alla risoluzione originale.</p></aside>
+      <aside className="gg-preview"><div className="gg-preview-head"><div><p className="gg-eyebrow">ANTEPRIMA LIVE</p><h2>{isWeekPoster ? 'Week Poster' : TYPE_LABELS[state.type]}</h2></div><span>1080 × {canvasHeight} px</span></div><div className="gg-canvas-wrap"><canvas ref={canvasRef} width="1080" height={canvasHeight} aria-label={`Anteprima ${isWeekPoster ? 'Week Poster' : TYPE_LABELS[state.type]}`} onPointerDown={pointerDown} onPointerMove={pointerMove} onPointerUp={() => { drag.current = null; }} onPointerCancel={() => { drag.current = null; }} style={{ aspectRatio: `1080 / ${canvasHeight}`, touchAction: state.type === 'week' && !isWeekPoster ? 'none' : 'auto' }} /></div>{message && <p className="gg-message" role="status">{message}</p>}<button className="gg-download" type="button" disabled={!ready} onClick={downloadPng}><ArrowDownToLine size={19} /> Scarica PNG</button><p className="gg-preview-note">{state.type === 'week' && state.weekFormat === 'story' ? 'Storia Instagram' : 'Post Instagram'} · esportazione alla risoluzione originale.</p></aside>
     </div>
   </main>;
 }

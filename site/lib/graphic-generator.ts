@@ -2,6 +2,7 @@ import { assetPath } from '@/lib/paths';
 
 export type GraphicType = 'calendario' | 'week' | 'matchday' | 'risultato';
 export type WeekFormat = 'post' | 'story';
+export type WeekLayout = 'glass' | 'poster';
 export type GlassLayer = 'behind' | 'front';
 export type Appointment = { id: string; club: 'nerone' | 'nerone-bounganvillae'; date: string; time: string; opponent: string; atHome: boolean };
 export type WeekMatch = {
@@ -20,7 +21,8 @@ export type GraphicState = {
   type: GraphicType; month: string; leftName: string; rightName: string; appointments: Appointment[];
   calendarLeftX: number; calendarRightX: number; calendarTopGap: number; calendarMatchGap: number;
   sponsor: string; photo: string; subjectPhoto: string; photoX: number; photoY: number; photoZoom: number;
-  weekFormat: WeekFormat; weekTitle: string; weekHeaderFontSizes: typeof DEFAULT_WEEK_HEADER_FONT_SIZES; backgroundBlur: number;
+  weekFormat: WeekFormat; weekLayout: WeekLayout; weekTitle: string; weekHeaderFontSizes: typeof DEFAULT_WEEK_HEADER_FONT_SIZES; backgroundBlur: number;
+  weekPoster: { subject: string; x: number; y: number; zoom: number; sponsorId: string; titleSize: number; sponsorLabelSize: number };
   glasses: Glass[]; homeTeam: string; awayTeam: string;
   homeLogo: string; awayLogo: string; competition: string; dateTime: string; address: string;
   homeScore: string; awayScore: string; resultClubSide: 'home' | 'away' | 'none';
@@ -174,11 +176,14 @@ function lines(ctx: CanvasRenderingContext2D, value: string, x: number, y: numbe
     return;
   }
 }
+function weekRoundLabel(value: string) {
+  const round = value.trim();
+  return /^\d/.test(round) ? `Giornata ${round}` : round;
+}
+
 function weekDetails(ctx: CanvasRenderingContext2D, { match, fontSizes }: MatchGlass, centerX: number, top: number, width: number, height: number) {
-  const round = match.round.trim();
-  const roundLabel = /^\d/.test(round) ? `Giornata ${round}` : round;
   const opponent = opponentName(match.homeTeam, match.awayTeam);
-  const matchup = [roundLabel, opponent && `vs ${opponent}`].filter(Boolean).join(' ');
+  const matchup = [weekRoundLabel(match.round), opponent && `vs ${opponent}`].filter(Boolean).join(' ');
   const fields = [
     { value: matchup, size: fontSizes.round },
     { value: match.dateTime.toLocaleUpperCase('it-IT'), size: fontSizes.dateTime },
@@ -366,6 +371,126 @@ async function week(ctx: CanvasRenderingContext2D, s: GraphicState) {
   if (subject) cover(ctx, subject, 0, 0, 1080, canvasHeight, s.photoZoom, s.photoX, s.photoY);
   s.glasses.forEach((g, index) => { if (g.layer === 'front') drawGlass(g, index); });
 }
+
+function posterDateTime(value: string) {
+  const label = value.trim().toLocaleUpperCase('it-IT');
+  const parts = label.match(/^(?:(.*?)(?:,\s*|\s+))?(\d{1,2}:\d{2}|ORARIO DA DEFINIRE)$/);
+  const date = parts ? (parts[1] ?? '').trim() : label;
+  const words = date.match(/^(\p{L}+)\s+(\d{1,2})\s+(\p{L}+)$/u);
+  return {
+    date: words ? `${words[1].slice(0, 3)} ${words[2].padStart(2, '0')} ${words[3].slice(0, 3)}` : date || 'DATA DA DEFINIRE',
+    time: parts?.[2] || 'ORARIO DA DEFINIRE',
+  };
+}
+
+async function weekPoster(ctx: CanvasRenderingContext2D, s: GraphicState, height: number) {
+  const story = s.weekFormat === 'story';
+  const width = 1080;
+  const margin = 50;
+  const headingY = story ? 144 : 48;
+  const cardsBottom = height - (story ? 240 : 140);
+  const cards = s.glasses.filter(glass => glass.kind === 'match');
+  const available = height * .36;
+  const gap = Math.min(18, available / Math.max(1, cards.length) * .14);
+  const rowHeight = Math.min(128, (available + gap) / Math.max(1, cards.length) - gap);
+  const cardsTop = cardsBottom - Math.max(0, cards.length * (rowHeight + gap) - gap);
+  const { subject, x, y, zoom, sponsorId, titleSize, sponsorLabelSize } = s.weekPoster;
+  const sponsor = SPONSORS.find(item => item.id === sponsorId);
+  const [players, sponsorLogo, matchLogos] = await Promise.all([
+    optionalImage(subject),
+    optionalImage(sponsor?.logo ?? ''),
+    Promise.all(cards.map(({ match }) => Promise.all([optionalImage(match.homeLogo), optionalImage(match.awayLogo)]))),
+  ]);
+
+  ctx.fillStyle = '#151515';
+  ctx.fillRect(0, 0, width, height);
+  const bandY = story ? 100 : 20;
+  const bandDepth = story ? 765 : 545;
+  const band = ctx.createLinearGradient(0, bandY + 440, width, bandY);
+  band.addColorStop(0, '#6e1e25');
+  band.addColorStop(1, '#a02b34');
+  ctx.fillStyle = band;
+  ctx.beginPath();
+  ctx.moveTo(0, bandY + 405);
+  ctx.lineTo(width, bandY);
+  ctx.lineTo(width, bandY + bandDepth);
+  ctx.lineTo(0, bandY + 405 + bandDepth);
+  ctx.closePath();
+  ctx.fill();
+
+  const titleFont = '"Archivo Black", "Arial Black", Arial, sans-serif';
+  const infoFont = '"DM Sans", Arial, sans-serif';
+  const playerTop = headingY + 50 + titleSize * 2;
+  if (players) {
+    const bounds = visibleBounds(players);
+    const playerBottom = Math.min(cardsBottom, cardsTop + 28);
+    const playerHeight = playerBottom - playerTop;
+    const scale = Math.min((width - 76) / bounds.w, playerHeight / bounds.h) * zoom;
+    const dw = bounds.w * scale, dh = bounds.h * scale;
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(0, playerTop - 18, width, playerBottom - playerTop + 18);
+    ctx.clip();
+    ctx.drawImage(players, bounds.x, bounds.y, bounds.w, bounds.h, (width - dw) / 2 + x, playerBottom - dh + y, dw, dh);
+    ctx.restore();
+  }
+
+  ctx.fillStyle = '#f7f3ed';
+  text(ctx, 'NERONE BASKET ANZIO', margin, headingY, width - margin * 2, 28, infoFont, '800');
+  text(ctx, 'QUESTA', margin - 5, headingY + 45, width - margin * 2, titleSize, titleFont, '900');
+  text(ctx, 'SETTIMANA', margin - 5, headingY + 45 + titleSize * .91, width - margin * 2, titleSize, titleFont, '900');
+
+  for (const [index, { match, fontSizes }] of cards.entries()) {
+    const top = cardsTop + index * (rowHeight + gap);
+    const size = rowHeight / 128;
+    const dateWidth = 194;
+    const contentLeft = margin + dateWidth;
+    const { date, time } = posterDateTime(match.dateTime);
+    const setSize = (value: number) => Math.max(1, Math.floor(value * size));
+    const write = (label: string, left: number, lineTop: number, maxWidth: number, fontSize: number, weight: string, align: CanvasTextAlign = 'left') => {
+      text(ctx, label, left, top + rowHeight * lineTop, maxWidth, setSize(fontSize), infoFont, weight, align, 1);
+    };
+    ctx.fillStyle = '#f3f0e9';
+    ctx.fillRect(margin, top, width - 2 * margin, rowHeight);
+    ctx.fillStyle = '#a32a34';
+    ctx.fillRect(margin, top, dateWidth, rowHeight);
+    ctx.fillStyle = '#fff';
+    const timeSize = Math.min(fontSizes.dateTime, 46);
+    write(date, margin + dateWidth / 2, .18, dateWidth - 18, timeSize * .68, '700', 'center');
+    write(time, margin + dateWidth / 2, .45, dateWidth - 18, timeSize, '900', 'center');
+
+    const emblems = matchLogos[index].filter(logo => logo !== null);
+    const emblemSize = Math.min(58, rowHeight * .55);
+    const emblemStart = contentLeft + 20;
+    for (const [side, logo] of emblems.entries()) {
+      const lx = emblemStart + side * (emblemSize + 6);
+      const ly = top + (rowHeight - emblemSize) / 2;
+      ctx.fillStyle = '#ded9d2';
+      ctx.beginPath();
+      ctx.arc(lx + emblemSize / 2, ly + emblemSize / 2, emblemSize / 2, 0, Math.PI * 2);
+      ctx.fill();
+      containVisible(ctx, logo, lx + 7 * size, ly + 7 * size, emblemSize - 14 * size, emblemSize - 14 * size);
+    }
+    const left = emblemStart + emblems.length * (emblemSize + 6) + (emblems.length ? 13 : 0);
+    const lineWidth = width - margin - left - 18;
+    ctx.fillStyle = '#65242a';
+    const competition = [match.title, weekRoundLabel(match.round)].filter(Boolean).join(' · ');
+    if (competition) write(competition.toLocaleUpperCase('it-IT'), left, .10, lineWidth, Math.min(fontSizes.title * .43, 30), '700');
+    ctx.fillStyle = '#171717';
+    const matchup = [match.homeTeam, match.awayTeam].map(name => name.trim()).filter(Boolean).join(' VS ');
+    if (matchup) write(matchup.toLocaleUpperCase('it-IT'), left, .34, lineWidth, Math.min(fontSizes.round, 42), '900');
+    ctx.fillStyle = '#35302e';
+    if (match.address.trim()) write(match.address, left, .70, lineWidth, Math.min(fontSizes.address * .65, 29), '500');
+  }
+
+  if (sponsorLogo) {
+    const sponsorTop = cardsBottom + 32;
+    ctx.fillStyle = '#f7f3ed';
+    text(ctx, 'POWERED BY', width / 2 - 19, sponsorTop + 18, 235, sponsorLabelSize, infoFont, '700', 'right', 12);
+    containVisible(ctx, sponsorLogo, width / 2 + 14, sponsorTop - 2, 204, 65);
+  }
+}
+
 let matchdayGrain: HTMLCanvasElement | null = null;
 function drawMatchdayGrain(ctx: CanvasRenderingContext2D) {
   if (!matchdayGrain) {
@@ -510,7 +635,10 @@ export async function drawGraphic(canvas: HTMLCanvasElement, state: GraphicState
   if (!ctx) throw new Error('Canvas non disponibile nel browser.');
   await document.fonts.ready;
   if (state.type === 'calendario') await calendario(ctx, state);
-  if (state.type === 'week') await week(ctx, state);
+  if (state.type === 'week') {
+    if (state.weekLayout === 'poster') await weekPoster(ctx, state, canvas.height);
+    else await week(ctx, state);
+  }
   if (state.type === 'matchday') await matchday(ctx, state);
   if (state.type === 'risultato') await risultato(ctx, state);
 }
